@@ -7,8 +7,8 @@ body{
   font-family: "Geist", "Geist Fallback";
   min-width: 32rem;
   min-height: 100vh;
-  max-width: 144rem;
   width: 100%;
+  max-width: 144rem;
   padding: 1rem;
   margin: 0 auto; 
 }
@@ -17,10 +17,40 @@ body{
   padding: 0;
   margin: 0;
 }
+h1{
+  font-size: 2.8rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  font-family: "Geist Mono","monospace";
+  color: chartreuse;
+}
+h2{
+  font-size: 2.3rem;
+  font-weight: bold;
+  margin-bottom: 0.6rem;
+}
+h3{
+  font-size: 1.9rem;
+  font-weight: bold;
+  margin-bottom: 0.6rem;
+}
+small{
+  font-size: 1.3rem;
+  font-weight: 300;
+
+}
+.txtDestaque{
+  font-size: 1.8rem;
+}
 .quadrado {
-  background-color: springgreen;
+  background-color: rgb(255, 2, 234);
   height: 50rem;
   width: 50rem;
+}
+.container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 @media screen and (max-width: 960px) {
