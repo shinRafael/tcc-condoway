@@ -13,7 +13,9 @@ export default function Home() {
       <small>Texto menor</small>
       <br />
       <div className="quadrado"></div>
+  
 
+  
      <Image
       src="/temp/arvore.jpg"
       alt="Picture of the author"
