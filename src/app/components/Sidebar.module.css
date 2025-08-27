@@ -1,0 +1,51 @@
+/* Sidebar.module.css - estilos para sidebar global */
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, #1E40AF 80%, #2563eb 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1.5rem;
+  box-shadow: 2px 0 12px rgba(30,64,175,0.10);
+  position: relative;
+  z-index: 2;
+}
+.logo {
+  font-size: 2.2rem;
+  font-weight: bold;
+  margin-bottom: 2.5rem;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px rgba(30,64,175,0.15);
+  transition: color .3s;
+}
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 1.15rem;
+}
+.menu li {
+  margin-bottom: 1.3rem;
+  position: relative;
+}
+.navLink {
+  color: #fff;
+  text-decoration: none;
+  padding: .5rem 1rem .5rem .5rem;
+  border-radius: 8px;
+  display: block;
+  transition: background .3s, transform .2s, box-shadow .2s;
+}
+.navLink:hover {
+  background: rgba(255,255,255,0.10);
+  color: #e0e7ff;
+  transform: translateX(8px) scale(1.05);
+  box-shadow: 2px 4px 12px rgba(30,64,175,0.10);
+}
+.navLinkActive {
+  background: rgba(255,255,255,0.18);
+  color: #e0e7ff;
+  font-weight: bold;
+  box-shadow: 2px 4px 12px rgba(30,64,175,0.13);
+  transform: translateX(8px) scale(1.07);
+}
