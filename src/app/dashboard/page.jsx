@@ -15,6 +15,7 @@ export default function Dashboard() {
                     <Card title={"Reservas Hoje"} value="8" />
                     <Card title={"Visitantes"} value="5" />
                     <Card title={"Encomendas"} value="12" />
+                    <Card title={"Gerenciamento"} value="5"/>
                 </div>
                 <table />
             </div>
