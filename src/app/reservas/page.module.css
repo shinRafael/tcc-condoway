@@ -1,0 +1,59 @@
+.reservasContainer {
+  padding: 32px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  max-width: 700px;
+  margin: 40px auto;
+}
+
+.reservasContainer h1 {
+  color: #1c65cc;
+  margin-bottom: 16px;
+}
+
+.reservasContainer p {
+  color: #2f3640;
+  font-size: 18px;
+}
+
+.listaAmbientes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.ambienteCard {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 24px;
+  text-align: left;
+  border-left: 8px solid #1c65cc;
+}
+
+.ambienteCard h2 {
+  color: #1c65cc;
+  margin-bottom: 8px;
+}
+
+.ambienteCard p {
+  margin: 6px 0;
+  color: #2f3640;
+}
+
+.disponível {
+  color: #0984e3;
+  font-weight: bold;
+}
+
+.ocupado {
+  color: #e17055;
+  font-weight: bold;
+}
+
+.manutenção {
+  color: #636e72;
+  font-weight: bold;
+}

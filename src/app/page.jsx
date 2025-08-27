@@ -1,9 +1,16 @@
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from 'next/image';
 
 import styles from './page.module.css';
 
 export default function Home() {
-  return(
+  const router = useRouter();
+  useEffect(() => {
+    router.replace("/dashboard");
+  }, [router]);
+  return (
     <div className="container">
       <h1 className={styles.tituloHome}>Hello World!!!</h1>
       <h2>Hello World!!!</h2>
@@ -13,8 +20,6 @@ export default function Home() {
       <small>Texto menor</small>
       <br />
       <div className="quadrado"></div>
-  
-
   
      <Image
       src="/temp/arvore.jpg"
@@ -31,4 +36,4 @@ export default function Home() {
      
     </div>
   );
-} 
+}
