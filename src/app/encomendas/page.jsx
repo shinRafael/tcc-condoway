@@ -20,11 +20,11 @@ const Encomendas = () => {
   return (
     <>
       <Head>
-        <title>Dashboard de Encomendas</title>
+        <title>Encomendas</title>
       </Head>
       <div className={styles.mainContentReserva}>
         <header className={styles.header}>
-          <h1>Dashboard de Encomendas</h1>
+          <h1>Encomendas</h1>
           <div className={styles.userInfo}>
             <span>Síndico</span>
             <img src="/user-icon.png" alt="User" />
