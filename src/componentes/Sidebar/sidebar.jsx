@@ -18,7 +18,7 @@ export default function Sidebar() {
                 <li><Link href={"/encomendas"}>Encomendas</Link></li>
                 <li><Link href={"/notificacaoes"}>Notificações</Link></li>
                 <li><Link href={"/mensagens"}>Mensagens</Link></li>
-                <li><Link href={"/gerenciamento"}>Gerenciamento</Link></li>
+                <li><Link href={"/gerenciamentoDash"}>Gerenciamento</Link></li>
             </ul>
         </div>
     );

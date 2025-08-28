@@ -4,6 +4,8 @@ import Link from 'next/link';
 import styles from './Sidebar.module.css';
 import { usePathname } from 'next/navigation';
 
+
+
 export default function Sidebar() {
   const pathname = usePathname();
   const navItems = [

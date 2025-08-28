@@ -3,7 +3,6 @@ import "../styles/reset.css";
 import "../styles/globals.css";
 
 import Cabecalho from "@/componentes/cabecalho";
-import Rodape from "@/componentes/rodape";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,11 +21,12 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
+    
     <html lang="pt-br">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
        
         {children}
-        <Rodape /> 
+       
       </body>
     </html>
   );
