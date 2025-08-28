@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import styles from './encomendas.module.css';
+import '../../styles/globals.css';
 
 const Encomendas = () => {
   // Dados simulados da sua API para teste, sem status de "problema"
@@ -17,24 +18,11 @@ const Encomendas = () => {
   const encomendasRetiradas = encomendas.filter(enc => enc.enc_status === 'entregue').length;
 
   return (
-    <div className={styles.container}>
+    <>
       <Head>
         <title>Dashboard de Encomendas</title>
       </Head>
-
-      <aside className={styles.sidebar}>
-        <h2>CondoWay</h2>
-        <nav>
-          <ul>
-            <li><a href="#" className={styles.active}>Dashboard</a></li>
-            <li><a href="#">Moradores</a></li>
-            <li><a href="#">Encomendas</a></li>
-            <li><a href="#">Reservas</a></li>
-          </ul>
-        </nav>
-      </aside>
-
-      <div className={styles.mainContent}>
+      <div className={styles.mainContentReserva}>
         <header className={styles.header}>
           <h1>Dashboard de Encomendas</h1>
           <div className={styles.userInfo}>
@@ -93,7 +81,7 @@ const Encomendas = () => {
           </div>
         </section>
       </div>
-    </div>
+    </>
   );
 };
 
