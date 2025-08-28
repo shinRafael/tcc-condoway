@@ -1,3 +1,79 @@
+.sidebar { width: 250px; background-color: #1a2c5e; color: #ffffff; padding: 24px; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+.logoLink { text-decoration: none; color: inherit; cursor: pointer; }
+.logoContainer { display: flex; flex-direction: row; align-items: center; gap: 12px; margin-bottom: 32px; }
+.logoIcon { height: 36px; width: auto; flex-shrink: 0; }
+.logoText { font-size: 1.5rem; font-weight: bold; line-height: 1; }
+.navList { list-style: none; padding: 0; margin: 0; }
+.navItem { margin-bottom: 12px; }
+.navLink { color: #a7b3d1; text-decoration: none; display: block; padding: 10px 12px; border-radius: 8px; transition: all 0.2s ease; }
+.navLink:hover { background-color: #2a3e7a; color: #ffffff; }
+.navLinkActive { background-color: #4a5e9a; color: #ffffff; font-weight: 500; }
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+  padding: 0 10px;
+}
+
+.logoIcon {
+  height: 36px;
+  width: auto;
+  display: block;
+  flex-shrink: 0;
+}
+
+.logoText {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ffffff;
+  line-height: 1;
+  white-space: nowrap;
+}
+.sidebar {
+  width: 250px;
+  background-color: #1a2c5e;
+  color: #ffffff;
+  padding: 24px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.logo { font-size: 1.5rem; font-weight: bold; margin-bottom: 32px; }
+.navList { list-style: none; padding: 0; margin: 0; }
+.navItem { margin-bottom: 12px; }
+.navLink { color: #a7b3d1; text-decoration: none; display: block; padding: 10px; border-radius: 6px; transition: all 0.2s ease; }
+.navLink:hover { background-color: #2a3e7a; color: #ffffff; }
+.navLinkActive { background-color: #4a5e9a; color: #ffffff; font-weight: 500; }
+.logoDivider {
+  border: none;
+  border-bottom: 2px solid #fff;
+  margin: 0 0 24px 0;
+  opacity: 0.2;
+}
+/* Logo vertical alignment styles */
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.logoIcon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  display: block;
+}
+
+.logoText {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  font-family: 'Montserrat', 'Poppins', 'Inter', Arial, sans-serif;
+}
 /* Sidebar.module.css - estilos para sidebar global */
 .sidebar {
   width: 260px;

@@ -1,78 +1,72 @@
 "use client";
-import { useState } from "react";
-import styles from './page.module.css';
-import '../../styles/globals.css';
+import React, { useState } from "react";
+import styles from "./page.module.css";
 
-const ambientes = [
-	{
-		id: 1,
-		nome: "Salão de Festas",
-		icone: "🎉",
-		status: "disponível",
-		detalhes: "Capacidade para 50 pessoas.",
-		proximaReserva: "2025-08-28 18:00",
-		pedidos: [
-			{ id: 101, usuario: "João Silva", data: "2025-08-28 18:00", status: "pendente" },
-			{ id: 102, usuario: "Maria Souza", data: "2025-08-29 20:00", status: "confirmado" }
-		],
-		historico: [
-			{ data: "25/08/2025", usuario: "João Silva" },
-			{ data: "20/08/2025", usuario: "Maria Souza" },
-		],
-	},
-	{
-		id: 2,
-		nome: "Churrasqueira",
-		icone: "🍖",
-		status: "ocupado",
-		detalhes: "Área externa coberta.",
-		proximaReserva: "2025-08-26 20:00",
-		pedidos: [
-			{ id: 103, usuario: "Carlos Lima", data: "2025-08-26 20:00", status: "pendente" }
-		],
-		historico: [
-			{ data: "22/08/2025", usuario: "Carlos Lima" },
-			{ data: "18/08/2025", usuario: "Ana Paula" },
-		],
-	},
-	{
-		id: 3,
-		nome: "Piscina",
-		icone: "🏊",
-		status: "manutenção",
-		detalhes: "Manutenção até 30/08.",
-		proximaReserva: null,
-		pedidos: [],
-		historico: [
-			{ data: "15/08/2025", usuario: "Pedro Santos" },
-		],
-	},
-	{
-		id: 4,
-		nome: "Quadra Poliesportiva",
-		icone: "⚽",
-		status: "disponível",
-		detalhes: "Iluminação noturna.",
-		proximaReserva: null,
-		pedidos: [
-			{ id: 104, usuario: "Lucas Godoi", data: "2025-08-30 19:00", status: "negado" }
-		],
-		historico: [
-			{ data: "10/08/2025", usuario: "Lucas Godoi" },
-		],
-	},
+// Dados de exemplo para os cards de reservas
+const initialData = [
+  {
+	id: 1,
+	nome: "Salão de Festas",
+	icone: "🎉",
+	status: "disponível",
+	detalhes: "Capacidade para 50 pessoas.",
+	proximaReserva: "2025-08-28 18:00",
+	pedidos: [
+	  { id: 'pedido-joao-1', usuario: "João Silva", data: "2025-08-28 18:00", status: "pendente" },
+	  { id: 'pedido-maria-1', usuario: "Maria Souza", data: "2025-08-29 20:00", status: "confirmado" }
+	],
+	historico: [
+	  { data: "25/08/2025", usuario: "João Silva" },
+	  { data: "20/08/2025", usuario: "Maria Souza" },
+	],
+  },
+  {
+	id: 2,
+	nome: "Churrasqueira",
+	icone: "🍖",
+	status: "ocupado",
+	detalhes: "Área externa coberta.",
+	proximaReserva: "2025-08-26 20:00",
+	pedidos: [
+	  { id: 'pedido-carlos-1', usuario: "Carlos Lima", data: "2025-08-26 20:00", status: "pendente" }
+	],
+	historico: [
+	  { data: "22/08/2025", usuario: "Carlos Lima" },
+	  { data: "18/08/2025", usuario: "Ana Paula" },
+	],
+  },
+  {
+	id: 3,
+	nome: "Piscina",
+	icone: "🏊",
+	status: "manutenção",
+	detalhes: "Manutenção até 30/08.",
+	proximaReserva: null,
+	pedidos: [],
+	historico: [
+	  { data: "15/08/2025", usuario: "Pedro Santos" },
+	],
+  },
+  {
+	id: 4,
+	nome: "Quadra Poliesportiva",
+	icone: "⚽",
+	status: "disponível",
+	detalhes: "Iluminação noturna.",
+	proximaReserva: null,
+	pedidos: [
+	  { id: 'pedido-lucas-1', usuario: "Lucas Godoi", data: "2025-08-30 19:00", status: "negado" }
+	],
+	historico: [
+	  { data: "10/08/2025", usuario: "Lucas Godoi" },
+	],
+  },
 ];
 
 const statusStyle = {
-	disponível: styles.statusDisponivel,
-	ocupado: styles.statusOcupado,
-	manutenção: styles.statusManutencao,
-};
-
-const pedidoStyle = {
-	pendente: styles.pedidoPendente,
-	confirmado: styles.pedidoConfirmado,
-	negado: styles.pedidoNegado,
+  "disponível": styles.statusDisponivel,
+  "ocupado": styles.statusOcupado,
+  "manutenção": styles.statusManutencao,
 };
 
 const menu = [
@@ -101,7 +95,7 @@ export default function Page() {
 	const [filtroMorador, setFiltroMorador] = useState("");
 	const [filtroAmbiente, setFiltroAmbiente] = useState("");
 	const [filtroData, setFiltroData] = useState("");
-	const [ambientesState, setAmbientesState] = useState(ambientes);
+const [ambientesState, setAmbientesState] = useState(initialData);
 	const [lastAction, setLastAction] = useState("");
 	const [modalPedido, setModalPedido] = useState(null);
 	const [hoverUsuario, setHoverUsuario] = useState(null);
@@ -294,47 +288,33 @@ function getPerfilUsuario(nome) {
 										<span className={styles.cardReservaVazia}>Nenhuma reserva futura</span>
 									)}
 								</div>
-								{ambiente.pedidos.length > 0 && (
-									<div className={styles.cardPedidos}>
-										<span>Pedidos pendentes:</span>
-										<ul>
-											{ambiente.pedidos.map((pedido) => (
-												<li key={pedido.id} className={pedidoStyle[pedido.status]}>
-													<span>
-														<b
-															onMouseEnter={() => setHoverUsuario(pedido.usuario)}
-															onMouseLeave={() => setHoverUsuario(null)}
-															className={styles.usuarioTooltip}
-														>
-															{getPrimeiroNome(pedido.usuario)}
-														</b> solicita para {formatarData(pedido.data)}
-														{hoverUsuario === pedido.usuario && (
-															<div className={styles.perfilTooltip}>
-																<div><strong>Nome:</strong> {pedido.usuario}</div>
-																<div><strong>Apto:</strong> {getPerfilUsuario(pedido.usuario).apartamento}</div>
-																<div><strong>Tel:</strong> {getPerfilUsuario(pedido.usuario).telefone}</div>
-															</div>
-														)}
-													</span>
-													<span className={styles.pedidoStatus}>{pedido.status}</span>
-													<div className={styles.cardAcoes}>
-														{modalPedido && modalPedido.ambienteId === ambiente.id && modalPedido.pedidoId === pedido.id ? (
-															<div className={styles.inlineDecisaoBox}>
-																<button className={styles.btnConfirmar} onClick={() => handleDecisao("confirmar")}>Confirmar</button>
-																<button className={styles.btnNegar} onClick={() => handleDecisao("negar")}>Negar</button>
-																<button className={styles.btnEditar} onClick={() => handleDecisao("editar")}>Editar</button>
-																<button className={styles.btnFechar} onClick={() => setModalPedido(null)}>Fechar</button>
-															</div>
-														) : (
-															<button className={styles.btnDecisao} onClick={() => handleOpenModal(ambiente.id, pedido.id)}>
-																Decidir
-															</button>
-														)}
-													</div>
-												</li>
-											))}
-										</ul>
-									</div>
+{ambiente.pedidos.length > 0 && (
+  <div className={styles.cardPedidos}>
+	<span>Pedidos pendentes:</span>
+	{ambiente.pedidos.map((pedido) => (
+	  <div key={pedido.id} className={`${styles.requestItem} ${pedido.status === 'pendente' ? styles.pending : pedido.status === 'confirmado' ? styles.confirmed : styles.denied}`}> 
+		<div className={styles.requestInfo}>
+		  <strong>{getPrimeiroNome(pedido.usuario)}</strong>
+		  <span>solicita para {formatarData(pedido.data)}</span>
+		</div>
+		<span className={styles.requestStatus}>{pedido.status.charAt(0).toUpperCase() + pedido.status.slice(1)}</span>
+							<div className={styles.actionsContainer}>
+							  {modalPedido && modalPedido.ambienteId === ambiente.id && modalPedido.pedidoId === pedido.id ? (
+								<div className={styles.inlineDecisaoBox}>
+								  <button className={styles.btnConfirmar} onClick={() => handleDecisao("confirmar")} aria-label="Confirmar" title="Confirmar">✔</button>
+								  <button className={styles.btnNegar} onClick={() => handleDecisao("negar")} aria-label="Negar" title="Negar">✖</button>
+								  <button className={styles.btnEditar} onClick={() => handleDecisao("editar")} aria-label="Editar" title="Editar">✎</button>
+								  <button className={styles.btnFechar} onClick={() => setModalPedido(null)} aria-label="Fechar" title="Fechar">⨉</button>
+								</div>
+							  ) : (
+								<button className={styles.actionButton} onClick={() => handleOpenModal(ambiente.id, pedido.id)}>
+								  Ações
+								</button>
+							  )}
+							</div>
+	  </div>
+	))}
+  </div>
 								)}
 								<div className={styles.cardHistorico}>
 									<span>Histórico:</span>
@@ -356,3 +336,4 @@ function getPerfilUsuario(nome) {
 		</div>
 	);
 }
+// ...existing code...

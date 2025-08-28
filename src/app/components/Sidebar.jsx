@@ -1,37 +1,54 @@
+
 'use client';
+import Link from 'next/link';
 import styles from './Sidebar.module.css';
 import { usePathname } from 'next/navigation';
 
-const menu = [
-  { label: 'Dashboard', path: '/dashboard' },
-  { label: 'Usuários', path: '/usuarios' },
-  { label: 'Apartamentos', path: '/apartamentos' },
-  { label: 'Reservas', path: '/reservas' },
-  { label: 'Visitantes', path: '/visitantes' },
-  { label: 'Encomendas', path: '/encomendas' },
-  { label: 'Notificações', path: '/notificacoes' },
-  { label: 'Mensagens', path: '/mensagens' }
-];
-
 export default function Sidebar() {
   const pathname = usePathname();
+  const navItems = [
+    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/reservas', label: 'Reservas' },
+    { href: '/usuarios', label: 'Usuários' },
+    { href: '/apartamentos', label: 'Apartamentos' },
+    { href: '/visitantes', label: 'Visitantes' },
+    { href: '/encomendas', label: 'Encomendas' },
+    { href: '/notificacoes', label: 'Notificações' },
+    { href: '/mensagens', label: 'Mensagens' },
+  ];
   return (
     <aside className={styles.sidebar}>
-      <h2 className={styles.logo}>CondoWay</h2>
+      <Link href="/dashboard" className={styles.logoLink}>
+        <div className={styles.logoContainer}>
+          <img src="/logo-icon.svg" alt="CondoWay Icon" className={styles.logoIcon} />
+          <h1 className={styles.logoText}>CondoWay</h1>
+        </div>
+      </Link>
       <nav>
-        <ul className={styles.menu}>
-          {menu.map((item) => (
-            <li key={item.label}>
-              <a
-                href={item.path}
-                className={
-                  pathname === item.path
-                    ? `${styles.navLink} ${styles.navLinkActive}`
-                    : styles.navLink
-                }
-              >
+        <ul className={styles.navList}>
+          {navItems.map((item) => (
+            <li key={item.href} className={styles.navItem}>
+              <Link href={item.href} className={`${styles.navLink} ${pathname === item.href ? styles.navLinkActive : ''}`}>
                 {item.label}
-              </a>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </aside>
+  );
+
+
+  return (
+    <aside className={styles.sidebar}>
+      <h1 className={styles.logo}>CondoWay</h1>
+      <nav>
+        <ul className={styles.navList}>
+          {navItems.map((item) => (
+            <li key={item.href} className={styles.navItem}>
+              <Link href={item.href} className={`${styles.navLink} ${pathname === item.href ? styles.navLinkActive : ''}`}>
+                {item.label}
+              </Link>
             </li>
           ))}
         </ul>
