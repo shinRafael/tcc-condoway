@@ -9,7 +9,7 @@ import { usePathname } from 'next/navigation';
 export default function Sidebar() {
   const pathname = usePathname();
   const navItems = [
-    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/dashboard', label: 'Dashbssssard' },
     { href: '/reservas', label: 'Reservas' },
     { href: '/usuarios', label: 'Usuários' },
     { href: '/apartamentos', label: 'Apartamentos' },
