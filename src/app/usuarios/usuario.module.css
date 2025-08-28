@@ -95,3 +95,64 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
+/* Formulário dentro do modal */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 15px;
+  font-family: Arial, sans-serif;
+}
+
+.form input,
+.form select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 100%;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.form input:focus,
+.form select:focus {
+  border-color: #4facfe;
+  box-shadow: 0 0 5px rgba(79, 172, 254, 0.5);
+  outline: none;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+/* Botões do modal */
+.saveBtn {
+  background: #2ed573;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.saveBtn:hover {
+  background: #27ae60;
+}
+
+.cancelBtn {
+  background: #dcdde1;
+  color: #2f3640;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.cancelBtn:hover {
+  background: #b2bec3;
+}
