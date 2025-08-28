@@ -5,9 +5,12 @@ import Link from "next/link"
 export default function Sidebar() {
     return(
         <div className="sidebar">
-            <h2>CondoWay</h2>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '30px' }}>
+                <img src="/temp/logo.svg" alt="Logo CondoWay" style={{ width: '38px', height: '38px', objectFit: 'contain', background: 'none' }} />
+                <h2 style={{ margin: 0, fontSize: '1.7rem', fontWeight: 700, letterSpacing: '1px' }}>CondWay</h2>
+            </div>
             <ul>
-                <li><Link href={"/dashboard"}>Dashboard</Link></li>
+                <li><Link href={"/dashboard"}>Dashboard haha</Link></li>
                 <li><Link href={"/usuarios"}>Usuarios</Link></li>
                 <li><Link href={"/apartamentos"}>Apartamentos</Link></li>
                 <li><Link href={"/reservas"}>Reservas</Link></li>

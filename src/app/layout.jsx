@@ -1,13 +1,16 @@
-import '../styles/globals.css';
 import Sidebar from './components/Sidebar';
+import styles from './Layout.module.css';
+import '../styles/globals.css';
+
+export const metadata = { title: 'CondoWay' };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="pt-BR">
-      <body style={{ margin: 0, padding: 0 }}>
-        <div style={{ display: 'flex', minHeight: '100vh', background: 'linear-gradient(135deg, #f5f7fa 0%, #e0e7ff 100%)' }}>
+    <html lang="pt-br">
+      <body>
+        <div className={styles.appContainer}>
           <Sidebar />
-          <main style={{ flexGrow: 1, padding: '2.5rem 2rem 2rem 2rem', minHeight: '100vh' }}>
+          <main className={styles.mainContent}>
             {children}
           </main>
         </div>
