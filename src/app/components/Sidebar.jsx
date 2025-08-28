@@ -9,7 +9,7 @@ import { usePathname } from 'next/navigation';
 export default function Sidebar() {
   const pathname = usePathname();
   const navItems = [
-    { href: '/dashboard', label: 'Dashbssssard' },
+    { href: '/dashboard', label: 'Dashboard' },
     { href: '/reservas', label: 'Reservas' },
     { href: '/usuarios', label: 'Usuários' },
     { href: '/apartamentos', label: 'Apartamentos' },
@@ -22,7 +22,7 @@ export default function Sidebar() {
     <aside className={styles.sidebar}>
       <Link href="/dashboard" className={styles.logoLink}>
         <div className={styles.logoContainer}>
-          <img src="/logo-icon.svg" alt="CondoWay Icon" className={styles.logoIcon} />
+          <img src="/temp/logosemtransparente.png" alt="CondoWay Icon" className={styles.logoIcon} />
           <h1 className={styles.logoText}>CondoWay</h1>
         </div>
       </Link>
