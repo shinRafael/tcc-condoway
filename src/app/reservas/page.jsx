@@ -259,9 +259,9 @@ function getPerfilUsuario(nome) {
 							onChange={(e) => setFiltroAmbiente(e.target.value)}
 						>
 							<option value="">Ambiente</option>
-							{ambientes.map((a) => (
-								<option key={a.id} value={a.nome}>{a.nome}</option>
-							))}
+ {ambientesState.map((a) => (
+   <option key={a.id} value={a.nome}>{a.nome}</option>
+ ))}
 						</select>
 						<input
 							type="date"
