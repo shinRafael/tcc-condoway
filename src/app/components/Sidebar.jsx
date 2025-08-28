@@ -10,7 +10,8 @@ const menu = [
   { label: 'Visitantes', path: '/visitantes' },
   { label: 'Encomendas', path: '/encomendas' },
   { label: 'Notificações', path: '/notificacoes' },
-  { label: 'Mensagens', path: '/mensagens' }
+  { label: 'Mensagens', path: '/mensagens' },
+  { label: "Gerenciamento", path: "/gerenciamento" }
 ];
 
 export default function Sidebar() {
