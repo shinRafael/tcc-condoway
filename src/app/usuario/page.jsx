@@ -1,4 +1,4 @@
-import '../../styles/usuarios.css';
+import '../../styles/usuario.module.css';
 
 export default function Usuarios() {
   return (
