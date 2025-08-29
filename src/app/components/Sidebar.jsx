@@ -17,6 +17,8 @@ export default function Sidebar() {
     { href: '/encomendas', label: 'Encomendas' },
     { href: '/notificacoes', label: 'Notificações' },
     { href: '/mensagens', label: 'Mensagens' },
+    { href: '/gerenciamento', label: 'Gerenciamento' }
+
   ];
   return (
     <aside className={styles.sidebar}>
