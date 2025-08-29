@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import './index.module.css';
+import { useState } from 'react';
+import styles from './index.module.css'; // Corrigido para usar CSS Modules
 
 export default function GerenciamentoPage() {
   const [dados, setDados] = useState([
@@ -38,39 +38,36 @@ export default function GerenciamentoPage() {
 
     setDados([...dados, novo]);
     setForm({ cond_id: "", ger_data: "", ger_descricao: "", ger_valor: "" });
-    setShowModal(false); // Fecha modal depois de salvar
+    setShowModal(false);
   };
 
   return (
-    <div className="main">
-      {/* Header */}
-      <div className="header">
-        <h1 className="headerTitle">Gerenciamento</h1>
-        <div className="userInfo">
+    <div className={styles.main}>
+      <div className={styles.header}>
+        <h1 className={styles.headerTitle}>Gerenciamento</h1>
+        <div className={styles.userInfo}>
           <span>Administrador</span>
           <img
             src="https://via.placeholder.com/35"
             alt="User"
-            className="userAvatar"
+            className={styles.userAvatar}
           />
         </div>
       </div>
 
-      {/* Conteúdo */}
-      <div className="content">
-        <div className="contentHeader">
-          <h2 className="contentTitle">Despesas do Condomínio</h2>
+      <div className={styles.content}>
+        <div className={styles.contentHeader}>
+          <h2 className={styles.contentTitle}>Despesas do Condomínio</h2>
           <button
             onClick={() => setShowModal(true)}
-            className="addButton"
+            className={styles.addButton}
           >
             + Adicionar
           </button>
         </div>
 
-        {/* Tabela */}
-        <div className="tableContainer">
-          <table className="table">
+        <div className={styles.tableContainer}>
+          <table className={styles.table}>
             <thead>
               <tr>
                 <th>Condomínio</th>
@@ -97,20 +94,19 @@ export default function GerenciamentoPage() {
         </div>
       </div>
 
-      {/* Modal */}
       {showModal && (
-        <div className="modalOverlay">
-          <div className="modalContent">
-            <h3 className="modalTitle">Adicionar Lançamento</h3>
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <h3 className={styles.modalTitle}>Adicionar Lançamento</h3>
             <form onSubmit={handleSubmit}>
-              <div className="formGroup">
+              <div className={styles.formGroup}>
                 <label>Condomínio</label>
                 <select
                   value={form.cond_id}
                   onChange={(e) =>
                     setForm({ ...form, cond_id: e.target.value })
                   }
-                  className="w-full p-3 border rounded"
+                  className={styles.select}
                 >
                   <option value="">Selecione</option>
                   {condominios.map((c) => (
@@ -121,7 +117,7 @@ export default function GerenciamentoPage() {
                 </select>
               </div>
 
-              <div className="formGroup">
+              <div className={styles.formGroup}>
                 <label>Data</label>
                 <input
                   type="date"
@@ -129,10 +125,11 @@ export default function GerenciamentoPage() {
                   onChange={(e) =>
                     setForm({ ...form, ger_data: e.target.value })
                   }
+                  className={styles.input}
                 />
               </div>
 
-              <div className="formGroup">
+              <div className={styles.formGroup}>
                 <label>Descrição</label>
                 <input
                   type="text"
@@ -141,10 +138,11 @@ export default function GerenciamentoPage() {
                   onChange={(e) =>
                     setForm({ ...form, ger_descricao: e.target.value })
                   }
+                  className={styles.input}
                 />
               </div>
 
-              <div className="formGroup">
+              <div className={styles.formGroup}>
                 <label>Valor</label>
                 <input
                   type="text"
@@ -153,18 +151,19 @@ export default function GerenciamentoPage() {
                   onChange={(e) =>
                     setForm({ ...form, ger_valor: e.target.value })
                   }
+                  className={styles.input}
                 />
               </div>
 
-              <div className="modalActions">
+              <div className={styles.modalActions}>
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="cancelButton"
+                  className={styles.cancelButton}
                 >
                   Cancelar
                 </button>
-                <button type="submit" className="saveButton">
+                <button type="submit" className={styles.saveButton}>
                   Salvar
                 </button>
               </div>
