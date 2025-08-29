@@ -1,39 +1,57 @@
-"use client";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Image from 'next/image';
+'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
-export default function Home() {
+
+
+export default function LoginPage() {
   const router = useRouter();
-  useEffect(() => {
-    router.replace("/dashboard");
-  }, [router]);
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [erro, setErro] = useState('');
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (email === 'admin@exemplo.com' && senha === '123456') {
+      router.push('/dashboard');
+    } else {
+      setErro('Credenciais inválidas.');
+    }
+  };
+
   return (
-    <div className="container">
-      <h1 className={styles.tituloHome}>Hello World!!!</h1>
-      <h2>Hello World!!!</h2>
-      <h3>Hello World!!!</h3>
-      <p className="txtDestaque">Primeiro exemplo no Next</p>
-      <p>Primeiro exemplo no Next</p>
-      <small>Texto menor</small>
-      <br />
-      <div className="quadrado"></div>
-  
-     <Image
-      src="/temp/arvore.jpg"
-      alt="Picture of the author"
-      width={130}
-      height={90}
-    />
-    <Image
-      src="/temp/arvorePequena.jpg"
-      alt="Picture of the author"
-      width={1300}
-      height={900}
-    />
-     
+    <div className={styles.loginContainer}>
+      <form onSubmit={handleLogin} className={styles.loginForm}>
+        <h1 className={styles.loginTitle}>Login</h1>
+
+        <label className={styles.label}>E-mail</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Digite seu e-mail"
+          required
+          className={styles.input}
+        />
+
+        <label className={styles.label}>Senha</label>
+        <input
+          type="password"
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+          placeholder="Digite sua senha"
+          required
+          className={styles.input}
+        />
+
+        {erro && <p className={styles.error}>{erro}</p>}
+
+        <button type="submit" className={styles.button}>
+          Entrar
+        </button>
+      </form>
     </div>
   );
 }
