@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import styles from './Sidebar.module.css';
 import { usePathname } from 'next/navigation';
-import { FaTachometerAlt, FaUsers, FaBuilding } from 'react-icons/fa';
+import { FaTachometerAlt, FaUsers, FaBuilding, FaEnvelope, FaBell, FaCommentAlt, FaDoorOpen } from 'react-icons/fa';
 import { BsFillCalendarCheckFill } from 'react-icons/bs';
 
 
@@ -12,15 +12,14 @@ import { BsFillCalendarCheckFill } from 'react-icons/bs';
 export default function Sidebar() {
   const pathname = usePathname();
   const navItems = [
-    { href: '/dashboard', label: ' Dashboard', icon: <FaTachometerAlt /> },
-    { href: '/reservas', label: ' Reservas', icon: <BsFillCalendarCheckFill /> },
-    { href: '/usuarios', label: ' Usuários', icon: <FaUsers /> },
+    { href: '/dashboard',    label: ' Dashboard',    icon: <FaTachometerAlt /> },
+    { href: '/reservas',     label: ' Reservas',     icon: <BsFillCalendarCheckFill /> },
+    { href: '/usuarios',     label: ' Usuários',     icon: <FaUsers /> },
     { href: '/apartamentos', label: ' Apartamentos', icon: <FaBuilding /> },
-    // Adicione outros ícones conforme necessário
-    { href: '/visitantes', label: ' Visitantes', icon: <FaUsers /> },
-    { href: '/encomendas', label: ' Encomendas', icon: <FaBuilding /> },
-    { href: '/notificacoes', label: ' Notificações', icon: <FaUsers /> },
-    { href: '/mensagens', label: ' Mensagens', icon: <FaUsers /> },
+    { href: '/visitantes',   label: ' Visitantes',   icon: <FaDoorOpen /> },
+    { href: '/encomendas',   label: ' Encomendas',   icon: <FaEnvelope /> },
+    { href: '/notificacoes', label: ' Notificações', icon: <FaBell /> },
+    { href: '/mensagens',    label: ' Mensagens',    icon: <FaCommentAlt /> },
   ];
   return (
     <aside className={styles.sidebar}>
