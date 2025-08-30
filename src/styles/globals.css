@@ -173,3 +173,12 @@ table th {
   font-weight: bold;
   color: #2f3640;
 }
+/* globals.css */
+@import "./reset.css";
+
+body {
+  font-family: "Poppins", sans-serif;
+  background: #f5f6fa;
+  margin: 0;
+  padding: 0;
+}

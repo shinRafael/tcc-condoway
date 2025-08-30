@@ -1,57 +1,29 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import styles from './page.module.css';
+import Header from "./components/Header";
+import Footer from "../componentes/Footer";
+import LoginForm from "./components/LoginForm";
+import "./globals.css";
 
-
-
-export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [erro, setErro] = useState('');
-
-  const handleLogin = (e) => {
-    e.preventDefault();
-    if (email === 'admin@exemplo.com' && senha === '123456') {
-      router.push('/dashboard');
-    } else {
-      setErro('Credenciais inválidas.');
-    }
-  };
-
+export default function HomePage() {
   return (
-    <div className={styles.loginContainer}>
-      <form onSubmit={handleLogin} className={styles.loginForm}>
-        <h1 className={styles.loginTitle}>Login</h1>
+    <>
+      <Header />
 
-        <label className={styles.label}>E-mail</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Digite seu e-mail"
-          required
-          className={styles.input}
-        />
+      <main>
+        <section className="loginSection">
+          <div className="loginContent">
+            <div className="welcomeText">
+              <h1>CondoWey facilitando o seu dia!</h1>
+              <p>Cadastre-se para receber novidades e acessar nossos recursos.</p>
+            </div>
 
-        <label className={styles.label}>Senha</label>
-        <input
-          type="password"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-          placeholder="Digite sua senha"
-          required
-          className={styles.input}
-        />
+            <LoginForm />
+          </div>
+        </section>
+      </main>
 
-        {erro && <p className={styles.error}>{erro}</p>}
-
-        <button type="submit" className={styles.button}>
-          Entrar
-        </button>
-      </form>
-    </div>
+      <Footer />
+    </>
   );
 }

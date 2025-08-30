@@ -1,11 +1,10 @@
-export default function Header(){
-    return(
-        <div className="header">
-            <h1>Dashboard</h1>
-            <div className="user-info">
-                <span>Sindico</span>
-                <img src="https://via.placeholder.com/35" alt="User"/>
-            </div>
-        </div>
-    );
+// src/componentes/Header/header.jsx
+import styles from "../../styles/Header.module.css";
+
+export default function Header() {
+  return (
+    <header className={styles.header}>
+      <h1>CondoWay</h1>
+    </header>
+  );
 }

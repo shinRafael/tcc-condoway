@@ -1,33 +1,15 @@
-import { Geist, Geist_Mono } from "next/font/google";
-import "../styles/reset.css";
+// src/app/layout.js
 import "../styles/globals.css";
-
-import Cabecalho from "@/componentes/cabecalho";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata = {
   title: "CondoWay",
-  description: "O melhor app de condominio para condominos ",
+  description: "Sistema de Gestão de Condomínios",
 };
 
 export default function RootLayout({ children }) {
   return (
-    
-    <html lang="pt-br">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-       
-        {children}
-       
-      </body>
+    <html lang="pt-BR">
+      <body>{children}</body>
     </html>
   );
 }
