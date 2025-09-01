@@ -36,9 +36,9 @@ export default function Sidebar() {
       <ul>
         {navItems.map((item) => (
           <li key={item.href}>
-            <Link href={item.href} className={pathname === item.href ? `${styles.active}` : ''}>
+            <Link href={item.href} className={`${styles.navLink} ${pathname === item.href ? styles.active : ''}`}>
               {item.icon}
-              <span style={{ marginLeft: 10 }}>{item.label}</span>
+              <span>{item.label}</span>
             </Link>
           </li>
         ))}

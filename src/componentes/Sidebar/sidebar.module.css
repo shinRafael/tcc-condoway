@@ -52,3 +52,15 @@ a:hover, a.active {
   background: #e0e7ef;
   color: #0070f3;
 }
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.navLink svg {
+  font-size: 1.3rem;
+  color: #0070f3;
+  min-width: 22px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
