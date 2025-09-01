@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 
 'use client';
 import Link from 'next/link';
@@ -62,3 +63,7 @@ export default function Sidebar() {
     </aside>
   );
 }
+=======
+// OBSOLETO: Sidebar foi movido para src/componentes/Sidebar/sidebar.jsx
+export default function Sidebar() { return null; }
+>>>>>>> Stashed changes

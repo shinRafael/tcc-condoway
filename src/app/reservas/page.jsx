@@ -1,5 +1,6 @@
 "use client";
 import ReservasList from "./ReservasList";
+import { useEffect } from "react";
 
 // Dados de exemplo para os cards de reservas
 const initialReservas = [
@@ -33,6 +34,22 @@ const initialReservas = [
 ];
 
 export default function Page() {
+	useEffect(() => {
+		const pendentes = initialReservas.reduce(
+			(acc, r) => acc + (r.pedidos?.filter((p) => p.status === "pendente").length || 0),
+			0
+		);
+		try {
+			const ev = new CustomEvent("sidebar-badge-event", {
+				detail: { type: "sidebar-badge-update", key: "reservas", count: pendentes },
+			});
+			window.dispatchEvent(ev);
+			const map = JSON.parse(localStorage.getItem("sidebarBadges") || "{}");
+			map.reservas = pendentes;
+			localStorage.setItem("sidebarBadges", JSON.stringify(map));
+		} catch {}
+	}, []);
+
 	return (
 		<div>
 			<h1>Controle de Reservas</h1>
