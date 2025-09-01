@@ -1,46 +1,49 @@
-import '../../styles/globals.css';
+"use client";
+import MensagensList from "./MensagensList";
 
-const menu = [
-  { label: "Dashboard", path: "/dashboard" },
-  { label: "Usuários", path: "/usuarios" },
-  { label: "Apartamentos", path: "/apartamentos" },
-  { label: "Reservas", path: "/reservas" },
-  { label: "Visitantes", path: "/visitantes" },
-  { label: "Encomendas", path: "/encomendas" },
-  { label: "Notificações", path: "/notificacoes" },
-  { label: "Mensagens", path: "/mensagens" },
-  { label:"Gerenciamento", path: "/gerenciamento" }
+const conversasIniciais = [
+  {
+    moradorId: 1,
+    moradorNome: "João Silva",
+    apartamento: "Bloco A - 102",
+    mensagens: [
+      {
+        id: 1,
+        remetente: "morador",
+        texto: "Boa noite, estou com problema na garagem.",
+        data: "2025-08-28 20:10",
+      },
+      {
+        id: 2,
+        remetente: "sindico",
+        texto: "Boa noite! Qual seria o problema?",
+        data: "2025-08-28 20:12",
+      },
+    ],
+  },
+  {
+    moradorId: 2,
+    moradorNome: "Maria Souza",
+    apartamento: "Bloco B - 305",
+    mensagens: [
+      {
+        id: 1,
+        remetente: "morador",
+        texto: "Gostaria de agendar uma reunião.",
+        data: "2025-08-28 18:00",
+      },
+    ],
+  },
 ];
 
-function SidebarReserva() {
+export default function Page() {
   return (
-    <aside className="sidebarReserva">
-      <h2 className="logoReserva">CondoWay</h2>
-      <nav>
-        <ul className="menuReserva">
-          {menu.map((item) => (
-            <li key={item.label}>
-              <a
-                href={item.path}
-                className={item.label === "Mensagens" ? "menuActiveReserva" : "menuLinkReserva"}
-              >
-                {item.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </aside>
-  );
-}
-
-export default function Mensagens() {
-  return (
-    <div className="containerReserva">
-      {/* SidebarReserva has been removed to avoid duplication */}
-      <div className="mainContentReserva">
-        {/* Conteúdo da página de mensagens */}
-      </div>
+    <div>
+      <h1>Mensagens</h1>
+      <p style={{ marginBottom: "24px" }}>
+        Comunicação entre moradores e síndico (suporte).
+      </p>
+      <MensagensList conversasIniciais={conversasIniciais} />
     </div>
   );
 }

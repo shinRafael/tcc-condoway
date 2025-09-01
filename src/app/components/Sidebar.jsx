@@ -19,6 +19,8 @@ export default function Sidebar() {
     { href: '/encomendas',   label: ' Encomendas',   icon: <FaEnvelope /> },
     { href: '/notificacoes', label: ' Notificações', icon: <FaBell /> },
     { href: '/mensagens',    label: ' Mensagens',    icon: <FaCommentAlt /> },
+    { href: '/ocorrencias',    label: ' Ocorrencias',    icon: <FaCommentAlt /> },
+    { href: '/gerenciamento',    label: ' Gerenciamento',    icon: <FaCommentAlt /> },
   ];
   return (
     <aside className={styles.sidebar}>
