@@ -13,6 +13,7 @@ import {
   FaComments,
   FaHome,
   FaEnvelope,
+  FaExclamationTriangle,
 } from 'react-icons/fa';
 import { MdDashboard, MdManageAccounts } from 'react-icons/md';
 
@@ -26,6 +27,7 @@ const navItems = [
   { key: 'encomendas',    href: '/encomendas',    label: 'Encomendas',    icon: FaBoxOpen },
   { key: 'notificacoes',  href: '/notificacoes',  label: 'Notificações',  icon: FaBell },
   { key: 'mensagens',     href: '/mensagens',     label: 'Mensagens',     icon: FaComments },
+  { key: 'ocorrencias',     href: '/ocorrencias',     label: 'Ocorrencias',     icon: FaExclamationTriangle },
   { key: 'contato',       href: '/contato',       label: 'Contato',       icon: FaEnvelope },
   { key: 'gerenciamento', href: '/gerenciamento', label: 'Gerenciamento', icon: MdManageAccounts },
 ];
