@@ -1,0 +1,43 @@
+.linkWrapper {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.08);
+}
+
+.icon {
+  color: #4f46e5; /* Um azul índigo como cor principal */
+}
+
+.textContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.title {
+  font-size: 0.875rem;
+  color: #6b7280;
+}

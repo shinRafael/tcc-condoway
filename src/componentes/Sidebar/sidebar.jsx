@@ -27,7 +27,6 @@ const navItems = [
   { key: 'notificacoes',  href: '/notificacoes',  label: 'Notificações',  icon: FaBell },
   { key: 'mensagens',     href: '/mensagens',     label: 'Mensagens',     icon: FaComments },
   { key: 'contato',       href: '/contato',       label: 'Contato',       icon: FaEnvelope },
-  { key: 'home',          href: '/home',          label: 'Home',          icon: FaHome },
   { key: 'gerenciamento', href: '/gerenciamento', label: 'Gerenciamento', icon: MdManageAccounts },
 ];
 
