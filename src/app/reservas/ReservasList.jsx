@@ -2,7 +2,7 @@
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale/pt-BR';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import EditReservationModal from './EditReservationModal';
 import styles from './page.module.css';
@@ -33,6 +33,18 @@ export default function ReservasList({ initialReservas }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingReserva, setEditingReserva] = useState(null);
   const [blockedDates, setBlockedDates] = useState([]);
+
+  // Atualiza badge sempre que reservas mudam
+  useEffect(() => {
+    const pendentes = reservas.filter(r => r.status === 'Pendente').length;
+    const ev = new CustomEvent('sidebar-badge-event', {
+      detail: { type: 'sidebar-badge-update', key: 'reservas', count: pendentes }
+    });
+    window.dispatchEvent(ev);
+    const map = JSON.parse(localStorage.getItem('sidebarBadges') || '{}');
+    map.reservas = pendentes;
+    localStorage.setItem('sidebarBadges', JSON.stringify(map));
+  }, [reservas]);
 
   const handleStatus = (id, novoStatus) => {
     setReservas(prev => prev.map(r => r.id === id ? { ...r, status: novoStatus } : r));
