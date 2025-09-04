@@ -27,6 +27,26 @@ export default function GerenciamentoPage() {
 
   const [showModal, setShowModal] = useState(false);
 
+  const handleValorChange = (e) => {
+    let value = e.target.value;
+    // Remove tudo que não for dígito para lidar apenas com os números
+    value = value.replace(/\D/g, "");
+
+    if (value === "") {
+      setForm({ ...form, ger_valor: "" });
+      return;
+    }
+
+    // Converte o valor para número (em centavos) e formata como moeda
+    const numberValue = Number(value) / 100;
+    const formattedValue = numberValue.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
+
+    setForm({ ...form, ger_valor: formattedValue });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.cond_id || !form.ger_data || !form.ger_descricao || !form.ger_valor) return;
@@ -148,9 +168,7 @@ export default function GerenciamentoPage() {
                   type="text"
                   placeholder="Ex: R$ 500,00"
                   value={form.ger_valor}
-                  onChange={(e) =>
-                    setForm({ ...form, ger_valor: e.target.value })
-                  }
+                  onChange={handleValorChange}
                   className={styles.input}
                 />
               </div>

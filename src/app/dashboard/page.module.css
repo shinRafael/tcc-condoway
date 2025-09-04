@@ -1,6 +1,4 @@
-// Em: d:\TEMP\LUCASrepositoriosGITHUB\tcc-condoway\src\componentes\Dashboard\Dashboard.jsx
-
-<ActionListCard title="Ações Requeridas" actions={acoesRequeridas} viewAllLink="/reservas" />/* Estilos para a página do Dashboard - d:/TEMP/LUCASrepositoriosGITHUB/tcc-condoway/src/app/dashboard/page.module.css */
+/* Estilos para a página do Dashboard - d:/TEMP/LUCASrepositoriosGITHUB/tcc-condoway/src/app/dashboard/page.module.css */
 
 .container {
   padding: 1.5rem;
