@@ -1,5 +1,7 @@
 "use client";
 import MensagensList from "./MensagensList";
+import PageHeader from "@/componentes/PageHeader";
+import { useEffect, useState } from "react";
 
 const conversasIniciais = [
   {
@@ -37,13 +39,45 @@ const conversasIniciais = [
 ];
 
 export default function Page() {
+  const [conversas, setConversas] = useState(conversasIniciais);
+
+  // Função para atualizar o badge quando as mensagens mudarem
+  const atualizarBadge = (conversasAtualizadas) => {
+    const mensagensNaoLidas = conversasAtualizadas.filter(conversa => 
+      conversa.mensagens.some(msg => msg.remetente === "morador" && !msg.lida)
+    ).length;
+    
+    try {
+      const ev = new CustomEvent("sidebar-badge-event", {
+        detail: { type: "sidebar-badge-update", key: "mensagens", count: mensagensNaoLidas },
+      });
+      window.dispatchEvent(ev);
+      const map = JSON.parse(localStorage.getItem("sidebarBadges") || "{}");
+      map.mensagens = mensagensNaoLidas;
+      localStorage.setItem("sidebarBadges", JSON.stringify(map));
+    } catch {}
+  };
+
+  // Calcular badge inicial
+  useEffect(() => {
+    atualizarBadge(conversas);
+  }, []);
+
+  // Callback para quando as mensagens forem atualizadas no componente filho
+  const handleMensagensUpdate = (conversasAtualizadas) => {
+    setConversas(conversasAtualizadas);
+    atualizarBadge(conversasAtualizadas);
+  };
+
   return (
-    <div>
-      <h1>Mensagens</h1>
-      <p style={{ marginBottom: "24px" }}>
-        Comunicação entre moradores e síndico (suporte).
-      </p>
-      <MensagensList conversasIniciais={conversasIniciais} />
+    <div className="page-container">
+      <PageHeader title="Mensagens" />
+      <div className="page-content">
+        <MensagensList 
+          conversasIniciais={conversas} 
+          onMensagensUpdate={handleMensagensUpdate}
+        />
+      </div>
     </div>
   );
 }

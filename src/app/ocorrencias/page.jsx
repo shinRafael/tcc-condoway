@@ -1,5 +1,7 @@
 "use client";
 import OcorrenciasList from "./OcorrenciasList";
+import PageHeader from "@/componentes/PageHeader";
+import { useEffect } from "react";
 
 const initialOcorrencias = [
   {
@@ -26,13 +28,25 @@ const initialOcorrencias = [
 ];
 
 export default function Page() {
+  useEffect(() => {
+    const ocorrenciasPendentes = initialOcorrencias.filter(o => o.status === "pendente").length;
+    try {
+      const ev = new CustomEvent("sidebar-badge-event", {
+        detail: { type: "sidebar-badge-update", key: "ocorrencias", count: ocorrenciasPendentes },
+      });
+      window.dispatchEvent(ev);
+      const map = JSON.parse(localStorage.getItem("sidebarBadges") || "{}");
+      map.ocorrencias = ocorrenciasPendentes;
+      localStorage.setItem("sidebarBadges", JSON.stringify(map));
+    } catch {}
+  }, []);
+
   return (
-    <div>
-      <h1>Controle de Ocorrências</h1>
-      <p style={{ marginBottom: "24px" }}>
-        Administração das ocorrências enviadas pelos moradores.
-      </p>
-      <OcorrenciasList initialOcorrencias={initialOcorrencias} />
+    <div className="page-container">
+      <PageHeader title="Controle de Ocorrências" />
+      <div className="page-content">
+        <OcorrenciasList initialOcorrencias={initialOcorrencias} />
+      </div>
     </div>
   );
 }

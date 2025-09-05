@@ -186,3 +186,31 @@
   from { opacity: 0; transform: translateY(5px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* Estilos para conversas não lidas */
+.conversaItem.naoLida {
+  border-left: 3px solid #007bff;
+  background: #f8f9ff !important;
+}
+
+.conversaInfo {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.badgeNaoLida {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #007bff;
+  font-size: 20px;
+  font-weight: bold;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}

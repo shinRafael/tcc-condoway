@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import styles from './index.module.css'; // Corrigido para usar CSS Modules
+import PageHeader from '@/componentes/PageHeader';
 
 export default function GerenciamentoPage() {
   const [dados, setDados] = useState([
@@ -62,9 +63,8 @@ export default function GerenciamentoPage() {
   };
 
   return (
-    <div className={styles.main}>
-      <div className={styles.header}>
-        <h1 className={styles.headerTitle}>Gerenciamento</h1>
+    <div className="page-container">
+      <PageHeader title="Gerenciamento" rightContent={(
         <div className={styles.userInfo}>
           <span>Administrador</span>
           <img
@@ -73,11 +73,12 @@ export default function GerenciamentoPage() {
             className={styles.userAvatar}
           />
         </div>
-      </div>
+      )} />
 
-      <div className={styles.content}>
-        <div className={styles.contentHeader}>
-          <h2 className={styles.contentTitle}>Despesas do Condomínio</h2>
+      <div className="page-content">
+        <div className={styles.content}>
+          <div className={styles.contentHeader}>
+            <h2 className={styles.contentTitle}>Despesas do Condomínio</h2>
           <button
             onClick={() => setShowModal(true)}
             className={styles.addButton}
@@ -112,11 +113,11 @@ export default function GerenciamentoPage() {
             </tbody>
           </table>
         </div>
-      </div>
+        </div>
 
-      {showModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent}>
+        {showModal && (
+          <div className={styles.modalOverlay}>
+            <div className={styles.modalContent}>
             <h3 className={styles.modalTitle}>Adicionar Lançamento</h3>
             <form onSubmit={handleSubmit}>
               <div className={styles.formGroup}>
@@ -189,6 +190,7 @@ export default function GerenciamentoPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

@@ -1,5 +1,7 @@
 "use client";
 import NotificacoesList from "./NotificacoesList";
+import PageHeader from "@/componentes/PageHeader";
+import { useEffect } from "react";
 
 const initialNotificacoes = [
   {
@@ -26,13 +28,25 @@ const initialNotificacoes = [
 ];
 
 export default function Page() {
+  useEffect(() => {
+    const novasNotificacoes = initialNotificacoes.filter(n => n.tipo === "importante").length;
+    try {
+      const ev = new CustomEvent("sidebar-badge-event", {
+        detail: { type: "sidebar-badge-update", key: "notificacoes", count: novasNotificacoes },
+      });
+      window.dispatchEvent(ev);
+      const map = JSON.parse(localStorage.getItem("sidebarBadges") || "{}");
+      map.notificacoes = novasNotificacoes;
+      localStorage.setItem("sidebarBadges", JSON.stringify(map));
+    } catch {}
+  }, []);
+
   return (
-    <div>
-      <h1>Controle de Notificações</h1>
-      <p style={{ marginBottom: "24px" }}>
-        Administração de notificações do condomínio.
-      </p>
-      <NotificacoesList initialNotificacoes={initialNotificacoes} />
+    <div className="page-container">
+      <PageHeader title="Controle de Notificações" />
+      <div className="page-content">
+        <NotificacoesList initialNotificacoes={initialNotificacoes} />
+      </div>
     </div>
   );
 }

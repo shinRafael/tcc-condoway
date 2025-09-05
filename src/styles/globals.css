@@ -1,5 +1,3 @@
-
-
 :root {
   --primary-color: #1c65cc;
   --primary-dark-color: #183a6b;
@@ -158,4 +156,61 @@ table th {
   background: #f1f2f6;
   font-weight: bold;
   color: var(--text-color);
+}
+
+/* Page Container (Standardized layout for all pages) */
+.page-container {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.page-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+@media (min-width: 768px) {
+  .page-content {
+    padding: 0 32px;
+  }
+}
+
+/* Header (Global Page Header) */
+.page-header {
+  background: #fff;
+  padding: 24px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.06);
+  margin: 24px 0 24px;
+}
+
+.page-header__title {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 700;
+  color: #0f172a; /* slate-900 */
+}
+
+.page-header__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #64748b; /* slate-500 */
+}
+
+/* Utility to optionally add a subtle top background band like in the screenshot */
+.page-header--band {
+  background: #fff;
+  position: relative;
+}
+.page-header--band::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: -24px; height: 48px;
+  background: #f6f7fb; /* very light */
+  border-radius: 0 0 16px 16px;
 }

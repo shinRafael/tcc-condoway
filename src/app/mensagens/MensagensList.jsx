@@ -1,14 +1,40 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./mensagens.module.css";
 
-export default function MensagensList({ conversasIniciais }) {
+export default function MensagensList({ conversasIniciais, onMensagensUpdate }) {
   const [conversas, setConversas] = useState(conversasIniciais);
   const [conversaAtivaId, setConversaAtivaId] = useState(null);
   const [novaMensagem, setNovaMensagem] = useState("");
 
   // Pega a conversa ativa já atualizada
   const conversaAtiva = conversas.find((c) => c.moradorId === conversaAtivaId);
+
+  // Marcar mensagens como lidas quando uma conversa é selecionada
+  const selecionarConversa = (moradorId) => {
+    setConversaAtivaId(moradorId);
+    
+    // Marcar todas as mensagens do morador como lidas
+    setConversas((prev) =>
+      prev.map((c) =>
+        c.moradorId === moradorId
+          ? {
+              ...c,
+              mensagens: c.mensagens.map((msg) =>
+                msg.remetente === "morador" ? { ...msg, lida: true } : msg
+              ),
+            }
+          : c
+      )
+    );
+  };
+
+  // Notificar sobre mudanças nas conversas
+  useEffect(() => {
+    if (onMensagensUpdate) {
+      onMensagensUpdate(conversas);
+    }
+  }, [conversas, onMensagensUpdate]);
 
   const enviarMensagem = () => {
     if (!novaMensagem.trim() || !conversaAtiva) return;
@@ -23,7 +49,15 @@ export default function MensagensList({ conversasIniciais }) {
     setConversas((prev) =>
       prev.map((c) =>
         c.moradorId === conversaAtiva.moradorId
-          ? { ...c, mensagens: [...c.mensagens, nova] }
+          ? { 
+              ...c, 
+              mensagens: [
+                ...c.mensagens.map(msg => 
+                  msg.remetente === "morador" ? { ...msg, lida: true } : msg
+                ),
+                nova
+              ]
+            }
           : c
       )
     );
@@ -36,24 +70,33 @@ export default function MensagensList({ conversasIniciais }) {
       {/* Sidebar de conversas */}
       <div className={styles.sidebar}>
         <h3>Conversas</h3>
-        {conversas.map((c) => (
-          <div
-            key={c.moradorId}
-            className={`${styles.conversaItem} ${
-              conversaAtivaId === c.moradorId ? styles.ativo : ""
-            }`}
-            onClick={() => setConversaAtivaId(c.moradorId)}
-          >
-            <div className={styles.conversaInfo}>
-              <strong>{c.moradorNome}</strong>
-              <span className={styles.apartamento}>{c.apartamento}</span>
+        {conversas.map((c) => {
+          const temMensagensNaoLidas = c.mensagens.some(
+            (msg) => msg.remetente === "morador" && !msg.lida
+          );
+          
+          return (
+            <div
+              key={c.moradorId}
+              className={`${styles.conversaItem} ${
+                conversaAtivaId === c.moradorId ? styles.ativo : ""
+              } ${temMensagensNaoLidas ? styles.naoLida : ""}`}
+              onClick={() => selecionarConversa(c.moradorId)}
+            >
+              <div className={styles.conversaInfo}>
+                <strong>{c.moradorNome}</strong>
+                <span className={styles.apartamento}>{c.apartamento}</span>
+                {temMensagensNaoLidas && (
+                  <span className={styles.badgeNaoLida}>●</span>
+                )}
+              </div>
+              <p>
+                {c.mensagens[c.mensagens.length - 1]?.texto.slice(0, 30) || ""}
+                ...
+              </p>
             </div>
-            <p>
-              {c.mensagens[c.mensagens.length - 1]?.texto.slice(0, 30) || ""}
-              ...
-            </p>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Área do chat */}
@@ -85,6 +128,11 @@ export default function MensagensList({ conversasIniciais }) {
                 placeholder="Digite sua mensagem..."
                 value={novaMensagem}
                 onChange={(e) => setNovaMensagem(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    enviarMensagem();
+                  }
+                }}
               />
               <button className={styles.sendButton} onClick={enviarMensagem}>
                 Enviar

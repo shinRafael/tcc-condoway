@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import styles from "./apartamentos.module.css";
+import PageHeader from "@/componentes/PageHeader";
 
 export default function Apartamentos() {
   const [showModal, setShowModal] = useState(false);
@@ -52,16 +53,18 @@ export default function Apartamentos() {
   };
 
   return (
-    <>
-      <div className={styles.main}>
-        <div className={styles.header}>
-          <h1>Apartamentos</h1>
+    <div className="page-container">
+      <PageHeader
+        title="Apartamentos"
+        rightContent={
           <div className={styles.userInfo}>
             <span>Síndico</span>
             <img src="https://via.placeholder.com/35" alt="User" />
           </div>
-        </div>
+        }
+      />
 
+      <div className="page-content">
         <div className={styles.content}>
           <button className={styles.addBtn} onClick={handleAddAp}>
             + Adicionar Apartamento
@@ -83,18 +86,36 @@ export default function Apartamentos() {
                   <td>
                     {ap.id}
                     <div className={styles.tooltip}>
-                      <p><strong>ID:</strong> {ap.id}</p>
-                      <p><strong>Bloco:</strong> {ap.bloco}</p>
-                      <p><strong>Número:</strong> {ap.numero}</p>
-                      <p><strong>Andar:</strong> {ap.andar}</p>
+                      <p>
+                        <strong>ID:</strong> {ap.id}
+                      </p>
+                      <p>
+                        <strong>Bloco:</strong> {ap.bloco}
+                      </p>
+                      <p>
+                        <strong>Número:</strong> {ap.numero}
+                      </p>
+                      <p>
+                        <strong>Andar:</strong> {ap.andar}
+                      </p>
                     </div>
                   </td>
                   <td>{ap.bloco}</td>
                   <td>{ap.numero}</td>
                   <td>{ap.andar}</td>
                   <td>
-                    <button className={styles.editBtn} onClick={() => handleEditAp(ap)}>Editar</button>
-                    <button className={styles.deleteBtn} onClick={() => handleDelete(ap.id)}>Excluir</button>
+                    <button
+                      className={styles.editBtn}
+                      onClick={() => handleEditAp(ap)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      className={styles.deleteBtn}
+                      onClick={() => handleDelete(ap.id)}
+                    >
+                      Excluir
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -106,20 +127,56 @@ export default function Apartamentos() {
       {showModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
-            <h2>{editingAp ? "Editar Apartamento" : "Adicionar Apartamento"}</h2>
+            <h2>
+              {editingAp
+                ? "Editar Apartamento"
+                : "Adicionar Apartamento"}
+            </h2>
             <form onSubmit={handleSave} className={styles.form}>
-              <input type="number" name="id" placeholder="ID" defaultValue={editingAp?.id || ""} required />
-              <input type="text" name="bloco" placeholder="Bloco" defaultValue={editingAp?.bloco || ""} required />
-              <input type="number" name="numero" placeholder="Número" defaultValue={editingAp?.numero || ""} required />
-              <input type="text" name="andar" placeholder="Andar" defaultValue={editingAp?.andar || ""} required />
+              <input
+                type="number"
+                name="id"
+                placeholder="ID"
+                defaultValue={editingAp?.id || ""}
+                required
+              />
+              <input
+                type="text"
+                name="bloco"
+                placeholder="Bloco"
+                defaultValue={editingAp?.bloco || ""}
+                required
+              />
+              <input
+                type="number"
+                name="numero"
+                placeholder="Número"
+                defaultValue={editingAp?.numero || ""}
+                required
+              />
+              <input
+                type="text"
+                name="andar"
+                placeholder="Andar"
+                defaultValue={editingAp?.andar || ""}
+                required
+              />
               <div className={styles.modalActions}>
-                <button type="submit" className={styles.saveBtn}>Salvar</button>
-                <button type="button" onClick={handleClose} className={styles.cancelBtn}>Cancelar</button>
+                <button type="submit" className={styles.saveBtn}>
+                  Salvar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className={styles.cancelBtn}
+                >
+                  Cancelar
+                </button>
               </div>
             </form>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
