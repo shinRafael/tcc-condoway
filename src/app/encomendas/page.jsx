@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import styles from "./encomendas.module.css";
+import PageHeader from "@/componentes/PageHeader";
 
 export default function Page() {
   const [encomendas, setEncomendas] = useState([
@@ -56,33 +57,28 @@ export default function Page() {
   };
 
   return (
-    <div className={styles.mainContent}>
-      <header className={styles.header}>
-        <h1>Encomendas</h1>
-        <div className={styles.userInfo}>
-          <span>Síndico</span>
-          <img src="/user-icon.png" alt="User" />
-        </div>
-      </header>
+    <div className="page-container">
+      <PageHeader title="Encomendas" rightContent={(<div className={styles.userInfo}><span>Síndico</span><img src="/user-icon.png" alt="User" /></div>)} />
 
-      {/* Cards */}
-      <section className={styles.dashboardCards}>
-        <div className={styles.card}>
-          <h3>Total de Encomendas</h3>
-          <p>{totalEncomendas}</p>
-        </div>
-        <div className={styles.card}>
-          <h3>Pendentes</h3>
-          <p>{encomendasPendentes}</p>
-        </div>
-        <div className={styles.card}>
-          <h3>Retiradas</h3>
-          <p>{encomendasRetiradas}</p>
-        </div>
-      </section>
+      <div className="page-content">
+        {/* Cards */}
+        <section className={styles.dashboardCards}>
+          <div className={styles.card}>
+            <h3>Total de Encomendas</h3>
+            <p>{totalEncomendas}</p>
+          </div>
+          <div className={styles.card}>
+            <h3>Pendentes</h3>
+            <p>{encomendasPendentes}</p>
+          </div>
+          <div className={styles.card}>
+            <h3>Retiradas</h3>
+            <p>{encomendasRetiradas}</p>
+          </div>
+        </section>
 
-      {/* Botão adicionar */}
-      <div style={{ marginBottom: "20px" }}>
+        {/* Botão adicionar */}
+        <div style={{ marginBottom: "20px" }}>
         <button className={styles.addButton} onClick={() => setShowForm(!showForm)}>
           {showForm ? "Cancelar" : "Adicionar Encomenda"}
         </button>
@@ -186,7 +182,8 @@ export default function Page() {
             </tbody>
           </table>
         </div>
-      </section>
+        </section>
+      </div>
     </div>
   );
 }

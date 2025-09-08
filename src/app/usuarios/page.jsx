@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import styles from "./usuario.module.css";
+import PageHeader from "@/componentes/PageHeader";
 
 export default function Usuarios() {
   const [showModal, setShowModal] = useState(false);
@@ -22,59 +23,57 @@ export default function Usuarios() {
   };
 
   const handleSave = (e) => {
-  e.preventDefault();
-  const formData = new FormData(e.target);
-  const newUser = Object.fromEntries(formData);
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const newUser = Object.fromEntries(formData);
 
-  if (editingUser) {
-    // Editar usuário existente
-    setUsers(users.map(u => (u.id === editingUser.id ? { ...u, ...newUser } : u)));
-  } else {
-    // Adicionar novo usuário
-    const nextId = users.length ? Math.max(...users.map(u => u.id)) + 1 : 1;
-    setUsers([...users, { id: nextId, ...newUser }]);
-  }
+    if (editingUser) {
+      // Editar usuário existente
+      setUsers(users.map(u => (u.id === editingUser.id ? { ...u, ...newUser } : u)));
+    } else {
+      // Adicionar novo usuário
+      const nextId = users.length ? Math.max(...users.map(u => u.id)) + 1 : 1;
+      setUsers([...users, { id: nextId, ...newUser }]);
+    }
 
-  setShowModal(false);
-  setEditingUser(null);
-};
+    setShowModal(false);
+    setEditingUser(null);
+  };
 
-const handleDeleteUser = (id) => {
-  if (confirm("Deseja realmente excluir este usuário?")) {
-    setUsers(users.filter(u => u.id !== id));
-  }
-};
+  const handleDeleteUser = (id) => {
+    if (confirm("Deseja realmente excluir este usuário?")) {
+      setUsers(users.filter(u => u.id !== id));
+    }
+  };
 
 
   const [users, setUsers] = useState([
-  { id: 1, nome: "João Silva", email: "joao@email.com", telefone: "(11) 99999-9999", tipo: "Morador", senha: "123456" },
-  { id: 2, nome: "Maria Oliveira", email: "maria@email.com", telefone: "(11) 98888-8888", tipo: "Síndico", senha: "abcdef" }
-]);
+    { id: 1, nome: "João Silva", email: "joao@email.com", telefone: "(11) 99999-9999", tipo: "Morador", senha: "123456" },
+    { id: 2, nome: "Maria Oliveira", email: "maria@email.com", telefone: "(11) 98888-8888", tipo: "Síndico", senha: "abcdef" }
+  ]);
 
 
   return (
-    <div className={styles.usuariosPage}>
-      <div className={styles.header}>
-        <h1>Usuários</h1>
+    <div className="page-container">
+      <PageHeader title="Usuários" rightContent={(
         <div className={styles.userInfo}>
           <span>Síndico</span>
           <img src="/placeholder.png" alt="User" />
         </div>
-      </div>
+      )} />
 
-      <div className={styles.content}>
-        <h2>Lista de Usuários</h2>
+      <div className="page-content">
+        <div className={styles.content}>
+          <button className={styles.addUserBtn} onClick={handleAddUser}>
+            + Adicionar Usuário
+          </button>
 
-        <button className={styles.addUserBtn} onClick={handleAddUser}>
-          + Adicionar Usuário
-        </button>
-
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nome</th>
-              <th>Email</th>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Email</th>
               <th>Telefone</th>
               <th>Tipo</th>
               <th>Senha</th>
@@ -109,13 +108,13 @@ const handleDeleteUser = (id) => {
             ))}
           </tbody>
         </table>
-      </div>
+        </div>
 
-      {/* Modal */}
-      {showModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <h2>{editingUser ? "Editar Usuário" : "Adicionar Usuário"}</h2>
+        {/* Modal */}
+        {showModal && (
+          <div className={styles.modalOverlay}>
+            <div className={styles.modal}>
+              <h2>{editingUser ? "Editar Usuário" : "Adicionar Usuário"}</h2>
             <form onSubmit={handleSave} className={styles.form}>
               <input
                 type="text"
@@ -161,6 +160,7 @@ const handleDeleteUser = (id) => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

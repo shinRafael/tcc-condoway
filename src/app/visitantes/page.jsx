@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import '../../styles/globals.css'
 import styles from './visitantes.module.css'
+import PageHeader from '@/componentes/PageHeader';
 
 export default function Visitantes() {
   const [visitantes, setVisitantes] = useState([
@@ -41,20 +42,23 @@ export default function Visitantes() {
   }
 
   return (
-    <main className={styles.main}>
-      <header className={styles.header}>
-        <h1 className={styles.headerTitle}>Controle de Visitantes</h1>
-        <div className={styles.userInfo}>
-          <span>Síndico</span>
-          <img src='https://via.placeholder.com/35' alt='User' className={styles.userAvatar} />
-        </div>
-      </header>
+    <div className="page-container">
+      <PageHeader
+        title="Controle de Visitantes"
+        rightContent={(
+          <div className={styles.userInfo}>
+            <span>Síndico</span>
+            <img src='https://via.placeholder.com/35' alt='User' className={styles.userAvatar} />
+          </div>
+        )}
+      />
 
-      <section className={styles.content}>
-        <div className={styles.contentHeader}>
-          <h2 className={styles.contentTitle}>Lista de Visitantes</h2>
-          <button className={styles.addButton} onClick={() => setShowForm(true)}>+ Adicionar Visitante</button>
-        </div>
+      <div className="page-content">
+        <section className={styles.content}>
+          <div className={styles.contentHeader}>
+            <h2 className={styles.contentTitle}>Lista de Visitantes</h2>
+            <button className={styles.addButton} onClick={() => setShowForm(true)}>+ Adicionar Visitante</button>
+          </div>
 
         <div className={styles.tableContainer}>
           <table className={styles.table}>
@@ -80,12 +84,12 @@ export default function Visitantes() {
             </tbody>
           </table>
         </div>
-      </section>
+        </section>
 
-      {showForm && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent}>
-            <h3 className={styles.modalTitle}>Adicionar Visitante</h3>
+        {showForm && (
+          <div className={styles.modalOverlay}>
+            <div className={styles.modalContent}>
+              <h3 className={styles.modalTitle}>Adicionar Visitante</h3>
             <form onSubmit={handleAddVisitante}>
               <div className={styles.formGroup}>
                 <label>Nome Completo</label>
@@ -118,7 +122,8 @@ export default function Visitantes() {
             </form>
           </div>
         </div>
-      )}
-    </main>
+        )}
+      </div>
+    </div>
   )
 }

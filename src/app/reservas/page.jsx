@@ -1,6 +1,7 @@
 "use client";
 import ReservasList from "./ReservasList";
 import { useEffect } from "react";
+import PageHeader from "@/componentes/PageHeader";
 
 // Dados de exemplo para os cards de reservas
 const initialReservas = [
@@ -51,12 +52,11 @@ export default function Page() {
 	}, []);
 
 	return (
-		<div>
-			<h1>Controle de Reservas</h1>
-			<p style={{ marginBottom: "24px" }}>
-				Administração de reservas dos ambientes do condomínio.
-			</p>
-			<ReservasList initialReservas={initialReservas} />
+		<div className="page-container">
+			<PageHeader title="Controle de Reservas" />
+			<div className="page-content">
+				<ReservasList initialReservas={initialReservas} />
+			</div>
 		</div>
 	);
 }

@@ -8,7 +8,7 @@ import ActionListCard from '../ActionListCard/ActionListCard';
 import ChartCard from '../Dashboard/ChartCard';
 import CalendarCard from '../Dashboard/CalendarCard';
 import ActivityFeedCard from '../Dashboard/ActivityFeedCard';
-import StatusChamadosCard from '../DashboardCards/StatusChamadosCard';
+import StatusOcorrenciasCard from '../DashboardCards/StatusOcorrenciasCard';
 import ManutencoesCard from '../DashboardCards/ManutencoesCard';
 import MensagensNaoLidasCard from '../DashboardCards/MensagensNaoLidasCard';
 import EnquetesCard from '../DashboardCards/EnquetesCard';
@@ -18,7 +18,7 @@ import styles from './Dashboard.module.css';
 const kpiData = {
   reservas: { value: 3, title: 'Reservas Pendentes', icon: <FiCalendar size={24} />, href: '/reservas?status=pendente' },
   encomendas: { value: 7, title: 'Encomendas a Retirar', icon: <FiBox size={24} />, href: '/encomendas' },
-  chamados: { value: 2, title: 'Chamados Abertos', icon: <FiBell size={24} />, href: '/chamados' },
+  ocorrencias: { value: 2, title: 'Ocorrências Abertas', icon: <FiBell size={24} />, href: '/ocorrencias' },
   visitantes: { value: 12, title: 'Visitantes Hoje', icon: <FiUsers size={24} />, href: '/visitantes' },
 };
 
@@ -43,14 +43,14 @@ const calendarEvents = [
 
 const atividadesRecentes = [
   { id: 1, time: '14:30', description: 'Chegou encomenda para Apto 201' },
-  { id: 2, time: '11:15', description: 'Morador Apto 404 registrou reclamação' },
+  { id: 2, time: '11:15', description: 'Morador Apto 404 registrou ocorrência' },
   { id: 3, time: '09:00', description: 'Reserva Salão de Festas confirmada (Apto 301)' },
 ];
 
-const statusChamadosData = [
-    { name: 'Abertos', value: 2, fill: '#f59e0b' },
+const statusOcorrenciasData = [
+    { name: 'Abertas', value: 2, fill: '#f59e0b' },
     { name: 'Em Andamento', value: 5, fill: '#3b82f6' },
-    { name: 'Concluídos', value: 18, fill: '#22c55e' }
+    { name: 'Concluídas', value: 18, fill: '#22c55e' }
 ];
 
 const manutencoesData = [
@@ -72,7 +72,6 @@ const Dashboard = () => {
   return (
     <div className={styles.dashboardContainer}>
       <header className={styles.dashboardHeader}>
-        <h1>Dashboard</h1>
         <select value={filter} onChange={(e) => setFilter(e.target.value)} >
           <option>Hoje</option>
           <option>Esta Semana</option>
@@ -84,12 +83,12 @@ const Dashboard = () => {
         {/* Linha 1 */}
         <KpiCard {...kpiData.reservas} />
         <KpiCard {...kpiData.encomendas} />
-        <KpiCard {...kpiData.chamados} />
+        <KpiCard {...kpiData.ocorrencias} />
         <KpiCard {...kpiData.visitantes} />
 
         {/* Linha 2 */}
         <ActionListCard title="Ações Requeridas" actions={acoesRequeridas} viewAllLink="/reservas" />
-        <StatusChamadosCard title="Status de Chamados" data={statusChamadosData} />
+        <StatusOcorrenciasCard title="Status de Ocorrências" data={statusOcorrenciasData} />
 
         {/* Linha 3 */}
         <CalendarCard title="Calendário de Eventos" events={calendarEvents} />
