@@ -1,0 +1,235 @@
+.container {
+  display: flex;
+  height: 75vh;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  border-right: 1px solid #e1e1e1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 50%, #e8f0ff 100%);
+  position: relative;
+}
+
+.sidebar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #007bff, #0056b3, #007bff);
+  border-radius: 0;
+}
+
+.sidebar h3 {
+  margin-bottom: 12px;
+  color: #1a365d;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 123, 255, 0.1);
+}
+
+.conversaItem {
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+  border: 1px solid rgba(0, 123, 255, 0.1);
+}
+
+.conversaItem:hover {
+  background: rgba(238, 243, 255, 0.95);
+  transform: translateX(3px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+}
+
+.conversaInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.conversaInfo strong {
+  font-size: 15px;
+  color: #222;
+}
+
+.apartamento {
+  font-size: 12px;
+  color: #555;
+}
+
+.conversaItem p {
+  font-size: 13px;
+  color: #666;
+  margin: 6px 0 0;
+}
+
+.ativo {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+  transform: translateX(5px);
+}
+
+.ativo p,
+.ativo .apartamento {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Chat */
+.chatArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.chatHeader {
+  padding: 14px;
+  border-bottom: 1px solid #ddd;
+  background: #f1f5ff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chatHeader h3 {
+  margin: 0;
+  color: #333;
+}
+
+.chatHeader span {
+  font-size: 13px;
+  color: #555;
+}
+
+.mensagens {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #fafafa;
+}
+
+.mensagem {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.4;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  animation: fadeIn 0.2s ease;
+}
+
+.mensagem p {
+  margin: 0;
+}
+
+.mensagem .data {
+  font-size: 11px;
+  color: #888;
+  margin-top: 4px;
+  align-self: flex-end;
+}
+
+.morador {
+  align-self: flex-start;
+  background: #e9f0ff;
+  border-top-left-radius: 4px;
+}
+
+.sindico {
+  align-self: flex-end;
+  background: #0066ff;
+  color: #fff;
+  border-top-right-radius: 4px;
+}
+
+.inputArea {
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid #ddd;
+  padding: 12px;
+  background: #f7f7f7;
+}
+
+.inputArea input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+.inputArea input:focus {
+  border-color: #0066ff;
+  box-shadow: 0 0 3px rgba(0,102,255,0.3);
+}
+
+.sendButton {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.sendButton:hover {
+  background: #218838;
+}
+
+.placeholder {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #666;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilos para conversas não lidas */
+.conversaItem.naoLida {
+  border-left: 3px solid #007bff;
+  background: #f8f9ff !important;
+}
+
+.conversaInfo {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.badgeNaoLida {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #007bff;
+  font-size: 20px;
+  font-weight: bold;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}

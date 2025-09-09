@@ -1,0 +1,86 @@
+.addButton {
+  background: #00a8ff;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 16px;
+  transition: background 0.3s;
+}
+.addButton:hover { background: #0090dd; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: #fff;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.data { font-size: 13px; color: #666; }
+.mensagem { font-size: 14px; color: #333; margin-bottom: 12px; }
+
+.actions { display: flex; justify-content: flex-end; gap: 8px; }
+.actions button {
+  border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: 500;
+}
+.editButton { background: #fbbf24; color: #fff; }
+.editButton:hover { background: #f6c23e; }
+.deleteButton { background: #dc3545; color: #fff; }
+.deleteButton:hover { background: #b02a37; }
+.saveButton { background: #28a745; color: #fff; }
+.saveButton:hover { background: #218838; }
+.cancelButton { background: #ef4444; color: #fff; }
+.cancelButton:hover { background: #dc2626; }
+
+.basica { border-left: 5px solid #00a8ff; }
+.moderada { border-left: 5px solid #fbc531; }
+.importante { border-left: 5px solid #e84118; }
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+.modalContent {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.modalContent input,
+.modalContent textarea,
+.modalContent select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}

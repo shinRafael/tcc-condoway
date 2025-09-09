@@ -1,45 +1,82 @@
-import '../../styles/globals.css';
+"use client";
+import MensagensList from "./MensagensList";
+import PageHeader from "@/componentes/PageHeader";
+import { useEffect, useState } from "react";
 
-const menu = [
-  { label: "Dashboard", path: "/dashboard" },
-  { label: "Usuários", path: "/usuarios" },
-  { label: "Apartamentos", path: "/apartamentos" },
-  { label: "Reservas", path: "/reservas" },
-  { label: "Visitantes", path: "/visitantes" },
-  { label: "Encomendas", path: "/encomendas" },
-  { label: "Notificações", path: "/notificacoes" },
-  { label: "Mensagens", path: "/mensagens" },
-  { label:"Gerenciamento", path: "/gerenciamento" }
+const conversasIniciais = [
+  {
+    moradorId: 1,
+    moradorNome: "João Silva",
+    apartamento: "Bloco A - 102",
+    mensagens: [
+      {
+        id: 1,
+        remetente: "morador",
+        texto: "Boa noite, estou com problema na garagem.",
+        data: "2025-08-28 20:10",
+      },
+      {
+        id: 2,
+        remetente: "sindico",
+        texto: "Boa noite! Qual seria o problema?",
+        data: "2025-08-28 20:12",
+      },
+    ],
+  },
+  {
+    moradorId: 2,
+    moradorNome: "Maria Souza",
+    apartamento: "Bloco B - 305",
+    mensagens: [
+      {
+        id: 1,
+        remetente: "morador",
+        texto: "Gostaria de agendar uma reunião.",
+        data: "2025-08-28 18:00",
+      },
+    ],
+  },
 ];
 
-function SidebarReserva() {
-  return (
-    <aside className="sidebarReserva">
-      <h2 className="logoReserva">CondoWay</h2>
-      <nav>
-        <ul className="menuReserva">
-          {menu.map((item) => (
-            <li key={item.label}>
-              <a
-                href={item.path}
-                className={item.label === "Mensagens" ? "menuActiveReserva" : "menuLinkReserva"}
-              >
-                {item.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </aside>
-  );
-}
+export default function Page() {
+  const [conversas, setConversas] = useState(conversasIniciais);
 
-export default function Mensagens() {
+  // Função para atualizar o badge quando as mensagens mudarem
+  const atualizarBadge = (conversasAtualizadas) => {
+    const mensagensNaoLidas = conversasAtualizadas.filter(conversa => 
+      conversa.mensagens.some(msg => msg.remetente === "morador" && !msg.lida)
+    ).length;
+    
+    try {
+      const ev = new CustomEvent("sidebar-badge-event", {
+        detail: { type: "sidebar-badge-update", key: "mensagens", count: mensagensNaoLidas },
+      });
+      window.dispatchEvent(ev);
+      const map = JSON.parse(localStorage.getItem("sidebarBadges") || "{}");
+      map.mensagens = mensagensNaoLidas;
+      localStorage.setItem("sidebarBadges", JSON.stringify(map));
+    } catch {}
+  };
+
+  // Calcular badge inicial
+  useEffect(() => {
+    atualizarBadge(conversas);
+  }, []);
+
+  // Callback para quando as mensagens forem atualizadas no componente filho
+  const handleMensagensUpdate = (conversasAtualizadas) => {
+    setConversas(conversasAtualizadas);
+    atualizarBadge(conversasAtualizadas);
+  };
+
   return (
-    <div className="containerReserva">
-      {/* SidebarReserva has been removed to avoid duplication */}
-      <div className="mainContentReserva">
-        {/* Conteúdo da página de mensagens */}
+    <div className="page-container">
+      <PageHeader title="Mensagens" />
+      <div className="page-content">
+        <MensagensList 
+          conversasIniciais={conversas} 
+          onMensagensUpdate={handleMensagensUpdate}
+        />
       </div>
     </div>
   );

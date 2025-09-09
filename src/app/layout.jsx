@@ -1,22 +1,31 @@
-"use client";
+import { Geist, Geist_Mono } from "next/font/google";
+import "../styles/reset.css";
+import "../styles/globals.css";
+import Sidebar from "@/componentes/Sidebar/sidebar";
+import styles from "./Layout.module.css";
 
-import { usePathname } from "next/navigation";
-import Sidebar from "./components/Sidebar";
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata = {
+  title: "CondoWay",
+  description: "O melhor app de condominio para condominos ",
+};
 
 export default function RootLayout({ children }) {
-  const pathname = usePathname();
-  
-  const hideSidebarRoutes = ["/", "/login"];
-  const showSidebar = !hideSidebarRoutes.includes(pathname);
-
   return (
-    <html lang="pt-BR">
-      <body>
-        <div className="flex">
-          {showSidebar && <Sidebar />}
-          <main className="flex-1 flex items-center justify-center min-h-screen">
-            {children}
-          </main>
+    <html lang="pt-br">
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <div className={styles.appContainer}>
+          <Sidebar />
+          <main className={styles.mainContent}>{children}</main>
         </div>
       </body>
     </html>

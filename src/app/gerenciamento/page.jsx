@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import styles from './index.module.css'; // Corrigido para usar CSS Modules
+import PageHeader from '@/componentes/PageHeader';
 
 export default function GerenciamentoPage() {
   const [dados, setDados] = useState([
@@ -27,6 +28,26 @@ export default function GerenciamentoPage() {
 
   const [showModal, setShowModal] = useState(false);
 
+  const handleValorChange = (e) => {
+    let value = e.target.value;
+    // Remove tudo que não for dígito para lidar apenas com os números
+    value = value.replace(/\D/g, "");
+
+    if (value === "") {
+      setForm({ ...form, ger_valor: "" });
+      return;
+    }
+
+    // Converte o valor para número (em centavos) e formata como moeda
+    const numberValue = Number(value) / 100;
+    const formattedValue = numberValue.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
+
+    setForm({ ...form, ger_valor: formattedValue });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.cond_id || !form.ger_data || !form.ger_descricao || !form.ger_valor) return;
@@ -42,9 +63,8 @@ export default function GerenciamentoPage() {
   };
 
   return (
-    <div className={styles.main}>
-      <div className={styles.header}>
-        <h1 className={styles.headerTitle}>Gerenciamento</h1>
+    <div className="page-container">
+      <PageHeader title="Gerenciamento" rightContent={(
         <div className={styles.userInfo}>
           <span>Administrador</span>
           <img
@@ -53,11 +73,12 @@ export default function GerenciamentoPage() {
             className={styles.userAvatar}
           />
         </div>
-      </div>
+      )} />
 
-      <div className={styles.content}>
-        <div className={styles.contentHeader}>
-          <h2 className={styles.contentTitle}>Despesas do Condomínio</h2>
+      <div className="page-content">
+        <div className={styles.content}>
+          <div className={styles.contentHeader}>
+            <h2 className={styles.contentTitle}>Despesas do Condomínio</h2>
           <button
             onClick={() => setShowModal(true)}
             className={styles.addButton}
@@ -92,11 +113,11 @@ export default function GerenciamentoPage() {
             </tbody>
           </table>
         </div>
-      </div>
+        </div>
 
-      {showModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent}>
+        {showModal && (
+          <div className={styles.modalOverlay}>
+            <div className={styles.modalContent}>
             <h3 className={styles.modalTitle}>Adicionar Lançamento</h3>
             <form onSubmit={handleSubmit}>
               <div className={styles.formGroup}>
@@ -148,9 +169,7 @@ export default function GerenciamentoPage() {
                   type="text"
                   placeholder="Ex: R$ 500,00"
                   value={form.ger_valor}
-                  onChange={(e) =>
-                    setForm({ ...form, ger_valor: e.target.value })
-                  }
+                  onChange={handleValorChange}
                   className={styles.input}
                 />
               </div>
@@ -171,6 +190,7 @@ export default function GerenciamentoPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

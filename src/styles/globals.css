@@ -1,3 +1,15 @@
+:root {
+  --primary-color: #1c65cc;
+  --primary-dark-color: #183a6b;
+  --secondary-color: #f5f6fa;
+  --text-color: #2f3640;
+  --text-light-color: #353b48;
+  --background-color: #f8f9fa;
+  --card-background: #fff;
+  --border-color: #eee;
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 html,
 body {
   padding: 0;
@@ -5,7 +17,7 @@ body {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background-color: #f8f9fa;
+  background-color: var(--background-color);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
@@ -13,34 +25,6 @@ body {
   box-sizing: border-box;
 }
 
-*::-webkit-scrollbar {
-  width: 8px;
-}
-*::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
-*::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 10px;
-}
-*::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-html,
-body {
-  padding: 0;
-  margin: 0;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  background-color: #f8f9fa;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
-* {
-  box-sizing: border-box;
-}
 /* Reset */
 * {
   margin: 0;
@@ -52,13 +36,13 @@ body {
 .body {
   display: flex;
   height: 100vh;
-  background-color: #f5f6fa;
+  background-color: var(--secondary-color);
 }
 
 /* Sidebar */
 .sidebar {
   width: 250px;
-  background: linear-gradient(180deg, #1c65cc 0%, #1c65cc 50%, #183a6b 100%);
+  background: linear-gradient(180deg, var(--primary-color) 0%, var(--primary-color) 50%, var(--primary-dark-color) 100%);
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -83,7 +67,7 @@ body {
 }
 
 .sidebar ul li a:hover {
-  background: #353b48;
+  background: var(--text-light-color);
 }
 
 /* Main */
@@ -105,7 +89,7 @@ body {
 
 .header h1 {
   font-size: 20px;
-  color: #2f3640;
+  color: var(--text-color);
 }
 
 .user-info {
@@ -129,17 +113,17 @@ body {
 }
 
 .card {
-  background: #fff;
+  background: var(--card-background);
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: var(--box-shadow);
   text-align: center;
 }
 
 .card h3 {
   margin-bottom: 10px;
   font-size: 18px;
-  color: #2f3640;
+  color: var(--text-color);
 }
 
 .card p {
@@ -156,22 +140,79 @@ body {
 table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
+  background: var(--card-background);
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: var(--box-shadow);
 }
 
 table th, table td {
   padding: 15px;
   text-align: left;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
 }
 
 table th {
   background: #f1f2f6;
   font-weight: bold;
-  color: #2f3640;
+  color: var(--text-color);
+}
+
+/* Page Container (Standardized layout for all pages) */
+.page-container {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.page-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+@media (min-width: 768px) {
+  .page-content {
+    padding: 0 32px;
+  }
+}
+
+/* Header (Global Page Header) */
+.page-header {
+  background: #fff;
+  padding: 24px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.06);
+  margin: 24px 0 24px;
+}
+
+.page-header__title {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 700;
+  color: #0f172a; /* slate-900 */
+}
+
+.page-header__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #64748b; /* slate-500 */
+}
+
+/* Utility to optionally add a subtle top background band like in the screenshot */
+.page-header--band {
+  background: #fff;
+  position: relative;
+}
+.page-header--band::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: -24px; height: 48px;
+  background: #f6f7fb; /* very light */
+  border-radius: 0 0 16px 16px;
 }
 /* globals.css */
 @import "./reset.css";

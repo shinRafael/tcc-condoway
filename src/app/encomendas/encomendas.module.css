@@ -1,52 +1,8 @@
-/* encomendas.module.css */
-
-.container {
-  display: flex;
-  min-height: 100vh;
-  /* Largura total da tela */
-  width: 100vw;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f0f2f5;
-}
-
-.sidebar {
-  width: 250px;
-  background-color: #002d72;
-  color: #fff;
-  padding: 24px;
-}
-
-.sidebar h2 {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 32px;
-}
-
-.sidebar ul {
-  list-style: none;
-}
-
-.sidebar a {
-  display: block;
-  padding: 12px 16px;
-  margin-bottom: 8px;
-  border-radius: 8px;
-  text-decoration: none;
-  color: #fff;
-  transition: background-color 0.3s ease;
-}
-
-.sidebar a:hover {
-  background-color: #001f56;
-}
-
-.sidebar a.active {
-  background-color: #001f56;
-}
-
 .mainContent {
   flex-grow: 1;
   padding: 32px;
+  background: #f5f6fa;
+  min-height: 100vh;
 }
 
 .header {
@@ -62,14 +18,14 @@
   color: #333;
 }
 
-.header .userInfo {
+.userInfo {
   display: flex;
   align-items: center;
   gap: 12px;
   color: #555;
 }
 
-.header .userInfo img {
+.userInfo img {
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -100,6 +56,62 @@
   font-size: 32px;
   font-weight: bold;
   color: #007bff;
+}
+
+.addButton {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.addButton:hover {
+  background: #0056b3;
+}
+
+.formContainer {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-bottom: 32px;
+}
+
+.formContainer h2 {
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.formContainer form {
+  display: grid;
+  gap: 12px;
+}
+
+.formContainer input,
+.formContainer select {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.submitButton {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.submitButton:hover {
+  background: #1e7e34;
 }
 
 .tableSection {
@@ -155,15 +167,33 @@
   background-color: #d4edda;
 }
 
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-  }
-  .sidebar {
-    width: 100%;
-    height: auto;
-  }
-  .mainContent {
-    padding: 20px;
-  }
+.editButton {
+  background: #ffc107;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.3s;
 }
+
+.editButton:hover {
+  background: #e0a800;
+}
+
+.saveButton {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.saveButton:hover {
+  background: #1e7e34;
+}
+

@@ -1,20 +1,20 @@
-import Header from "@/componentes/Header/header";
-import Card from "@/componentes/Card/card";
-import Table from "@/componentes/Table/table";
-import '../../styles/globals.css';
+'use client';
+import React from 'react';
+import Dashboard from '@/componentes/Dashboard/Dashboard';
+import PageHeader from '@/componentes/PageHeader';
 
-export default function Dashboard() {
-    return (
-        <div className="main">
-            <Header />
-            <div className="dashboard">
-                <Card title={"Moradores"} value="120" />
-                <Card title={"Reservas Hoje"} value="8" />
-                <Card title={"Visitantes"} value="5" />
-                <Card title={"Encomendas"} value="12" />
-                <Card title={"Gerenciamento"} value="5"/>
-            </div>
-            <table />
+export default function DashboardPage() {
+  return (
+    <div className="page-container">
+      <PageHeader title="Dashboard" rightContent={(
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#64748b' }}>
+          <span>Síndico</span>
+          <img src="https://via.placeholder.com/35" alt="User" style={{ borderRadius: '50%' }} />
         </div>
-    );
+      )} />
+      <div className="page-content">
+        <Dashboard />
+      </div>
+    </div>
+  );
 }
