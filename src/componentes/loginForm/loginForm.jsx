@@ -1,7 +1,7 @@
 "use client";
 import styles from "../styles/LoginForm.module.css";
 
-export default function LoginForm() {
+export default function Loginform() {
   return (
     <form className={styles.loginForm}>
       <label htmlFor="nome">Seu nome completo</label>
