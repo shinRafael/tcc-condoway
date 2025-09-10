@@ -8,10 +8,10 @@ import ActionListCard from '../ActionListCard/ActionListCard';
 import ChartCard from '../Dashboard/ChartCard';
 import CalendarCard from '../Dashboard/CalendarCard';
 import ActivityFeedCard from '../Dashboard/ActivityFeedCard';
-import StatusOcorrenciasCard from '../DashboardCards/StatusOcorrenciasCard';
 import ManutencoesCard from '../DashboardCards/ManutencoesCard';
 import MensagensNaoLidasCard from '../DashboardCards/MensagensNaoLidasCard';
 import EnquetesCard from '../DashboardCards/EnquetesCard';
+import RecentOccurrences from '../DashboardCards/RecentOccurrences';
 import styles from './Dashboard.module.css';
 
 // Mock Data
@@ -45,12 +45,6 @@ const atividadesRecentes = [
   { id: 1, time: '14:30', description: 'Chegou encomenda para Apto 201' },
   { id: 2, time: '11:15', description: 'Morador Apto 404 registrou ocorrência' },
   { id: 3, time: '09:00', description: 'Reserva Salão de Festas confirmada (Apto 301)' },
-];
-
-const statusOcorrenciasData = [
-    { name: 'Abertas', value: 2, fill: '#f59e0b' },
-    { name: 'Em Andamento', value: 5, fill: '#3b82f6' },
-    { name: 'Concluídas', value: 18, fill: '#22c55e' }
 ];
 
 const manutencoesData = [
@@ -88,7 +82,9 @@ const Dashboard = () => {
 
         {/* Linha 2 */}
         <ActionListCard title="Ações Requeridas" actions={acoesRequeridas} viewAllLink="/reservas" />
-        <StatusOcorrenciasCard title="Status de Ocorrências" data={statusOcorrenciasData} />
+        <div className={styles.cardLarge}>
+          <RecentOccurrences />
+        </div>
 
         {/* Linha 3 */}
         <CalendarCard title="Calendário de Eventos" events={calendarEvents} />

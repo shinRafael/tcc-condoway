@@ -61,6 +61,10 @@
   grid-column: span 2;
 }
 
+.cardExtraLarge {
+  grid-column: span 3;
+}
+
 /* KPI Card */
 .kpiContent {
   display: flex;
