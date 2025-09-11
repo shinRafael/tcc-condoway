@@ -5,6 +5,7 @@ import styles from './index.module.css'; // Corrigido para usar CSS Modules
 import PageHeader from '@/componentes/PageHeader';
 import Sidebar from '@/componentes/Sidebar/sidebar';
 
+
 export default function GerenciamentoPage() {
   const [dados, setDados] = useState([
     { ger_id: 1, cond_id: 1, ger_data: "18/08/2025", ger_descricao: "Reparo no portão eletrônico", ger_valor: "R$ 750,00" },

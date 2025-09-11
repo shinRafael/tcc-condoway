@@ -2,6 +2,7 @@
 import { useState } from "react";
 import styles from "./encomendas.module.css";
 import PageHeader from "@/componentes/PageHeader";
+import Sidebar from '@/componentes/Sidebar/sidebar';
 
 export default function Page() {
   const [encomendas, setEncomendas] = useState([
