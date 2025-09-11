@@ -1,5 +1,5 @@
 "use client";
-import styles from "../styles/LoginForm.module.css";
+import styles from "@/styles/Login.module.css";
 
 export default function Loginform() {
   return (

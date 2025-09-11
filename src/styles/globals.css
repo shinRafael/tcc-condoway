@@ -1,7 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind base (se você realmente usa Tailwind no projeto) */
 
+/* Importa reset.css (deixe só UM reset, preferencialmente o seu reset.css customizado) */
+@import "./reset.css";
+
+/* Variáveis globais */
 :root {
   --primary-color: #1c65cc;
   --primary-dark-color: #183a6b;
@@ -14,33 +16,25 @@
   --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-html,
-body {
-  padding: 0;
-  margin: 0;
+/* Reset básico */
+html, body {
   height: 100%;
   width: 100%;
-  overflow: hidden;
-  background-color: var(--background-color);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-/* Reset */
-* {
   margin: 0;
   padding: 0;
+  background-color: var(--background-color);
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* Remova overflow: hidden para evitar problemas de rolagem */
 }
 
-.body {
-  display: flex;
-  height: 100vh;
-  background-color: var(--secondary-color);
+/* Reset universal */
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
 }
 
 /* Sidebar */
@@ -162,7 +156,7 @@ table th {
   color: var(--text-color);
 }
 
-/* Page Container (Standardized layout for all pages) */
+/* Page Container */
 .page-container {
   min-height: 100vh;
   background-color: #f8f9fa;
@@ -180,7 +174,7 @@ table th {
   }
 }
 
-/* Header (Global Page Header) */
+/* Page Header */
 .page-header {
   background: #fff;
   padding: 24px 32px;
@@ -196,17 +190,16 @@ table th {
   font-size: 28px;
   line-height: 36px;
   font-weight: 700;
-  color: #0f172a; /* slate-900 */
+  color: #0f172a;
 }
 
 .page-header__right {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #64748b; /* slate-500 */
+  color: #64748b;
 }
 
-/* Utility to optionally add a subtle top background band like in the screenshot */
 .page-header--band {
   background: #fff;
   position: relative;
@@ -215,15 +208,6 @@ table th {
   content: "";
   position: absolute;
   left: 0; right: 0; top: -24px; height: 48px;
-  background: #f6f7fb; /* very light */
+  background: #f6f7fb;
   border-radius: 0 0 16px 16px;
-}
-/* globals.css */
-@import "./reset.css";
-
-body {
-  font-family: "Poppins", sans-serif;
-  background: #f5f6fa;
-  margin: 0;
-  padding: 0;
 }
