@@ -1,18 +1,17 @@
 import React from 'react';
 import styles from './Dashboard.module.css';
 
-const KpiCard = ({ icon, value, title, href = '#' }) => {
-  return (
-    <a href={href} className={styles.card}>
-      <div className={styles.kpiContent}>
-        <div className={styles.kpiIcon}>{icon}</div>
-        <div className={styles.kpiText}>
-          <span className={styles.kpiValue}>{value}</span>
-          <span className={styles.kpiTitle}>{title}</span>
-        </div>
-      </div>
-    </a>
-  );
-};
+export function KpiCard({ icon, value, title, label }) {
+  const finalTitle = title || label;
+  const renderedIcon = icon && React.isValidElement(icon)
+    ? React.cloneElement(icon, { className: styles.kpiIcon, size: 40 })
+    : null;
 
-export default KpiCard;
+  return (
+    <div className={`${styles.card} ${styles.kpiLinkCard}`}>
+      {renderedIcon}
+      <div className={styles.kpiValue}>{value}</div>
+      <div className={styles.kpiTitle}>{finalTitle}</div>
+    </div>
+  );
+}
