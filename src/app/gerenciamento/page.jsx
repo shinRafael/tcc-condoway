@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import styles from './index.module.css'; // Corrigido para usar CSS Modules
 import PageHeader from '@/componentes/PageHeader';
+import Sidebar from '@/componentes/Sidebar/sidebar';
 
 export default function GerenciamentoPage() {
   const [dados, setDados] = useState([
