@@ -217,3 +217,39 @@
   font-size: 0.875rem;
   color: #374151;
 }
+
+/* ==== Imported from Cards.module.css ==== */
+.cardSpan2 { grid-column: span 2; }
+.chartWrapper { flex-grow:1; display:flex; align-items:center; justify-content:center; }
+.list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.75rem; }
+.listItem { display:flex; justify-content:space-between; align-items:center; font-size:0.9rem; }
+.prazo { font-weight:500; color:#4f46e5; background:#eef2ff; padding:0.25rem 0.5rem; border-radius:9999px; font-size:0.75rem; }
+.kpiLinkCard { align-items:center; text-decoration:none; color:inherit; }
+.kpiIcon { color:#4f46e5; margin-bottom:0.5rem; }
+.kpiValue { font-size:2.5rem; font-weight:700; color:#111827; }
+.kpiTitle { font-size:1rem; color:#6b7280; }
+.enqueteContent { display:flex; flex-direction:column; gap:1rem; flex-grow:1; justify-content:space-between; }
+.enqueteTitle { font-weight:500; }
+.progressBarContainer { width:100%; height:8px; background:#e5e7eb; border-radius:9999px; overflow:hidden; }
+.progressBar { height:100%; background:#22c55e; border-radius:9999px; }
+.enqueteFooter { display:flex; justify-content:space-between; font-size:0.875rem; color:#6b7280; }
+
+/* ==== Imported from RecentOccurrences.module.css ==== */
+.recentContainer { background:#fff; border-radius:8px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06); padding:24px; }
+.recentHeader { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
+.recentTitle { font-size:18px; line-height:28px; font-weight:600; color:#111827; }
+.recentList { list-style:none; padding:0; margin:0; }
+.recentItem { padding-bottom:20px; margin-bottom:20px; }
+.recentItem:not(:last-child) { border-bottom:1px solid #e5e7eb; }
+.recentItemTitle { margin-bottom:12px; }
+.recentItemText { font-size:14px; font-weight:500; color:#111827; }
+.recentBadges { display:flex; gap:12px; }
+.recentBadge { padding:6px 12px; font-size:12px; font-weight:600; border-radius:9999px; }
+.badgeStatusAberta { background:#dbeafe; color:#1e40af; }
+.badgeStatusEmAndamento { background:#fed7aa; color:#c2410c; }
+.badgeStatusConcluida { background:#dcfce7; color:#166534; }
+.badgePriorityAlta { background:#fecaca; color:#dc2626; }
+.badgePriorityMedia { background:#fef3c7; color:#d97706; }
+.badgePriorityBaixa { background:#f3f4f6; color:#374151; }
+.recentEmpty { text-align:center; padding:32px 0; }
+.recentEmptyText { color:#6b7280; font-size:14px; }

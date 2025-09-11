@@ -3,23 +3,25 @@ import React, { useState } from 'react';
 import { FiCalendar, FiBox, FiBell, FiUsers, FiCheckCircle, FiMessageSquare, FiUserPlus } from 'react-icons/fi';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
-import KpiCard from '../KpiCard/KpiCard';
+import { KpiCard } from './KpiCard';
 import ActionListCard from '../ActionListCard/ActionListCard';
-import ChartCard from '../Dashboard/ChartCard';
-import CalendarCard from '../Dashboard/CalendarCard';
-import ActivityFeedCard from '../Dashboard/ActivityFeedCard';
-import ManutencoesCard from '../DashboardCards/ManutencoesCard';
-import MensagensNaoLidasCard from '../DashboardCards/MensagensNaoLidasCard';
-import EnquetesCard from '../DashboardCards/EnquetesCard';
-import RecentOccurrences from '../DashboardCards/RecentOccurrences';
+import ChartCard from './ChartCard';
+import CalendarCard from './CalendarCard';
+import ActivityFeedCard from './ActivityFeedCard';
+import { EnquetesCard } from './EnquetesCard';
+import { ManutencoesCard } from './ManutencoesCard';
+import { MensagensNaoLidasCard } from './MensagensNaoLidasCard';
+import { StatusChamadosCard } from './StatusChamadosCard';
+import { StatusOcorrenciasCard } from './StatusOcorrenciasCard';
+import RecentOccurrences from './RecentOccurrences';
 import styles from './Dashboard.module.css';
 
 // Mock Data
 const kpiData = {
-  reservas: { value: 3, title: 'Reservas Pendentes', icon: <FiCalendar size={24} />, href: '/reservas?status=pendente' },
-  encomendas: { value: 7, title: 'Encomendas a Retirar', icon: <FiBox size={24} />, href: '/encomendas' },
-  ocorrencias: { value: 2, title: 'Ocorrências Abertas', icon: <FiBell size={24} />, href: '/ocorrencias' },
-  visitantes: { value: 12, title: 'Visitantes Hoje', icon: <FiUsers size={24} />, href: '/visitantes' },
+  reservas: { value: 3, title: 'Reservas Pendentes', icon: <FiCalendar />, href: '/reservas?status=pendente' },
+  encomendas: { value: 7, title: 'Encomendas a Retirar', icon: <FiBox />, href: '/encomendas' },
+  ocorrencias: { value: 2, title: 'Ocorrências Abertas', icon: <FiBell />, href: '/ocorrencias' },
+  visitantes: { value: 12, title: 'Visitantes Hoje', icon: <FiUsers />, href: '/visitantes' },
 };
 
 const acoesRequeridas = [

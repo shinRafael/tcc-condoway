@@ -1,5 +1,3 @@
-
-
 :root {
   --primary-color: #1c65cc;
   --primary-dark-color: #183a6b;
@@ -216,6 +214,10 @@ table th {
   background: #f6f7fb; /* very light */
   border-radius: 0 0 16px 16px;
 }
+
+/* Layout with Sidebar */
+.app-shell { display: flex; min-height: 100vh; width: 100%; }
+.app-main { flex: 1; overflow-y: auto; }
 /* globals.css */
 @import "./reset.css";
 
