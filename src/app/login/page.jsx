@@ -3,7 +3,7 @@
 export default function LoginPage() {
   return (
     <div className="loginBox">
-      <h2>Facilitando o seu dia!</h2>
+      <h2>Melhorando </h2>
       <p>Cadastre-se para receber novidades e acessar nossos recursos.</p>
 
       <form className="loginForm">
