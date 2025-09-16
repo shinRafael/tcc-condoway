@@ -1,50 +1,68 @@
 "use client";
-import { useState } from "react";
 import styles from "./ocorrencias.module.css";
 
-export default function OcorrenciasList({ initialOcorrencias }) {
-  const [ocorrencias, setOcorrencias] = useState(initialOcorrencias);
-
-  const atualizarStatus = (id, novoStatus) => {
-    setOcorrencias(
-      ocorrencias.map((o) =>
-        o.id === id ? { ...o, status: novoStatus } : o
-      )
-    );
+export default function OcorrenciasList({ initialOcorrencias, onUpdateStatus }) {
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Aberta":
+        return styles.pendente;
+      case "Em Andamento":
+        return styles.emAndamento;
+      case "Resolvida":
+        return styles.resolvida;
+      case "Cancelada":
+        return styles.cancelada;
+      default:
+        return styles.pendente;
+    }
   };
 
   return (
     <div className={styles.grid}>
-      {ocorrencias.map((o) => (
+      {initialOcorrencias.map((o) => (
         <div
-          key={o.id}
-          className={`${styles.card} ${
-            o.status === "pendente" ? styles.pendente : styles.visto
-          }`}
+          key={o.oco_id}
+          className={`${styles.card} ${getStatusClass(o.oco_status)}`}
         >
           <div className={styles.cardHeader}>
-            <h3>{o.titulo}</h3>
+            <h3>{o.oco_protocolo}</h3>
             <span className={styles.data}>
-              {new Date(o.data).toLocaleDateString("pt-BR")}
+              {new Date(o.oco_data).toLocaleDateString("pt-BR")}
             </span>
           </div>
-          <p className={styles.mensagem}>{o.mensagem}</p>
+          <p className={styles.mensagem}>
+            <strong>Status:</strong> {o.oco_status}
+          </p>
+          <p className={styles.mensagem}>{o.oco_descricao}</p>
           <div className={styles.actions}>
-            {o.status === "pendente" ? (
-              <button
-                className={styles.saveButton}
-                onClick={() => atualizarStatus(o.id, "visto")}
-              >
-                Marcar como Visto
-              </button>
-            ) : (
-              <button
-                className={styles.editButton}
-                onClick={() => atualizarStatus(o.id, "pendente")}
-              >
-                Voltar para Pendente
-              </button>
-            )}
+            <button
+              className={styles.actionButton}
+              onClick={() => onUpdateStatus(o.oco_id, "Aberta")}
+              disabled={o.oco_status === "Aberta"}
+            >
+              Aberta
+            </button>
+            <button
+              className={styles.actionButton}
+              onClick={() => onUpdateStatus(o.oco_id, "Em Andamento")}
+              disabled={o.oco_status === "Em Andamento"}
+            >
+              Em Andamento
+            </button>
+            <button
+              className={styles.actionButton}
+              onClick={() => onUpdateStatus(o.oco_id, "Resolvida")}
+              disabled={o.oco_status === "Resolvida"}
+            >
+              Resolvida
+            </button>
+            <button
+              className={styles.actionButton}
+              onClick={() => onUpdateStatus(o.oco_id, "Cancelada")}
+              disabled={o.oco_status === "Cancelada"}
+            >
+              Cancelada
+            </button>
           </div>
         </div>
       ))}
