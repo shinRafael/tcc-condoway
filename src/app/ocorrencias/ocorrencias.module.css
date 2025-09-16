@@ -32,6 +32,21 @@
 .saveButton { background: #28a745; color: #fff; }
 .saveButton:hover { background: #218838; }
 
-/* Estados */
-.pendente { border-left: 5px solid #e84118; } /* vermelho */
-.visto { border-left: 5px solid #00a8ff; }   /* azul */
+/* src/app/ocorrencias/ocorrencias.module.css */
+/* ... (outras classes existentes) */
+
+.emAndamento { border-left: 5px solid #ffc107; } /* amarelo */
+.resolvida { border-left: 5px solid #28a745; }   /* verde */
+.cancelada { border-left: 5px solid #dc3545; }   /* vermelho */
+.actions button {
+  /* ... (estilos existentes dos botões) */
+  background: #007bff;
+  color: white;
+}
+.actions button:hover {
+  background: #0056b3;
+}
+.actions button:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
