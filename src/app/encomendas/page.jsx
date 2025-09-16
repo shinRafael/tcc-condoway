@@ -2,7 +2,7 @@
 import { useState } from "react";
 import styles from "./encomendas.module.css";
 import PageHeader from "@/componentes/PageHeader";
-import Sidebar from '@/componentes/Sidebar/sidebar';
+import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
 
 export default function Page() {
   const [encomendas, setEncomendas] = useState([
@@ -59,7 +59,7 @@ export default function Page() {
 
   return (
     <div className="page-container">
-      <PageHeader title="Encomendas" rightContent={(<div className={styles.userInfo}><span>Síndico</span><img src="/user-icon.png" alt="User" /></div>)} />
+      <PageHeader title="Encomendas" rightContent={(<RightHeaderBrand />)} />
 
       <div className="page-content">
         {/* Cards */}

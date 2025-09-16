@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import styles from "./usuario.module.css";
 import PageHeader from "@/componentes/PageHeader";
+import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
 
 export default function Usuarios() {
   const [showModal, setShowModal] = useState(false);
@@ -56,10 +57,7 @@ export default function Usuarios() {
   return (
     <div className="page-container">
       <PageHeader title="Usuários" rightContent={(
-        <div className={styles.userInfo}>
-          <span>Síndico</span>
-          <img src="/placeholder.png" alt="User" />
-        </div>
+        <RightHeaderBrand />
       )} />
 
       <div className="page-content">

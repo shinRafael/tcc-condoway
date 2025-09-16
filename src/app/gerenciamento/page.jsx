@@ -4,6 +4,7 @@ import { useState } from 'react';
 import styles from './index.module.css'; // Corrigido para usar CSS Modules
 import PageHeader from '@/componentes/PageHeader';
 import Sidebar from '@/componentes/Sidebar/sidebar';
+import RightHeaderBrand from '@/componentes/PageHeader/RightHeaderBrand';
 
 
 export default function GerenciamentoPage() {
@@ -67,14 +68,7 @@ export default function GerenciamentoPage() {
   return (
     <div className="page-container">
       <PageHeader title="Gerenciamento" rightContent={(
-        <div className={styles.userInfo}>
-          <span>Administrador</span>
-          <img
-            src="https://via.placeholder.com/35"
-            alt="User"
-            className={styles.userAvatar}
-          />
-        </div>
+        <RightHeaderBrand />
       )} />
 
       <div className="page-content">

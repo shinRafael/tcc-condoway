@@ -157,7 +157,7 @@ const Dashboard = () => {
   return (
     <div className={styles.dashboardContainer}>
       <header className={styles.dashboardHeader}>
-        <select value={filter} onChange={(e) => setFilter(e.target.value)} >
+        <select className={styles.filterSelect} value={filter} onChange={(e) => setFilter(e.target.value)} >
           <option>Hoje</option>
           <option>Esta Semana</option>
           <option>Este Mês</option>

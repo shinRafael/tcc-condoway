@@ -270,3 +270,43 @@
 @media (max-width: 768px) {
   .scrollArea { max-height: calc(100vh - 120px); }
 }
+
+/* Filter Select Styles */
+.filterSelect {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: #fff url('data:image/svg+xml;utf8,<svg fill="%236b7280" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.25 7.5L10 12.25 14.75 7.5" stroke="%236b7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>') no-repeat right .75rem center/14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  padding: .5rem 2.25rem .5rem .875rem; /* space for chevron */
+  color: #111827;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+
+.filterSelect:hover {
+  border-color: #d1d5db;
+}
+
+.filterSelect:focus-visible {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79,70,229,.15);
+}
+
+.filterSelect:disabled {
+  opacity: .7;
+  cursor: not-allowed;
+}
+
+@media (prefers-color-scheme: dark) {
+  .filterSelect {
+    background-color: #111827;
+    color: #e5e7eb;
+    border-color: #374151;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23e5e7eb" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.25 7.5L10 12.25 14.75 7.5" stroke="%23e5e7eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+  }
+  .filterSelect:hover { border-color: #4b5563; }
+}

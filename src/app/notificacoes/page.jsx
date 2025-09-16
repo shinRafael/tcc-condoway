@@ -2,6 +2,7 @@
 import NotificacoesList from "./NotificacoesList";
 import PageHeader from "@/componentes/PageHeader";
 import { useEffect } from "react";
+import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
 
 const initialNotificacoes = [
   {
@@ -29,7 +30,7 @@ const initialNotificacoes = [
 
 export default function Page() {
   useEffect(() => {
-    const novasNotificacoes = initialNotificacoes.filter(n => n.tipo === "importante").length;
+    const novasNotificacoes = initialNotificacoes.filter((n) => n.tipo === "importante").length;
     try {
       const ev = new CustomEvent("sidebar-badge-event", {
         detail: { type: "sidebar-badge-update", key: "notificacoes", count: novasNotificacoes },
@@ -43,7 +44,7 @@ export default function Page() {
 
   return (
     <div className="page-container">
-      <PageHeader title="Controle de Notificações" />
+      <PageHeader title="Controle de Notificações" rightContent={<RightHeaderBrand />} />
       <div className="page-content">
         <NotificacoesList initialNotificacoes={initialNotificacoes} />
       </div>
