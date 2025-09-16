@@ -2,23 +2,27 @@
 import { useState, useEffect } from "react";
 import OcorrenciasList from "./OcorrenciasList";
 import PageHeader from "@/componentes/PageHeader";
+import api from '@/services/api';
 
 export default function Page() {
   const [ocorrencias, setOcorrencias] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Função para buscar as ocorrências da API
   const fetchOcorrencias = async () => {
     setLoading(true);
+    console.log("Iniciando a busca por ocorrências..."); // Adicionado para depuração
     try {
-      const response = await fetch("http://localhost:3333/ocorrencias");
-      if (!response.ok) {
-        throw new Error("Erro ao buscar ocorrências da API.");
-      }
-      const data = await response.json();
-      setOcorrencias(data.dados);
+      const response = await api.get("/ocorrencias");
+      
+      // Adicionado para depuração: loga a resposta completa da API
+      console.log("Resposta completa da API:", response);
+      
+      // Adicionado para depuração: loga os dados esperados
+      console.log("Dados recebidos:", response.data.dados);
 
-      const ocorrenciasPendentes = data.dados.filter(o => o.oco_status === "Aberta").length;
+      setOcorrencias(response.data.dados);
+
+      const ocorrenciasPendentes = response.data.dados.filter(o => o.oco_status === "Aberta").length;
       try {
         const ev = new CustomEvent("sidebar-badge-event", {
           detail: { type: "sidebar-badge-update", key: "ocorrencias", count: ocorrenciasPendentes },
@@ -32,26 +36,16 @@ export default function Page() {
       }
 
     } catch (error) {
+      // Adicionado para depuração: loga qualquer erro de requisição
       console.error("Falha ao buscar ocorrências:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Função para atualizar o status de uma ocorrência
   const handleUpdateStatus = async (id, novoStatus) => {
     try {
-      const response = await fetch(`http://localhost:3333/ocorrencias/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ oco_status: novoStatus }),
-      });
-      if (!response.ok) {
-        throw new Error("Erro ao atualizar o status da ocorrência na API.");
-      }
-      // Após a atualização, recarrega a lista de ocorrências
+      await api.patch(`/ocorrencias/${id}`, { oco_status: novoStatus });
       fetchOcorrencias();
     } catch (error) {
       console.error("Falha ao atualizar o status:", error);
