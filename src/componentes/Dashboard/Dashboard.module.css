@@ -21,7 +21,7 @@
 .dashboardGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 /* Card Base Styles */
@@ -48,6 +48,7 @@
   font-size: 1.125rem;
   font-weight: 600;
   color: #374151;
+  margin-bottom: 0.75rem;
 }
 
 .viewAllLink {
@@ -222,7 +223,7 @@
 .cardSpan2 { grid-column: span 2; }
 .chartWrapper { flex-grow:1; display:flex; align-items:center; justify-content:center; }
 .list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.75rem; }
-.listItem { display:flex; justify-content:space-between; align-items:center; font-size:0.9rem; }
+.listItem { display:flex; justify-content:space-between; align-items:center; font-size:0.9rem; padding: 6px 0; }
 .prazo { font-weight:500; color:#4f46e5; background:#eef2ff; padding:0.25rem 0.5rem; border-radius:9999px; font-size:0.75rem; }
 .kpiLinkCard { align-items:center; text-decoration:none; color:inherit; }
 .kpiIcon { color:#4f46e5; margin-bottom:0.5rem; }
@@ -253,3 +254,19 @@
 .badgePriorityBaixa { background:#f3f4f6; color:#374151; }
 .recentEmpty { text-align:center; padding:32px 0; }
 .recentEmptyText { color:#6b7280; font-size:14px; }
+
+/* Scroll area for large content */
+.scrollArea {
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+  padding-right: 4px; /* keep content away from scrollbar */
+  padding-bottom: 64px; /* extra space so last card/shadow is not clipped */
+}
+.scrollArea::-webkit-scrollbar { width: 8px; }
+.scrollArea::-webkit-scrollbar-track { background: transparent; }
+.scrollArea::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 8px; }
+.scrollArea:hover::-webkit-scrollbar-thumb { background: #9ca3af; }
+
+@media (max-width: 768px) {
+  .scrollArea { max-height: calc(100vh - 120px); }
+}
