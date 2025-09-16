@@ -34,10 +34,9 @@ export default function LoginPage() {
 
         .loginBox p {
           font-size: 0.9rem;
-          color: #666;
+          color: #666; 
           margin-bottom: 1.5rem;
         }
-
         .loginForm {
           display: flex;
           flex-direction: column;
