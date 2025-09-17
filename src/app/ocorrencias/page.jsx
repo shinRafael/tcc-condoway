@@ -8,7 +8,7 @@ export default function Page() {
   const [ocorrencias, setOcorrencias] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchOcorrencias = async () => {
+  const axiosOcorrencias = async () => {
     setLoading(true);
     console.log("Iniciando a busca por ocorrências..."); // Adicionado para depuração
     try {
@@ -46,14 +46,14 @@ export default function Page() {
   const handleUpdateStatus = async (id, novoStatus) => {
     try {
       await api.patch(`/ocorrencias/${id}`, { oco_status: novoStatus });
-      fetchOcorrencias();
+      axiosOcorrencias();
     } catch (error) {
       console.error("Falha ao atualizar o status:", error);
     }
   };
 
   useEffect(() => {
-    fetchOcorrencias();
+    axiosOcorrencias();
   }, []);
 
   return (
