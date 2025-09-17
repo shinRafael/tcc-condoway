@@ -4,6 +4,8 @@ import OcorrenciasList from "./OcorrenciasList";
 import PageHeader from "@/componentes/PageHeader";
 import api from '@/services/api';
 
+//teste para ver se esta funcionando
+
 export default function Page() {
   const [ocorrencias, setOcorrencias] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,7 +36,7 @@ export default function Page() {
       } catch (e) {
         console.error("Erro ao atualizar o badge do sidebar:", e);
       }
-
+        
     } catch (error) {
       // Adicionado para depuração: loga qualquer erro de requisição
       console.error("Falha ao buscar ocorrências:", error);
