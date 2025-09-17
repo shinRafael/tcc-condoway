@@ -34,7 +34,7 @@ export default function Page() {
       } catch (e) {
         console.error("Erro ao atualizar o badge do sidebar:", e);
       }
-        //Josué: 19:18
+        
     } catch (error) {
       // Adicionado para depuração: loga qualquer erro de requisição
       console.error("Falha ao buscar ocorrências:", error);
