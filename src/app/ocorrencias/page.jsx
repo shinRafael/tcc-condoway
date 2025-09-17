@@ -4,6 +4,8 @@ import OcorrenciasList from "./OcorrenciasList";
 import PageHeader from "@/componentes/PageHeader";
 import api from '@/services/api';
 
+//teste para ver se esta funcionando
+
 export default function Page() {
   const [ocorrencias, setOcorrencias] = useState([]);
   const [loading, setLoading] = useState(true);
