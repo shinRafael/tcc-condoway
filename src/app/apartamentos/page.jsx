@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import styles from "./apartamentos.module.css";
 import PageHeader from "@/componentes/PageHeader";
+import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
 
 export default function Apartamentos() {
   const [showModal, setShowModal] = useState(false);
@@ -56,12 +57,7 @@ export default function Apartamentos() {
     <div className="page-container">
       <PageHeader
         title="Apartamentos"
-        rightContent={
-          <div className={styles.userInfo}>
-            <span>Síndico</span>
-            <img src="https://via.placeholder.com/35" alt="User" />
-          </div>
-        }
+        rightContent={<RightHeaderBrand />}
       />
 
       <div className="page-content">

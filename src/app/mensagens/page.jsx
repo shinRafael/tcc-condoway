@@ -2,6 +2,7 @@
 import MensagensList from "./MensagensList";
 import PageHeader from "@/componentes/PageHeader";
 import { useEffect, useState } from "react";
+import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
 
 const conversasIniciais = [
   {
@@ -71,7 +72,7 @@ export default function Page() {
 
   return (
     <div className="page-container">
-      <PageHeader title="Mensagens" />
+      <PageHeader title="Mensagens" rightContent={<RightHeaderBrand />} />
       <div className="page-content">
         <MensagensList 
           conversasIniciais={conversas} 

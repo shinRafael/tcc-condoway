@@ -3,6 +3,7 @@ import { useState } from 'react'
 import '../../styles/globals.css'
 import styles from './visitantes.module.css'
 import PageHeader from '@/componentes/PageHeader';
+import RightHeaderBrand from '@/componentes/PageHeader/RightHeaderBrand';
 
 export default function Visitantes() {
   const [visitantes, setVisitantes] = useState([
@@ -45,12 +46,7 @@ export default function Visitantes() {
     <div className="page-container">
       <PageHeader
         title="Controle de Visitantes"
-        rightContent={(
-          <div className={styles.userInfo}>
-            <span>Síndico</span>
-            <img src='https://via.placeholder.com/35' alt='User' className={styles.userAvatar} />
-          </div>
-        )}
+        rightContent={(<RightHeaderBrand />)}
       />
 
       <div className="page-content">

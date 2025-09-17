@@ -2,6 +2,7 @@
 import ReservasList from "./ReservasList";
 import { useEffect } from "react";
 import PageHeader from "@/componentes/PageHeader";
+import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
 
 // Dados de exemplo para os cards de reservas
 const initialReservas = [
@@ -53,7 +54,7 @@ export default function Page() {
 
 	return (
 		<div className="page-container">
-			<PageHeader title="Controle de Reservas" />
+			<PageHeader title="Controle de Reservas" rightContent={<RightHeaderBrand />} />
 			<div className="page-content">
 				<ReservasList initialReservas={initialReservas} />
 			</div>

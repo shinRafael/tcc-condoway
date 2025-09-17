@@ -1,15 +1,45 @@
+/* Modern button styles */
 .containerBotao{
-    padding: 1rem;
-    border: 0.5rem solid #afb;
-    background-color: #aff;
-    margin: 1rem;
-    cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .75rem 1.25rem;
+  border: none;
+  border-radius: 9999px; /* pill */
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: .02em;
+  box-shadow: 0 6px 14px rgba(79,70,229,.25);
+  cursor: pointer;
+  user-select: none;
+  transition: transform .08s ease, box-shadow .2s ease, filter .2s ease, background .3s ease;
 }
 
 .containerBotao:hover{
-    border: 0.5rem solid #ff1;
+  filter: brightness(1.05);
+  box-shadow: 0 10px 18px rgba(79,70,229,.28);
 }
+
+.containerBotao:active{
+  transform: translateY(1px);
+  box-shadow: 0 4px 10px rgba(79,70,229,.25);
+}
+
+.containerBotao:focus-visible{
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(79,70,229,.20), 0 6px 14px rgba(79,70,229,.25);
+}
+
+.containerBotao:disabled{
+  cursor: not-allowed;
+  opacity: .6;
+  filter: grayscale(20%);
+  box-shadow: none;
+}
+
 .txtBotao{
-    color: #ff1;
-    letter-spacing: 0.5rem;
+  color: inherit;
+  font-size: .95rem;
 }
