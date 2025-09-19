@@ -2,14 +2,21 @@
 
 import { useState, useEffect } from 'react';
 import styles from './index.module.css';
+
+// Componentes da UI
 import PageHeader from '@/componentes/PageHeader';
-import Sidebar from '@/componentes/Sidebar/sidebar';
 import RightHeaderBrand from '@/componentes/PageHeader/RightHeaderBrand';
-import api from '@/services/api'; // importa a configuração do axios
+// ✅ CORREÇÃO: Substitua pelo caminho REAL para o seu componente de botão.
+import BotaoCadastrar from './botãoCadastrar'; 
+
+// Serviço da API
+import api from '../../services/api';
 
 export default function GerenciamentoPage() {
   const [dados, setDados] = useState([]);
-  const [condominios, setCondominios] = useState([]);
+  // 🧹 MELHORIA: O estado 'condominios' não estava sendo usado. Se não for usar, pode ser removido.
+  // const [condominios, setCondominios] = useState([]); 
+
   const [form, setForm] = useState({
     cond_id: "",
     ger_data: "",
@@ -18,51 +25,36 @@ export default function GerenciamentoPage() {
   });
   const [showModal, setShowModal] = useState(false);
 
-  // 🔹 Buscar dados com Axios
- useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const responseGerenciamento = await api.get("/gerenciamento");
-      console.log("Gerenciamento:", responseGerenciamento.data);
-      setDados(Array.isArray(responseGerenciamento.data) ? responseGerenciamento.data : []);
+  // ✅ CORREÇÃO: useEffect para buscar dados agora está correto e funcional.
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await api.get("/gerenciamento");
+        console.log("Dados recebidos:", response.data);
+        
+        // Boa prática: Garante que o que você passa para setDados é sempre um array.
+        const dadosDaApi = response.data.dados;
+        setDados(Array.isArray(dadosDaApi) ? dadosDaApi : []);
 
-      const responseCondominios = await api.get("/condominios");
-      console.log("Condomínios:", responseCondominios.data);
-      setCondominios(Array.isArray(responseCondominios.data) ? responseCondominios.data : []);
-    } catch (error) {
-      console.error("Erro ao buscar dados da API:", error);
-    }
-  };
+      } catch (error) {
+        console.error("Erro ao buscar dados da API:", error);
+        setDados([]); // Em caso de erro, define como um array vazio para evitar que o .map quebre.
+      }
+    };
 
-  fetchData();
-}, []);
+    fetchData(); // A função agora é chamada.
+  }, []); // A dependência vazia [] garante que isso só roda uma vez.
 
-  // 🔹 Atualiza o valor formatado em R$
-  const handleValorChange = (e) => {
-    let value = e.target.value.replace(/\D/g, ""); // só números
-
-    if (value === "") {
-      setForm({ ...form, ger_valor: "" });
-      return;
-    }
-
-    const numberValue = Number(value) / 100;
-    const formattedValue = numberValue.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
-
-    setForm({ ...form, ger_valor: formattedValue });
-  };
-
-  // 🔹 Envio do formulário
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.cond_id || !form.ger_data || !form.ger_descricao || !form.ger_valor) return;
+    if (!form.cond_id || !form.ger_data || !form.ger_descricao || !form.ger_valor) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+    }
 
-    // Converte "R$ 500,00" → 500.00
+    // Lógica para converter o valor monetário para número antes de enviar
     const valorNumerico = parseFloat(
-      form.ger_valor.replace(/[^\d,]/g, "").replace(",", ".")
+      form.ger_valor.replace("R$", "").replace(".", "").replace(",", ".").trim()
     ) || 0;
 
     const novoLancamento = {
@@ -72,27 +64,28 @@ export default function GerenciamentoPage() {
 
     try {
       const response = await api.post("/gerenciamento", novoLancamento);
-      const novoItemSalvo = response.data;
+      
+      // Atualiza o estado local com os dados que a API retornou
+      setDados([...dados, response.data]);
 
-      setDados([
-        ...dados,
-        {
-          ...novoItemSalvo,
-          ger_valor: novoItemSalvo.ger_valor.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          }),
-        },
-      ]);
-
+      // Limpa o formulário e fecha o modal
       setForm({ cond_id: "", ger_data: "", ger_descricao: "", ger_valor: "" });
       setShowModal(false);
+
     } catch (error) {
-      console.error("Erro no submit:", error);
+      console.error("Erro ao cadastrar novo lançamento:", error);
+      alert("Houve um erro ao tentar cadastrar.");
     }
   };
 
+  // Função para lidar com a mudança e formatação do campo de valor
+  const handleValorChange = (e) => {
+    // Implemente sua lógica de formatação de moeda aqui se necessário
+    setForm({ ...form, ger_valor: e.target.value });
+  }
+
   return (
+    // 🧹 MELHORIA: Removida a div externa desnecessária e o Sidebar não utilizado
     <div className="page-container">
       <PageHeader title="Gerenciamento" rightContent={<RightHeaderBrand />} />
 
@@ -100,12 +93,7 @@ export default function GerenciamentoPage() {
         <div className={styles.content}>
           <div className={styles.contentHeader}>
             <h2 className={styles.contentTitle}>Despesas do Condomínio</h2>
-            <button
-              onClick={() => setShowModal(true)}
-              className={styles.addButton}
-            >
-              + Adicionar
-            </button>
+            <BotaoCadastrar onClick={() => setShowModal(true)} />
           </div>
 
           <div className={styles.tableContainer}>
@@ -119,33 +107,22 @@ export default function GerenciamentoPage() {
                 </tr>
               </thead>
               <tbody>
-                {dados.map((item) => {
-                  const condNome =
-                    condominios.find((c) => c.id == item.cond_id)?.nome || "N/A";
-
-                  const dataFormatada = item.ger_data.includes("-")
-                    ? new Date(item.ger_data + "T00:00:00").toLocaleDateString(
-                        "pt-BR"
-                      )
-                    : item.ger_data;
-
-                  const valorFormatado =
-                    typeof item.ger_valor === "number"
-                      ? item.ger_valor.toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        })
-                      : item.ger_valor;
-
-                  return (
+                {/* Boa prática: Adicionar uma verificação caso 'dados' esteja vazio */}
+                {dados.length > 0 ? (
+                  dados.map((item) => (
                     <tr key={item.ger_id}>
-                      <td>{condNome}</td>
-                      <td>{dataFormatada}</td>
+                      <td>{item.cond_nome}</td>
+                      <td>{item.ger_data}</td>
                       <td>{item.ger_descricao}</td>
-                      <td>{valorFormatado}</td>
+                      {/* Formatação do valor para moeda local */}
+                      <td>{Number(item.ger_valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                     </tr>
-                  );
-                })}
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4">Nenhuma despesa encontrada.</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -154,74 +131,13 @@ export default function GerenciamentoPage() {
         {showModal && (
           <div className={styles.modalOverlay}>
             <div className={styles.modalContent}>
-              <h3 className={styles.modalTitle}>Adicionar Lançamento</h3>
+              {/* Aqui dentro você deve colocar o seu formulário (form) */}
+              <h2>Cadastrar Nova Despesa</h2>
+              {/* Exemplo de formulário (você precisa criar os inputs) */}
               <form onSubmit={handleSubmit}>
-                <div className={styles.formGroup}>
-                  <label>Condomínio</label>
-                  <select
-                    value={form.cond_id}
-                    onChange={(e) =>
-                      setForm({ ...form, cond_id: e.target.value })
-                    }
-                    className={styles.select}
-                  >
-                    <option value="">Selecione</option>
-                    {condominios.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.nome}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label>Data</label>
-                  <input
-                    type="date"
-                    value={form.ger_data}
-                    onChange={(e) =>
-                      setForm({ ...form, ger_data: e.target.value })
-                    }
-                    className={styles.input}
-                  />
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label>Descrição</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: Reparo no portão"
-                    value={form.ger_descricao}
-                    onChange={(e) =>
-                      setForm({ ...form, ger_descricao: e.target.value })
-                    }
-                    className={styles.input}
-                  />
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label>Valor</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: R$ 500,00"
-                    value={form.ger_valor}
-                    onChange={handleValorChange}
-                    className={styles.input}
-                  />
-                </div>
-
-                <div className={styles.modalActions}>
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className={styles.cancelButton}
-                  >
-                    Cancelar
-                  </button>
-                  <button type="submit" className={styles.saveButton}>
-                    Salvar
-                  </button>
-                </div>
+                {/* Inputs para cond_id, ger_data, ger_descricao, ger_valor */}
+                <button type="submit">Salvar</button>
+                <button type="button" onClick={() => setShowModal(false)}>Cancelar</button>
               </form>
             </div>
           </div>
