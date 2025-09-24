@@ -1,111 +1,190 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./notificacoes.module.css";
+import api from "@/services/api";
 
-export default function NotificacoesList({ initialNotificacoes }) {
+export default function NotificacoesList({ initialNotificacoes, adicionarNotificacao, salvarEdicao, excluirNotificacao }) {
   const [notificacoes, setNotificacoes] = useState(initialNotificacoes);
   const [editandoId, setEditandoId] = useState(null);
+  const [dadosEditados, setDadosEditados] = useState({});
+  
+  // States para o modal
   const [showModal, setShowModal] = useState(false);
-  const [nova, setNova] = useState({ titulo: "", mensagem: "", tipo: "basica" });
+  const [nova, setNova] = useState({ titulo: "", mensagem: "", prioridade: "baixa" });
+  
+  // States para o público-alvo
+  const [tipoAlvo, setTipoAlvo] = useState("todos"); // 'todos', 'bloco', ou 'apartamento'
+  const [blocoSelecionado, setBlocoSelecionado] = useState("");
+  const [apartamentoSelecionado, setApartamentoSelecionado] = useState("");
 
-  // Adicionar nova notificação
-  const adicionarNotificacao = () => {
+  // States para carregar os dados dos selects
+  const [todosBlocos, setTodosBlocos] = useState([]);
+  const [todosApartamentos, setTodosApartamentos] = useState([]);
+  const [apartamentosFiltrados, setApartamentosFiltrados] = useState([]);
+
+  useEffect(() => {
+    setNotificacoes(initialNotificacoes);
+  }, [initialNotificacoes]);
+  
+  useEffect(() => {
+    const carregarOpcoes = async () => {
+      try {
+        const resBlocos = await api.get('/blocos');
+        setTodosBlocos(resBlocos.data.dados);
+        const resAps = await api.get('/apartamentos');
+        setTodosApartamentos(resAps.data.dados);
+      } catch (error) {
+        console.error('Falha ao carregar opções', error);
+      }
+    };
+    carregarOpcoes();
+  }, []);
+
+  // Filtra os apartamentos quando um bloco é selecionado
+  useEffect(() => {
+    if (blocoSelecionado) {
+      const filtrados = todosApartamentos.filter(ap => ap.bloco_id == blocoSelecionado);
+      setApartamentosFiltrados(filtrados);
+      setApartamentoSelecionado(""); // Reseta a seleção do apartamento
+    } else {
+      setApartamentosFiltrados([]);
+    }
+  }, [blocoSelecionado, todosApartamentos]);
+
+
+  const handleAdicionar = (e) => {
+    e.preventDefault();
     if (!nova.titulo || !nova.mensagem) return;
-    setNotificacoes([
-      ...notificacoes,
-      { id: Date.now(), ...nova, data: new Date().toISOString().split("T")[0] },
-    ]);
-    setNova({ titulo: "", mensagem: "", tipo: "basica" });
+
+    let alvoFinal = "todos";
+    if (tipoAlvo === "bloco" && blocoSelecionado) {
+        alvoFinal = `bloco-${blocoSelecionado}`;
+    } else if (tipoAlvo === "apartamento" && apartamentoSelecionado) {
+        alvoFinal = `ap-${apartamentoSelecionado}`;
+    }
+
+    adicionarNotificacao({ ...nova, alvo: alvoFinal });
+    
+    // Reseta o modal
+    setNova({ titulo: "", mensagem: "", prioridade: "baixa" });
     setShowModal(false);
+    setTipoAlvo("todos");
+    setBlocoSelecionado("");
+    setApartamentoSelecionado("");
   };
 
-  // Salvar edição
-  const salvarEdicao = (id, atualizado) => {
-    setNotificacoes(notificacoes.map((n) => (n.id === id ? { ...n, ...atualizado } : n)));
+  const handleExcluir = (notificacao) => {
+    excluirNotificacao(notificacao);
+  };
+
+  const handleAbrirEdicao = (notificacao) => {
+    setEditandoId(notificacao.id);
+    setDadosEditados({
+        titulo: notificacao.titulo,
+        mensagem: notificacao.mensagem,
+        prioridade: notificacao.prioridade.toLowerCase(),
+    });
+  };
+
+  const handleSalvarEdicao = (original) => {
+    salvarEdicao(original, dadosEditados);
     setEditandoId(null);
   };
-
-  // Excluir
-  const excluirNotificacao = (id) => setNotificacoes(notificacoes.filter((n) => n.id !== id));
+  
+  const getPrioridadeClass = (prioridade) => {
+    switch (prioridade?.toLowerCase()) {
+      case 'baixa': return styles.prioridadeBaixa;
+      case 'media': return styles.prioridadeMedia;
+      case 'alta': return styles.prioridadeAlta;
+      default: return '';
+    }
+  };
 
   return (
     <div>
-      {/* Botão adicionar */}
-      <button className={styles.addButton} onClick={() => setShowModal(true)}>
-        + Adicionar Notificação
-      </button>
+      <button className={styles.addButton} onClick={() => setShowModal(true)}>+ Adicionar Notificação</button>
 
-      {/* Modal de adição */}
       {showModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
             <h3>Nova Notificação</h3>
-            <input
-              type="text"
-              placeholder="Título"
-              value={nova.titulo}
-              onChange={(e) => setNova({ ...nova, titulo: e.target.value })}
-            />
-            <textarea
-              placeholder="Mensagem"
-              value={nova.mensagem}
-              onChange={(e) => setNova({ ...nova, mensagem: e.target.value })}
-            />
-            <select
-              value={nova.tipo}
-              onChange={(e) => setNova({ ...nova, tipo: e.target.value })}
-            >
-              <option value="basica">Básica</option>
-              <option value="moderada">Moderada</option>
-              <option value="importante">Importante</option>
-            </select>
-            <div className={styles.modalActions}>
-              <button className={styles.saveButton} onClick={adicionarNotificacao}>Salvar</button>
-              <button className={styles.cancelButton} onClick={() => setShowModal(false)}>Cancelar</button>
-            </div>
+            <form onSubmit={handleAdicionar}>
+              {/* Campos Título e Mensagem (sem alteração) */}
+              <div className={styles.formGroup}><label>Título</label><input type="text" value={nova.titulo} onChange={(e) => setNova({ ...nova, titulo: e.target.value })} required /></div>
+              <div className={styles.formGroup}><label>Mensagem</label><textarea value={nova.mensagem} onChange={(e) => setNova({ ...nova, mensagem: e.target.value })} required /></div>
+
+              {/* NOVA LÓGICA DE SELEÇÃO DE PÚBLICO-ALVO */}
+              <div className={styles.formGroup}>
+                <label>Público-alvo</label>
+                <select value={tipoAlvo} onChange={(e) => setTipoAlvo(e.target.value)}>
+                    <option value="todos">Todos</option>
+                    <option value="bloco">Por Bloco</option>
+                    <option value="apartamento">Por Apartamento</option>
+                </select>
+              </div>
+
+              {tipoAlvo === 'bloco' && (
+                <div className={styles.formGroup}>
+                    <label>Selecione o Bloco</label>
+                    <select value={blocoSelecionado} onChange={(e) => setBlocoSelecionado(e.target.value)} required>
+                        <option value="">-- Selecione --</option>
+                        {todosBlocos.map(b => <option key={b.bloc_id} value={b.bloc_id}>{b.bloc_nome}</option>)}
+                    </select>
+                </div>
+              )}
+
+              {tipoAlvo === 'apartamento' && (
+                <>
+                    <div className={styles.formGroup}>
+                        <label>Primeiro, selecione o Bloco</label>
+                        <select value={blocoSelecionado} onChange={(e) => setBlocoSelecionado(e.target.value)} required>
+                            <option value="">-- Selecione o Bloco --</option>
+                            {todosBlocos.map(b => <option key={b.bloc_id} value={b.bloc_id}>{b.bloc_nome}</option>)}
+                        </select>
+                    </div>
+                    {blocoSelecionado && (
+                        <div className={styles.formGroup}>
+                            <label>Agora, selecione o Apartamento</label>
+                            <select value={apartamentoSelecionado} onChange={(e) => setApartamentoSelecionado(e.target.value)} required>
+                                <option value="">-- Selecione o Apartamento --</option>
+                                {apartamentosFiltrados.map(ap => <option key={ap.ap_id} value={ap.ap_id}>{ap.ap_numero}</option>)}
+                            </select>
+                        </div>
+                    )}
+                </>
+              )}
+
+              {/* Campo Prioridade (sem alteração) */}
+              <div className={styles.formGroup}><label>Prioridade</label><select value={nova.prioridade} onChange={(e) => setNova({ ...nova, prioridade: e.target.value })}><option value="baixa">Baixa</option><option value="media">Média</option><option value="alta">Alta</option></select></div>
+              <div className={styles.modalActions}><button type="submit">Salvar</button><button type="button" onClick={() => setShowModal(false)}>Cancelar</button></div>
+            </form>
           </div>
         </div>
       )}
 
-      {/* Lista de notificações */}
       <div className={styles.grid}>
         {notificacoes.map((n) =>
           editandoId === n.id ? (
-            <div key={n.id} className={`${styles.card} ${styles[n.tipo]}`}>
-              <input
-                type="text"
-                defaultValue={n.titulo}
-                onChange={(e) => (n.titulo = e.target.value)}
-              />
-              <textarea
-                defaultValue={n.mensagem}
-                onChange={(e) => (n.mensagem = e.target.value)}
-              />
-              <select
-                defaultValue={n.tipo}
-                onChange={(e) => (n.tipo = e.target.value)}
-              >
-                <option value="basica">Básica</option>
-                <option value="moderada">Moderada</option>
-                <option value="importante">Importante</option>
-              </select>
-              <div className={styles.actions}>
-                <button className={styles.saveButton} onClick={() => salvarEdicao(n.id, n)}>Salvar</button>
-                <button className={styles.cancelButton} onClick={() => setEditandoId(null)}>Cancelar</button>
-              </div>
+            // FORMULÁRIO DE EDIÇÃO
+            <div key={n.id} className={styles.card}>
+                <div className={styles.formGroup}><label>Título</label><input type="text" value={dadosEditados.titulo} onChange={(e) => setDadosEditados({...dadosEditados, titulo: e.target.value})} /></div>
+                <div className={styles.formGroup}><label>Mensagem</label><textarea value={dadosEditados.mensagem} onChange={(e) => setDadosEditados({...dadosEditados, mensagem: e.target.value})} /></div>
+                <div className={styles.formGroup}><label>Prioridade</label><select value={dadosEditados.prioridade} onChange={(e) => setDadosEditados({...dadosEditados, prioridade: e.target.value})}><option value="baixa">Baixa</option><option value="media">Média</option><option value="alta">Alta</option></select></div>
+                <div className={styles.actions}>
+                    <button className={styles.saveButton} onClick={() => handleSalvarEdicao(n)}>Salvar</button>
+                    <button className={styles.cancelButton} onClick={() => setEditandoId(null)}>Cancelar</button>
+                </div>
             </div>
           ) : (
-            <div key={n.id} className={`${styles.card} ${styles[n.tipo]}`}>
-              <div className={styles.cardHeader}>
-                <h3>{n.titulo}</h3>
-                <span className={styles.data}>
-                  {new Date(n.data).toLocaleDateString("pt-BR")}
-                </span>
-              </div>
+            // CARD DE EXIBIÇÃO
+            <div key={n.id} className={`${styles.card} ${getPrioridadeClass(n.prioridade)}`}>
+              <div className={styles.cardHeader}><h3>{n.titulo}</h3><span className={styles.data}>{new Date(n.data).toLocaleDateString("pt-BR", { timeZone: 'UTC' })}</span></div>
               <p className={styles.mensagem}>{n.mensagem}</p>
+              <p className={styles.infoItem}><strong>Prioridade:</strong> <span className={getPrioridadeClass(n.prioridade)}>{n.prioridade?.toUpperCase()}</span></p>
+              <p className={styles.infoItem}><strong>Enviado para:</strong> {n.destinatarios} destinatário(s)</p>
               <div className={styles.actions}>
-                <button className={styles.editButton} onClick={() => setEditandoId(n.id)}>Editar</button>
-                <button className={styles.deleteButton} onClick={() => excluirNotificacao(n.id)}>Excluir</button>
+                <button className={styles.editButton} onClick={() => handleAbrirEdicao(n)}>Editar</button>
+                <button className={styles.deleteButton} onClick={() => handleExcluir(n)}>Excluir Envio</button>
               </div>
             </div>
           )
