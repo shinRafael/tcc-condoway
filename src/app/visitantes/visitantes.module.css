@@ -2,6 +2,11 @@
   min-height: 100vh;
   background-color: #f5f6fa;
   padding: 2.5rem;
+
+  /* Centralizar conteúdo */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   font-family: 'Poppins', sans-serif;
 }
 
@@ -44,6 +49,10 @@
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  /* Centralização e limite de largura */
+  width: 100%;
+  max-width: 1000px;
 }
 
 .contentHeader {
