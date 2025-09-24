@@ -1,31 +1,43 @@
 .main {
   padding: 2rem;
-  font-family: Arial, sans-serif;
+  font-family: 'Poppins', Arial, sans-serif;
+  background-color: #f5f6fa;
 }
 
+/* Header */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 1rem 0;
 }
 
 .headerTitle {
-  font-size: 2rem;
-  font-weight: bold;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
 }
 
 .userInfo {
   display: flex;
   align-items: center;
   gap: 1rem;
+  color: #7f8c8d;
+  font-size: 0.95rem;
 }
 
 .userAvatar {
   border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border: 2px solid #ecf0f1;
 }
 
+/* Content */
 .content {
-  margin-top: 2rem;
+  margin-top: 1.5rem;
 }
 
 .contentHeader {
@@ -35,20 +47,35 @@
 }
 
 .contentTitle {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #34495e;
 }
 
+/* Primary action button (Add) - aligned with modal/form buttons */
 .addButton {
-  background-color: #0070f3;
-  color: white;
-  padding: 0.5rem 1rem;
+  background-color: #3498db;
+  color: #ffffff;
   border: none;
-  border-radius: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 6px rgba(52,152,219,0.28);
 }
 
+.addButton:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(52,152,219,0.36);
+}
+
+/* Table */
 .tableContainer {
   margin-top: 1rem;
+  overflow-x: auto;
 }
 
 .table {
@@ -58,82 +85,187 @@
 
 .table th,
 .table td {
-  border: 1px solid #ccc;
+  border: 1px solid #e6edf3;
   padding: 0.75rem;
   text-align: left;
+  color: #4b5563;
+  background: #fff;
 }
 
+/* Modal / Panel overlay (keeps sidebar behavior) */
 .modalOverlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(13, 38, 59, 0.18);
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-end; /* sidebar/panel on right */
+  align-items: flex-start;
+  padding: 3rem 2rem;
+  z-index: 1200;
+  pointer-events: auto;
+  animation: fadeIn 0.18s ease forwards;
 }
 
+/* Modal content / panel card */
 .modalContent {
-  background: white;
-  padding: 2rem;
-  border-radius: 1rem;
-  width: 400px;
+  background: #ffffff;
+  padding: 1.25rem 1.25rem;
+  border-radius: 12px;
+  width: 360px;
+  max-width: calc(100% - 2rem);
+  box-shadow: 0 8px 30px rgba(13, 38, 59, 0.12);
+  transform-origin: top right;
+  animation: slideIn 0.18s ease forwards;
 }
 
-.addButton {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: background-color 0.2s ease-in-out;
-}
-
-.addButton:hover {
-  background-color: #0056b3;
-}
-
+/* Modal title */
 .modalTitle {
-  margin-bottom: 1rem;
+  margin: 0 0 0.75rem 0;
   font-size: 1.25rem;
+  color: #34495e;
+  text-align: center;
+  font-weight: 600;
 }
 
+/* Form inside panel */
+.formulario {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  max-width: 100%;
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+/* Form groups & labels */
 .formGroup {
-  margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
+  gap: 0.35rem;
 }
 
-.input,
-.select {
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
+.formGroup label {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  color: #34495e;
+  font-size: 0.95rem;
 }
 
+/* Inputs */
+.input {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #e6edf3;
+  border-radius: 8px;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  font-size: 0.95rem;
+}
+
+.input:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 4px rgba(52,152,219,0.08);
+}
+
+/* Form action buttons container */
+.formActions,
 .modalActions {
   display: flex;
-  justify-content: space-between;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
 }
 
-.cancelButton,
-.saveButton {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-}
-
+/* Shared styles for action buttons */
+.saveButton,
 .cancelButton {
-  background-color: #ccc;
+  border: none;
+  padding: 0.65rem 0.95rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-size: 0.95rem;
 }
 
+/* Save button - green */
 .saveButton {
-  background-color: #0070f3;
-  color: white;
+  background: linear-gradient(180deg,#2ecc71,#27ae60);
+  color: #ffffff;
+  box-shadow: 0 6px 12px rgba(46,204,113,0.12);
+}
+
+.saveButton:hover {
+  background: linear-gradient(180deg,#27ae60,#22a954);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(39,174,96,0.14);
+}
+
+/* Cancel button - neutral */
+.cancelButton {
+  background: #bdc3c7;
+  color: #34495e;
+  border: 1px solid rgba(0,0,0,0.04);
+}
+
+.cancelButton:hover {
+  background: #95a5a6;
+  transform: translateY(-2px);
+}
+
+/* Small shadow/focus for inputs and buttons to match the panel look */
+.input:active,
+.input:focus,
+.saveButton:active,
+.cancelButton:active {
+  transform: translateY(0);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(8px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Responsividade: mobile first adjustments */
+@media (max-width: 600px) {
+  .formulario {
+    width: 100%;
+    padding: 1rem;
+    box-shadow: none;
+  }
+
+  .formActions {
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+  }
+
+  .saveButton,
+  .cancelButton {
+    width: 100%;
+  }
+}
+
+/* Responsividade: transforma em modal central em telas pequenas */
+@media (max-width: 720px) {
+  .modalOverlay {
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+  }
+
+  .modalContent {
+    width: 100%;
+    max-width: 520px;
+  }
 }
