@@ -1,23 +1,67 @@
 'use client';
 import React, { useState } from 'react';
 import { FiCalendar, FiBox, FiBell, FiUsers, FiCheckCircle, FiMessageSquare, FiUserPlus } from 'react-icons/fi';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-
 import { KpiCard } from './KpiCard';
 import ActionListCard from '../ActionListCard/ActionListCard';
-import ChartCard from './ChartCard';
-import CalendarCard from './CalendarCard';
-import ActivityFeedCard from './ActivityFeedCard';
-import { EnquetesCard } from './EnquetesCard';
-import { ManutencoesCard } from './ManutencoesCard';
-import { MensagensNaoLidasCard } from './MensagensNaoLidasCard';
 import { StatusChamadosCard } from './StatusChamadosCard';
 import { StatusOcorrenciasCard } from './StatusOcorrenciasCard';
 import RecentOccurrences from './RecentOccurrences';
 import styles from './Dashboard.module.css';
+// import NotificationService from '../../utils/notificationService'; // Descomente para usar dados reais
+
+// Simulação de dados das outras rotas
+// NOTA: Para usar dados reais, substitua esta função por NotificationService.getAllNotifications()
+const getNotificacoesDasRotas = () => {
+  // Dados de reservas pendentes (baseado em initialReservas do reservas/page.jsx)
+  const reservasPendentes = [
+    {
+      id: 101,
+      categoria: 'reserva',
+      titulo: 'Solicitação: Salão de Festas (João Silva - Apto 201)',
+      data: '15 min atrás',
+      status: 'pendente',
+      canApprove: true,
+      detalhes: {
+        usuario: 'João Silva',
+        ambiente: 'Salão de Festas',
+        data: '2025-08-28 18:00',
+        apartamento: '201'
+      }
+    }
+  ];
+
+  // Dados de visitantes recentes/pendentes
+  const visitantesRecentes = [
+    {
+      id: 201,
+      categoria: 'visitante',
+      titulo: 'Visitante na portaria: Ana Costa (Apto 305)',
+      data: 'Agora mesmo',
+      status: 'pendente',
+      canApprove: true,
+      detalhes: {
+        nome: 'Ana Costa',
+        documento: '555.666.777-88',
+        apartamento: '305',
+        tipo: 'entrada'
+      }
+    },
+    {
+      id: 202,
+      categoria: 'visitante',
+      titulo: 'Entrada autorizada: Carlos Pereira (Apto 201)',
+      data: '5 min atrás',
+      status: 'aprovada',
+      canApprove: false
+    }
+  ];
+
+  return [...reservasPendentes, ...visitantesRecentes];
+};
 
 // Fonte de dados por filtro
 function getDashboardData(scope) {
+  const notificacoesReais = getNotificacoesDasRotas();
   if (scope === 'Esta Semana') {
     return {
       kpis: {
@@ -32,36 +76,7 @@ function getDashboardData(scope) {
         { id: 3, type: 'validar', description: 'Validar Novo Cadastro: Apto 804', link: '/usuarios/987', icon: <FiUserPlus /> },
         { id: 4, type: 'aprovar', description: 'Aprovar Reserva: Salão de Festas (Apto 305)', link: '/reservas/305', icon: <FiCheckCircle /> },
       ],
-      usoAreasComunsData: [
-        { name: 'Salão', value: 32 },
-        { name: 'Churrasqueira', value: 21 },
-        { name: 'Academia', value: 17 },
-        { name: 'Piscina', value: 14 },
-      ],
-      calendarEvents: [
-        { id: 1, date: 'QUA', title: 'Assembleia Ordinária' },
-        { id: 2, date: 'SEX', title: 'Manutenção Portão' },
-        { id: 3, date: 'SÁB', title: 'Festa no Salão (Apto 305)' },
-        { id: 4, date: 'DOM', title: 'Limpeza Piscina' },
-      ],
-      atividadesRecentes: [
-        { id: 1, time: 'Ontem 18:10', description: 'Visitante autorizado (Apto 802)' },
-        { id: 2, time: 'Ontem 12:05', description: 'Encomenda entregue (Apto 504)' },
-        { id: 3, time: 'Seg 09:12', description: 'Ocorrência registrada (barulho)' },
-        { id: 4, time: 'Seg 08:30', description: 'Reserva confirmada: Academia' },
-      ],
-      manutencoesData: [
-        { id: 1, item: 'Portão principal', prazo: 'Hoje' },
-        { id: 2, item: 'Elevador Torre B', prazo: 'Amanhã' },
-        { id: 3, item: 'Piscina - Aquecedor', prazo: 'Em 3 dias' },
-        { id: 4, item: 'Gerador - Revisão', prazo: 'Em 5 dias' },
-      ],
-      enquete: { titulo: 'Mudança horário da academia aos sábados', prazo: 'termina em 2 dias', participacao: 64 },
-      ocorrenciasRecentes: [
-        { id: 1, title: 'Vazamento no corredor da Torre A', status: 'Em Andamento', priority: 'Alta' },
-        { id: 2, title: 'Barulho após horário', status: 'Aberta', priority: 'Média' },
-        { id: 3, title: 'Lâmpada queimada no térreo', status: 'Concluída', priority: 'Baixa' },
-      ],
+      ocorrenciasRecentes: notificacoesReais,
     };
   }
 
@@ -80,34 +95,7 @@ function getDashboardData(scope) {
         { id: 4, type: 'aprovar', description: 'Aprovar Reserva: Churrasqueira (Apto 402)', link: '/reservas/402', icon: <FiCheckCircle /> },
         { id: 5, type: 'responder', description: 'Responder Mensagem: Portaria', link: '/mensagens/888', icon: <FiMessageSquare /> },
       ],
-      usoAreasComunsData: [
-        { name: 'Salão', value: 120 },
-        { name: 'Churrasqueira', value: 78 },
-        { name: 'Academia', value: 64 },
-        { name: 'Piscina', value: 53 },
-      ],
-      calendarEvents: [
-        { id: 1, date: '05 OUT', title: 'Reforma jardim interno' },
-        { id: 2, date: '12 OUT', title: 'Pintura garagem' },
-        { id: 3, date: '19 OUT', title: 'Reunião Conselho' },
-        { id: 4, date: '28 OUT', title: 'Confraternização dos moradores' },
-      ],
-      atividadesRecentes: [
-        { id: 1, time: '10/10 17:45', description: 'Entrega de encomenda (Apto 1502)' },
-        { id: 2, time: '08/10 08:10', description: 'Registro de ocorrência (elevador parou)' },
-        { id: 3, time: '03/10 19:20', description: 'Reserva Churrasqueira confirmada' },
-        { id: 4, time: '01/10 07:05', description: 'Visita de manutenção programada' },
-      ],
-      manutencoesData: [
-        { id: 1, item: 'Dedetização Áreas Comuns', prazo: 'em 10 dias' },
-        { id: 2, item: 'Revisão Elétrica Garagem', prazo: 'em 14 dias' },
-        { id: 3, item: 'Troca filtros da piscina', prazo: 'em 20 dias' },
-      ],
-      enquete: { titulo: 'Implantar coleta seletiva no condomínio?', prazo: 'termina em 5 dias', participacao: 72 },
-      ocorrenciasRecentes: [
-        { id: 1, title: 'Porta do hall com problema', status: 'Aberta', priority: 'Média' },
-        { id: 2, title: 'Problema no interfone', status: 'Em Andamento', priority: 'Alta' },
-      ],
+      ocorrenciasRecentes: notificacoesReais,
     };
   }
 
@@ -124,35 +112,110 @@ function getDashboardData(scope) {
       { id: 2, type: 'responder', description: 'Responder Mensagem: Maria (Apto 302)', link: '/mensagens/456', icon: <FiMessageSquare /> },
       { id: 3, type: 'validar', description: 'Validar Novo Cadastro: Apto 504', link: '/usuarios/789', icon: <FiUserPlus /> },
     ],
-    usoAreasComunsData: [
-      { name: 'Salão', value: 18 },
-      { name: 'Churrasqueira', value: 12 },
-      { name: 'Academia', value: 6 },
-      { name: 'Piscina', value: 9 },
-    ],
-    calendarEvents: [
-      { id: 1, date: '25 SET', title: 'Reunião de Condomínio' },
-      { id: 2, date: '28 SET', title: 'Manutenção Elevador B' },
-      { id: 3, date: '02 OUT', title: 'Festa no Salão (Apto 301)' },
-    ],
-    atividadesRecentes: [
-      { id: 1, time: '14:30', description: 'Chegou encomenda para Apto 201' },
-      { id: 2, time: '11:15', description: 'Morador Apto 404 registrou ocorrência' },
-      { id: 3, time: '09:00', description: 'Reserva Salão de Festas confirmada (Apto 301)' },
-    ],
-    manutencoesData: [
-      { id: 1, item: 'Manutenção Elevador B', prazo: 'em 15 dias' },
-      { id: 2, item: "Limpeza Caixa d'Água", prazo: 'em 40 dias' },
-      { id: 3, item: 'Dedetização Áreas Comuns', prazo: 'em 60 dias' },
-    ],
-    enquete: { titulo: 'Nova regra sobre pets na área da piscina', prazo: 'termina em 3 dias', participacao: 78 },
-    ocorrenciasRecentes: [],
+    ocorrenciasRecentes: notificacoesReais,
   };
 }
 
 const Dashboard = () => {
   const [filter, setFilter] = useState('Hoje');
-  const data = getDashboardData(filter);
+  const [notificacoes, setNotificacoes] = useState(getNotificacoesDasRotas());
+  const [processedActions, setProcessedActions] = useState(new Set());
+  const [removedActions, setRemovedActions] = useState(new Set());
+  
+  // Obter dados do dashboard filtrando ações removidas
+  const getDashboardDataFiltered = (scope) => {
+    const data = getDashboardData(scope);
+    data.acoesRequeridas = data.acoesRequeridas.filter(action => !removedActions.has(action.id));
+    return data;
+  };
+  
+  const data = getDashboardDataFiltered(filter);
+
+  // Handlers para aprovar/rejeitar notificações
+  // NOTA: Para produção, integre com NotificationService
+  const handleApproveNotification = async (notificacao) => {
+    console.log('Aprovando notificação:', notificacao);
+    
+    // Versão com integração real (descomente quando estiver pronto):
+    // try {
+    //   if (notificacao.categoria === 'reserva') {
+    //     await NotificationService.aprovarReserva(notificacao.detalhes.reservaId);
+    //   } else if (notificacao.categoria === 'visitante') {
+    //     await NotificationService.autorizarVisitante(notificacao.detalhes.visitorId);
+    //   }
+    //   // Recarregar notificações após aprovação
+    //   const novasNotificacoes = await NotificationService.getAllNotifications();
+    //   setNotificacoes(novasNotificacoes);
+    // } catch (error) {
+    //   console.error('Erro ao aprovar:', error);
+    //   return;
+    // }
+    
+    // Versão atual (simulada):
+    // Atualizar status da notificação
+    setNotificacoes(prev => prev.map(n => 
+      n.id === notificacao.id 
+        ? { ...n, status: 'aprovada', canApprove: false, titulo: n.titulo.replace('Solicitação:', 'Aprovado:').replace('na portaria:', 'autorizado:') }
+        : n
+    ));
+  };
+
+  const handleRejectNotification = async (notificacao) => {
+    console.log('Rejeitando notificação:', notificacao);
+    
+    // Versão com integração real (descomente quando estiver pronto):
+    // try {
+    //   if (notificacao.categoria === 'reserva') {
+    //     await NotificationService.rejeitarReserva(notificacao.detalhes.reservaId);
+    //   } else if (notificacao.categoria === 'visitante') {
+    //     await NotificationService.negarVisitante(notificacao.detalhes.visitorId);
+    //   }
+    //   // Recarregar notificações após rejeição
+    //   const novasNotificacoes = await NotificationService.getAllNotifications();
+    //   setNotificacoes(novasNotificacoes);
+    // } catch (error) {
+    //   console.error('Erro ao rejeitar:', error);
+    //   return;
+    // }
+    
+    // Versão atual (simulada):
+    // Atualizar status da notificação
+    setNotificacoes(prev => prev.map(n => 
+      n.id === notificacao.id 
+        ? { ...n, status: 'rejeitada', canApprove: false, titulo: n.titulo.replace('Solicitação:', 'Rejeitado:').replace('na portaria:', 'negado:') }
+        : n
+    ));
+  };
+
+  // Handler para ações rápidas do ActionListCard
+  const handleQuickAction = (actionId, actionType) => {
+    console.log(`Ação rápida: ${actionType} para ação ${actionId}`);
+    
+    // Marcar ação como processada temporariamente
+    setProcessedActions(prev => new Set([...prev, `${actionId}_${actionType}`]));
+    
+    // Implementar lógica de ação rápida
+    if (actionType === 'approve') {
+      // Lógica para aprovar
+      console.log(`Ação ${actionId} aprovada com sucesso!`);
+    } else if (actionType === 'reject') {
+      // Lógica para rejeitar
+      console.log(`Ação ${actionId} rejeitada.`);
+    }
+    
+    // Remover a ação da lista após 2 segundos
+    setTimeout(() => {
+      // Adicionar à lista de ações removidas
+      setRemovedActions(prev => new Set([...prev, actionId]));
+      
+      // Limpar do estado de processamento
+      setProcessedActions(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(`${actionId}_${actionType}`);
+        return newSet;
+      });
+    }, 2000);
+  };
 
   return (
     <div className={styles.dashboardContainer}>
@@ -173,29 +236,20 @@ const Dashboard = () => {
           <KpiCard {...data.kpis.visitantes} />
 
           {/* Linha 2 */}
-          <ActionListCard title="Ações Requeridas" actions={data.acoesRequeridas} viewAllLink="/reservas" />
+          <ActionListCard 
+            title="Ações Requeridas" 
+            actions={data.acoesRequeridas} 
+            viewAllLink="/reservas"
+            onQuickAction={handleQuickAction}
+            processedActions={processedActions}
+          />
           <div className={styles.cardLarge}>
-            <RecentOccurrences occurrences={data.ocorrenciasRecentes} />
+            <RecentOccurrences 
+              occurrences={notificacoes} 
+              onApprove={handleApproveNotification}
+              onReject={handleRejectNotification}
+            />
           </div>
-
-          {/* Linha 3 */}
-          <CalendarCard title="Calendário de Eventos" events={data.calendarEvents} />
-          <ChartCard title="Uso de Áreas Comuns (Último Mês)">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.usoAreasComunsData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
-                <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} />
-                <YAxis stroke="#9ca3af" fontSize={12} />
-                <Tooltip wrapperClassName={styles.tooltip} />
-                <Bar dataKey="value" fill="#4f46e5" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartCard>
-
-          {/* Linha 4 */}
-          <ManutencoesCard title="Manutenções Preventivas" manutencoes={data.manutencoesData} />
-          <MensagensNaoLidasCard count={5} href="/mensagens" />
-          <ActivityFeedCard title="Atividades Recentes" activities={data.atividadesRecentes} />
-          <EnquetesCard title="Enquetes Ativas" enquete={data.enquete} />
 
         </div>
       </div>
