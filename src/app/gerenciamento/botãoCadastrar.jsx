@@ -1,137 +1,106 @@
 'use client';
 
 import { useState } from 'react';
-import api from '@/services/api'; // <- ajuste o caminho conforme seu projeto
 import styles from './index.module.css';
+import api from '@/services/api';
 
-export default function BotaoCadastrar({ onClick, show, onClose, onSaved }) {
-  const isControlled = typeof show !== 'undefined';
+export default function BotaoCadastrar({ onSaved }) {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [formData, setFormData] = useState({
     cond_id: '',
     ger_data: '',
     ger_descricao: '',
-    ger_valor: ''
+    ger_valor: '',
   });
+  const [loading, setLoading] = useState(false);
 
-  const visible = isControlled ? show : mostrarFormulario;
+  const toggleModal = () => setMostrarFormulario(prev => !prev);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const fechar = () => {
-    if (isControlled) {
-      if (onClose) onClose();
-    } else {
-      setMostrarFormulario(false);
-    }
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
-      const payload = {
-        ...formData,
-        ger_valor: parseFloat(String(formData.ger_valor).replace(",", ".") || 0)
-      };
-      const response = await api.post('/gerenciamento', payload);
-      // chama callback do parent se existir
-      if (onSaved) onSaved(response.data);
-      alert('Cadastro realizado com sucesso!');
-      // fecha/limpa
-      fechar();
+      const response = await api.post('/gerenciamento', formData);
+      const itemSalvo = response.data.dados || formData;
+
+      if (onSaved) onSaved(itemSalvo);
+
       setFormData({ cond_id: '', ger_data: '', ger_descricao: '', ger_valor: '' });
+      setMostrarFormulario(false);
     } catch (error) {
-      console.error(error);
-      alert('Erro ao cadastrar, tente novamente.');
+      console.error('Erro ao salvar despesa:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div>
-      <button
-        onClick={() => {
-          if (onClick) onClick();
-          if (!isControlled) setMostrarFormulario(true);
-        }}
-        className={styles.addButton}
-      >
-        + Adicionar
+    <>
+      <button className={styles.botaoCadastrar} onClick={toggleModal}>
+        Cadastrar Despesa
       </button>
 
-      {visible && (
-        <div className={styles.modalOverlay} role="dialog" aria-modal="true">
-          <div className={styles.modalContent}>
-            <form onSubmit={handleSubmit} className={styles.formulario}>
-              <div className={styles.formGroup}>
-                <label className={styles.label} htmlFor="cond_id">ID do condomínio</label>
+      {mostrarFormulario && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h3>Cadastrar Despesa</h3>
+            <form onSubmit={handleSubmit} className={styles.form}>
+              <label>
+                Condomínio:
                 <input
-                  id="cond_id"
-                  className={styles.input}
                   type="text"
                   name="cond_id"
-                  placeholder="ID do condomínio"
                   value={formData.cond_id}
                   onChange={handleChange}
                   required
                 />
-              </div>
+              </label>
 
-              <div className={styles.formGroup}>
-                <label className={styles.label} htmlFor="ger_data">Data</label>
+              <label>
+                Data:
                 <input
-                  id="ger_data"
-                  className={styles.input}
                   type="date"
                   name="ger_data"
                   value={formData.ger_data}
                   onChange={handleChange}
                   required
                 />
-              </div>
+              </label>
 
-              <div className={styles.formGroup}>
-                <label className={styles.label} htmlFor="ger_descricao">Descrição</label>
+              <label>
+                Descrição:
                 <input
-                  id="ger_descricao"
-                  className={styles.input}
                   type="text"
                   name="ger_descricao"
-                  placeholder="Descrição"
                   value={formData.ger_descricao}
                   onChange={handleChange}
                   required
                 />
-              </div>
+              </label>
 
-              <div className={styles.formGroup}>
-                <label className={styles.label} htmlFor="ger_valor">Valor</label>
+              <label>
+                Valor:
                 <input
-                  id="ger_valor"
-                  className={styles.input}
                   type="number"
                   step="0.01"
                   name="ger_valor"
-                  placeholder="Valor"
                   value={formData.ger_valor}
                   onChange={handleChange}
                   required
                 />
-              </div>
+              </label>
 
-              <div className={styles.formActions}>
-                <button type="submit" className={styles.saveButton}>
-                  Cadastrar
+              <div className={styles.formButtons}>
+                <button type="submit" disabled={loading}>
+                  {loading ? 'Salvando...' : 'Salvar'}
                 </button>
-                <button
-                  type="button"
-                  onClick={fechar}
-                  className={styles.cancelButton}
-                >
+                <button type="button" onClick={toggleModal}>
                   Cancelar
                 </button>
               </div>
@@ -139,6 +108,6 @@ export default function BotaoCadastrar({ onClick, show, onClose, onSaved }) {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

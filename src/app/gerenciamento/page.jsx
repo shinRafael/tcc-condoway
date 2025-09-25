@@ -14,7 +14,6 @@ import api from '../../services/api';
 
 export default function GerenciamentoPage() {
   const [dados, setDados] = useState([]);
-  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,6 +31,13 @@ export default function GerenciamentoPage() {
     fetchData();
   }, []);
 
+  // Função para adicionar item novo na tabela
+  const handleSaved = (item) => {
+    if (!item) return;
+    const safeItem = item.ger_id ? item : { ...item, ger_id: `local-${Date.now()}` };
+    setDados(prev => [...prev, safeItem]);
+  };
+
   return (
     <div className="page-container">
       <PageHeader title="Gerenciamento" rightContent={<RightHeaderBrand />} />
@@ -40,16 +46,8 @@ export default function GerenciamentoPage() {
         <div className={styles.content}>
           <div className={styles.contentHeader}>
             <h2 className={styles.contentTitle}>Despesas do Condomínio</h2>
-            <BotaoCadastrar
-              onClick={() => setShowModal(true)}
-              show={showModal}
-              onClose={() => setShowModal(false)}
-              onSaved={(item) => {
-                // garante id único caso o backend não retorne ger_id
-                const safeItem = item && item.ger_id ? item : { ...(item || {}), ger_id: `local-${Date.now()}` };
-                setDados(prev => [...prev, safeItem]);
-              }}
-            />
+            {/* Botão de cadastrar agora controla o modal internamente */}
+            <BotaoCadastrar onSaved={handleSaved} />
           </div>
 
           <div className={styles.tableContainer}>
@@ -74,14 +72,13 @@ export default function GerenciamentoPage() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4">Nenhuma despesa encontrada.</td>
+                    <td colSpan={4}>Nenhuma despesa encontrada.</td>
                   </tr>
                 )}
               </tbody>
             </table>
           </div>
         </div>
-        {/* removido modal duplicado aqui — BotaoCadastrar agora controla o modal */}
       </div>
     </div>
   );
