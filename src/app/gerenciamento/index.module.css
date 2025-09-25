@@ -1,271 +1,118 @@
-.main {
-  padding: 2rem;
-  font-family: 'Poppins', Arial, sans-serif;
-  background-color: #f5f6fa;
-}
-
-/* Header */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 0;
-}
-
-.headerTitle {
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: #2c3e50;
-  margin: 0;
-}
-
-.userInfo {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  color: #7f8c8d;
-  font-size: 0.95rem;
-}
-
-.userAvatar {
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  object-fit: cover;
-  border: 2px solid #ecf0f1;
-}
-
-/* Content */
-.content {
-  margin-top: 1.5rem;
-}
-
-.contentHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.contentTitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #34495e;
-}
-
-/* Primary action button (Add) - aligned with modal/form buttons */
-.addButton {
-  background-color: #3498db;
-  color: #ffffff;
+.botaoCadastrar {
+  background-color: #4f46e5;
+  color: #fff;
   border: none;
-  padding: 0.75rem 1.25rem;
-  border-radius: 8px;
-  font-size: 1rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.5rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  box-shadow: 0 2px 6px rgba(52,152,219,0.28);
+  transition: background-color 0.3s ease;
 }
 
-.addButton:hover {
-  background-color: #2980b9;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(52,152,219,0.36);
+.botaoCadastrar:hover {
+  background-color: #4338ca;
 }
 
-/* Table */
-.tableContainer {
-  margin-top: 1rem;
-  overflow-x: auto;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.table th,
-.table td {
-  border: 1px solid #e6edf3;
-  padding: 0.75rem;
-  text-align: left;
-  color: #4b5563;
-  background: #fff;
-}
-
-/* Modal / Panel overlay (keeps sidebar behavior) */
 .modalOverlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(13, 38, 59, 0.18);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: flex-end; /* sidebar/panel on right */
-  align-items: flex-start;
-  padding: 3rem 2rem;
-  z-index: 1200;
-  pointer-events: auto;
-  animation: fadeIn 0.18s ease forwards;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+  overflow-y: auto;
 }
 
-/* Modal content / panel card */
-.modalContent {
-  background: #ffffff;
-  padding: 1.25rem 1.25rem;
-  border-radius: 12px;
-  width: 360px;
-  max-width: calc(100% - 2rem);
-  box-shadow: 0 8px 30px rgba(13, 38, 59, 0.12);
-  transform-origin: top right;
-  animation: slideIn 0.18s ease forwards;
+.modal {
+  background-color: #fff;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-out;
 }
 
-/* Modal title */
-.modalTitle {
-  margin: 0 0 0.75rem 0;
-  font-size: 1.25rem;
-  color: #34495e;
-  text-align: center;
-  font-weight: 600;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Form inside panel */
-.formulario {
-  background: transparent;
-  padding: 0;
-  border-radius: 0;
-  box-shadow: none;
-  max-width: 100%;
-  margin: 0;
-  display: grid;
-  gap: 0.75rem;
-}
-
-/* Form groups & labels */
-.formGroup {
+.form {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 1rem;
 }
 
-.formGroup label {
-  font-weight: 500;
-  margin-bottom: 0.25rem;
-  color: #34495e;
-  font-size: 0.95rem;
-}
-
-/* Inputs */
-.input {
-  padding: 0.65rem 0.75rem;
-  border: 1px solid #e6edf3;
-  border-radius: 8px;
-  background: #fff;
-  outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  font-size: 0.95rem;
-}
-
-.input:focus {
-  border-color: #3498db;
-  box-shadow: 0 0 0 4px rgba(52,152,219,0.08);
-}
-
-/* Form action buttons container */
-.formActions,
-.modalActions {
+.form label {
   display: flex;
-  gap: 0.75rem;
-  justify-content: flex-end;
-  margin-top: 0.5rem;
+  flex-direction: column;
+  font-weight: 500;
+  color: #111827;
 }
 
-/* Shared styles for action buttons */
-.saveButton,
-.cancelButton {
-  border: none;
-  padding: 0.65rem 0.95rem;
-  border-radius: 8px;
+.form input {
+  margin-top: 0.3rem;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form input:focus {
+  border-color: #4f46e5;
+}
+
+.formButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.formButtons button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.18s ease;
-  font-size: 0.95rem;
+  border: none;
+  transition: background-color 0.3s ease;
 }
 
-/* Save button - green */
-.saveButton {
-  background: linear-gradient(180deg,#2ecc71,#27ae60);
-  color: #ffffff;
-  box-shadow: 0 6px 12px rgba(46,204,113,0.12);
+.formButtons button[type="submit"] {
+  background-color: #4f46e5;
+  color: #fff;
 }
 
-.saveButton:hover {
-  background: linear-gradient(180deg,#27ae60,#22a954);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(39,174,96,0.14);
+.formButtons button[type="submit"]:hover {
+  background-color: #4338ca;
 }
 
-/* Cancel button - neutral */
-.cancelButton {
-  background: #bdc3c7;
-  color: #34495e;
-  border: 1px solid rgba(0,0,0,0.04);
+.formButtons button[type="button"] {
+  background-color: #e5e7eb;
+  color: #111827;
 }
 
-.cancelButton:hover {
-  background: #95a5a6;
-  transform: translateY(-2px);
+.formButtons button[type="button"]:hover {
+  background-color: #d1d5db;
 }
 
-/* Small shadow/focus for inputs and buttons to match the panel look */
-.input:active,
-.input:focus,
-.saveButton:active,
-.cancelButton:active {
-  transform: translateY(0);
-}
+@media (max-width: 480px) {
+  .modal {
+    padding: 1.5rem;
+  }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+  .formButtons {
+    flex-direction: column;
+  }
 
-@keyframes slideIn {
-  from { transform: translateX(8px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-/* Responsividade: mobile first adjustments */
-@media (max-width: 600px) {
-  .formulario {
+  .formButtons button {
     width: 100%;
-    padding: 1rem;
-    box-shadow: none;
-  }
-
-  .formActions {
-    flex-direction: column-reverse;
-    gap: 0.5rem;
-  }
-
-  .saveButton,
-  .cancelButton {
-    width: 100%;
-  }
-}
-
-/* Responsividade: transforma em modal central em telas pequenas */
-@media (max-width: 720px) {
-  .modalOverlay {
-    justify-content: center;
-    align-items: center;
-    padding: 2rem;
-  }
-
-  .modalContent {
-    width: 100%;
-    max-width: 520px;
   }
 }
