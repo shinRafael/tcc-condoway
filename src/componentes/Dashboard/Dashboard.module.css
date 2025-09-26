@@ -142,12 +142,6 @@
   opacity: 1;
 }
 
-
-
-
-
-
-
 .categoryBadge {
   font-size: 0.625rem;
   font-weight: 600;
@@ -192,15 +186,12 @@
   color: #374151;
 }
 
-
-
 /* Responsividade */
 @media (max-width: 768px) {
   .dashboardGrid {
     grid-template-columns: 1fr;
   }
 }
-
 
 /* Activity Feed Card */
 .activityFeed {
@@ -571,4 +562,139 @@
     opacity: 1;
     align-self: flex-end;
   }
+}
+
+/* Estilos para o card de Notificações Recentes (Visitantes) */
+.notificationHeader {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.notificationHeader svg {
+  margin-right: 10px;
+}
+
+.notificationCount {
+  margin-left: auto;
+  background-color: #007bff;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
+
+.notificationItem {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #f5f5f5;
+  transition: background-color 0.2s;
+}
+
+.notificationItem:last-child {
+  border-bottom: none;
+}
+
+.notificationItem:hover {
+  background-color: #f9f9f9;
+}
+
+.statusDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+
+.notificationContent {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.notificationTitle {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.details {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 15px;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.detailItem svg {
+  font-size: 1rem;
+}
+
+.statusTag {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: #333;
+}
+
+/* Cores para os status */
+.statusAguardando {
+  background-color: #fff3cd; /* Amarelo claro */
+  color: #856404; /* Texto escuro para contraste */
+}
+
+.statusEntrou {
+  background-color: #d4edda; /* Verde claro */
+  color: #155724; /* Texto escuro para contraste */
+}
+
+/* Pontos coloridos para o status */
+.notificationItem .statusAguardando {
+  background-color: #ffc107; /* Amarelo */
+}
+
+.notificationItem .statusEntrou {
+  background-color: #28a745; /* Verde */
+}
+
+.emptyState {
+  color: #888;
+  text-align: center;
+  width: 100%;
+  padding: 20px 0;
+}
+
+/* Estilos para o Footer do Card */
+.cardFooter {
+  padding: 10px 15px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: center;
+}
+
+.expandButton {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px;
+}
+
+.expandButton:hover {
+  text-decoration: underline;
 }
