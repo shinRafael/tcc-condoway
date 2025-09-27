@@ -1,155 +1,230 @@
 'use client';
-import { format } from 'date-fns';
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale/pt-BR';
-
 import { useState, useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
+import { IoClose } from 'react-icons/io5';
+
 import EditReservationModal from './EditReservationModal';
+import AmbienteCard from './AmbienteCard';
 import styles from './page.module.css';
+import api from '@/services/api'; // Importando a configuração da API
 
-export default function ReservasList({ initialReservas }) {
-  const initialMock = [
-    { id: 'reserva-1', morador: 'João Silva', ambiente: 'Salão de Festas', dataReserva: '2025-09-15T18:00:00', dataPedido: '2025-09-01T00:00:00', status: 'Confirmado' },
-    // Conflito (A vs B): Maria pediu primeiro, então ela tem prioridade.
-    { id: 'reserva-2', morador: 'Maria Oliveira', ambiente: 'Churrasqueira', dataReserva: '2025-09-20T12:00:00', dataPedido: '2025-09-02T00:00:00', status: 'Pendente' }, // (A) - Prioridade
-    { id: 'reserva-3', morador: 'Carlos Souza', ambiente: 'Churrasqueira', dataReserva: '2025-09-20T19:00:00', dataPedido: '2025-09-03T00:00:00', status: 'Pendente' }, // (B) - Conflitante
-    { id: 'reserva-4', morador: 'Ana Pereira', ambiente: 'Salão de Festas', dataReserva: '2025-09-22T20:00:00', dataPedido: '2025-09-04T00:00:00', status: 'Negado' },
-    { id: 'reserva-5', morador: 'Lucas Godoi', ambiente: 'Piscina', dataReserva: '2025-09-18T14:00:00', dataPedido: '2025-09-05T00:00:00', status: 'Pendente' },
-  ];
-  // Função de formatação segura para datas
-  const formatDateSafe = (dateString, formatString) => {
-    try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) {
-        return 'Data inválida';
-      }
-      return format(date, formatString, { locale: ptBR });
-    } catch (error) {
-      console.error("Erro ao formatar data:", dateString, error);
-      return 'Data inválida';
+export default function ReservasList() {
+    // 1. Inicia os estados como vazios, pois os dados virão da API
+    const [todasAsReservas, setTodasAsReservas] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [reservasFiltradas, setReservasFiltradas] = useState([]);
+    const [periodo, setPeriodo] = useState('semana');
+    
+    // Estados para controle dos modais e edição
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+    const [selectedAmbiente, setSelectedAmbiente] = useState(null);
+    const [editingReserva, setEditingReserva] = useState(null);
+    const [blockedDates, setBlockedDates] = useState([]);
+
+    // 2. Função para buscar os dados da API
+    const fetchReservas = async () => {
+        try {
+            setLoading(true);
+            const response = await api.get('/reservas'); // Rota da sua API
+            // Garante que os dados são um array antes de setar
+            setTodasAsReservas(Array.isArray(response.data.dados) ? response.data.dados : []);
+        } catch (error) {
+            console.error("Erro ao buscar reservas da API:", error);
+            toast.error("Falha ao carregar as reservas.");
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    // 3. useEffect para chamar a busca de dados quando o componente carregar
+    useEffect(() => {
+        fetchReservas();
+    }, []);
+
+    // useEffect para filtrar as reservas com base no período selecionado
+    useEffect(() => {
+        const hoje = new Date();
+        let filtradas = [];
+
+        if (periodo === 'semana') {
+            const inicioDaSemana = startOfWeek(hoje, { locale: ptBR });
+            const fimDaSemana = endOfWeek(hoje, { locale: ptBR });
+            filtradas = todasAsReservas.filter(r => {
+                const dataReserva = new Date(r.dataReserva);
+                return dataReserva >= inicioDaSemana && dataReserva <= fimDaSemana;
+            });
+        } else if (periodo === 'mes') {
+            const inicioDoMes = startOfMonth(hoje);
+            const fimDoMes = endOfMonth(hoje);
+            filtradas = todasAsReservas.filter(r => {
+                const dataReserva = new Date(r.dataReserva);
+                return dataReserva >= inicioDoMes && dataReserva <= fimDoMes;
+            });
+        } else {
+            filtradas = todasAsReservas;
+        }
+        setReservasFiltradas(filtradas);
+    }, [periodo, todasAsReservas]);
+
+    const formatDateSafe = (dateString, formatString) => {
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return 'Data inválida';
+            return format(date, formatString, { locale: ptBR });
+        } catch (error) {
+            console.error("Erro ao formatar data:", dateString, error);
+            return 'Data inválida';
+        }
+    };
+
+    // Função para atualizar o STATUS (localmente e na API)
+    const handleStatus = async (id, novoStatus) => {
+        const originalReservas = [...todasAsReservas];
+        const updatedReservas = todasAsReservas.map(r => r.id === id ? { ...r, status: novoStatus } : r);
+        setTodasAsReservas(updatedReservas);
+        toast.success(`Reserva marcada como ${novoStatus}`);
+
+        try {
+            // Supondo que sua API tenha uma rota PATCH para atualizar o status
+            await api.patch(`/reservas/${id}/status`, { status: novoStatus });
+        } catch (error) {
+            console.error("Erro ao atualizar status na API:", error);
+            toast.error("Falha ao salvar a alteração.");
+            setTodasAsReservas(originalReservas); // Reverte a mudança em caso de erro
+        }
+    };
+
+    // Função para atualizar a DATA (localmente e na API)
+    const handleUpdateReserva = async (reservaId, novaData) => {
+        if (!novaData || isNaN(new Date(novaData).getTime())) {
+            toast.error('A data selecionada é inválida.');
+            return;
+        }
+
+        const originalReservas = [...todasAsReservas];
+        const updatedReservas = todasAsReservas.map(r => r.id === reservaId ? { ...r, dataReserva: novaData.toISOString() } : r);
+        setTodasAsReservas(updatedReservas);
+        toast.success('Reserva atualizada!');
+        setIsEditModalOpen(false);
+
+        try {
+            // Supondo que sua API tenha uma rota PATCH para atualizar a reserva
+            await api.patch(`/reservas/${reservaId}`, { dataReserva: novaData.toISOString() });
+        } catch (error) {
+            console.error("Erro ao atualizar data na API:", error);
+            toast.error("Falha ao salvar a nova data.");
+            setTodasAsReservas(originalReservas);
+        }
+    };
+    
+    const handleOpenEditModal = (reservaParaEditar) => {
+        const conflitosPotenciais = todasAsReservas.filter(r => 
+            r.ambiente === reservaParaEditar.ambiente && r.id !== reservaParaEditar.id
+        );
+        const datasBloqueadas = conflitosPotenciais
+            .filter(r => r.status === 'Reservado' || (r.status === 'Pendente' && new Date(r.dataPedido) < new Date(reservaParaEditar.dataPedido)))
+            .map(r => new Date(r.dataReserva));
+
+        setBlockedDates(datasBloqueadas);
+        setEditingReserva(reservaParaEditar);
+        setIsEditModalOpen(true);
+    };
+
+    const handleSelectAmbiente = (ambiente) => {
+        setSelectedAmbiente(ambiente);
+        setIsDetailsModalOpen(true);
+    };
+
+    const groupedReservas = reservasFiltradas.reduce((acc, reserva) => {
+        (acc[reserva.ambiente] = acc[reserva.ambiente] || []).push(reserva);
+        return acc;
+    }, {});
+
+    const reservasDoAmbienteSelecionado = selectedAmbiente ? groupedReservas[selectedAmbiente] || [] : [];
+    
+    if (loading) {
+        return <div className={styles.loadingState}>Carregando reservas...</div>;
     }
-  };
-  const [reservas, setReservas] = useState(initialMock);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingReserva, setEditingReserva] = useState(null);
-  const [blockedDates, setBlockedDates] = useState([]);
 
-  // Atualiza badge sempre que reservas mudam
-  useEffect(() => {
-    const pendentes = reservas.filter(r => r.status === 'Pendente').length;
-    const ev = new CustomEvent('sidebar-badge-event', {
-      detail: { type: 'sidebar-badge-update', key: 'reservas', count: pendentes }
-    });
-    window.dispatchEvent(ev);
-    const map = JSON.parse(localStorage.getItem('sidebarBadges') || '{}');
-    map.reservas = pendentes;
-    localStorage.setItem('sidebarBadges', JSON.stringify(map));
-  }, [reservas]);
-
-  const handleStatus = (id, novoStatus) => {
-    setReservas(prev => prev.map(r => r.id === id ? { ...r, status: novoStatus } : r));
-    toast.success(`Reserva ${id} marcada como ${novoStatus}`);
-  };
-
-  const handleOpenEditModal = (reservaParaEditar) => {
-    // 1. Encontra todas as reservas no mesmo ambiente para identificar conflitos.
-    const conflitosPotenciais = reservas.filter(r => 
-      r.ambiente === reservaParaEditar.ambiente && 
-      r.id !== reservaParaEditar.id
-    );
-
-    // 2. Filtra para encontrar os dias que devem ser bloqueados.
-    // Um dia é bloqueado se houver uma reserva 'Confirmada' ou 'Pendente' com maior prioridade.
-    const datasBloqueadas = conflitosPotenciais
-      .filter(r => 
-        r.status === 'Confirmado' || 
-        (r.status === 'Pendente' && new Date(r.dataPedido) < new Date(reservaParaEditar.dataPedido))
-      )
-      .map(r => new Date(r.dataReserva));
-
-    setBlockedDates(datasBloqueadas);
-    setEditingReserva(reservaParaEditar);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setEditingReserva(null);
-  };
-
-  const handleUpdateReserva = (reservaId, novaData) => {
-    // 1. Verifica se a nova data é válida antes de prosseguir.
-    if (!novaData || isNaN(new Date(novaData).getTime())) {
-      toast.error('A data selecionada é inválida.');
-      return;
-    }
-
-    // 2. Mapeia o array de reservas para criar uma nova versão atualizada.
-    const updatedReservas = reservas.map(reserva => {
-      if (reserva.id === reservaId) {
-        // Salva a data no formato ISO 8601 universal
-        return { ...reserva, dataReserva: novaData.toISOString() };
-      }
-      return reserva;
-    });
-
-    // 3. Atualiza o estado principal com o novo array.
-    setReservas(updatedReservas);
-
-    // 4. Dá feedback ao usuário e fecha o modal.
-    toast.success('Reserva atualizada com sucesso!');
-    handleCloseModal();
-  };
-
-  // Ordena por ambiente e dataPedido
-  const sortedReservas = [...reservas].sort((a, b) => {
-    if (a.ambiente < b.ambiente) return -1;
-    if (a.ambiente > b.ambiente) return 1;
-    return new Date(a.dataPedido) - new Date(b.dataPedido);
-  });
-
-  return (
-    <div>
-      <Toaster position="top-center" />
-      <EditReservationModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        reserva={editingReserva}
-        onUpdate={handleUpdateReserva}
-        excludeDatesArray={blockedDates}
-      />
-      <div className={styles.cardGrid}>
-        {sortedReservas.map((reserva, index) => (
-          <div key={reserva.id} className={`${styles.requestCard} ${styles[reserva.status.toLowerCase()]}`}>
-            <div className={styles.cardHeader}>
-              <strong>{reserva.morador}</strong>
-              <span>{reserva.ambiente}</span>
-              {/* Badge de prioridade */}
-              {reserva.status === 'Pendente' &&
-                (index === 0 || sortedReservas[index - 1].ambiente !== reserva.ambiente) && (
-                  <span className={styles.priorityBadge}>Prioridade</span>
-                )
-              }
+    return (
+        <div>
+            <Toaster position="top-center" />
+            
+            <div className={styles.filtrosContainer}>
+                <button onClick={() => setPeriodo('semana')} className={periodo === 'semana' ? styles.filtroAtivo : styles.filtroInativo}>
+                    Esta Semana
+                </button>
+                <button onClick={() => setPeriodo('mes')} className={periodo === 'mes' ? styles.filtroAtivo : styles.filtroInativo}>
+                    Este Mês
+                </button>
+                <button onClick={() => setPeriodo('todos')} className={periodo === 'todos' ? styles.filtroAtivo : styles.filtroInativo}>
+                    Ver Todas
+                </button>
             </div>
-            <div className={styles.cardBody}>
-              <p><strong>Para:</strong> {formatDateSafe(reserva.dataReserva, "dd/MM/yyyy 'às' HH:mm")}</p>
-              <p><strong>Pedido em:</strong> {formatDateSafe(reserva.dataPedido, 'dd/MM/yyyy')}</p>
+
+            <div className={styles.ambienteGrid}>
+                {Object.keys(groupedReservas).length > 0 ? (
+                    Object.entries(groupedReservas).map(([ambiente, reservasDoAmbiente]) => (
+                        <AmbienteCard 
+                            key={ambiente} 
+                            ambiente={ambiente} 
+                            reservas={reservasDoAmbiente}
+                            onSelect={handleSelectAmbiente}
+                        />
+                    ))
+                ) : (
+                    <p className={styles.emptyState}>Nenhuma reserva encontrada para o período selecionado.</p>
+                )}
             </div>
-            <div className={styles.cardFooter}>
-              <span className={`${styles.statusBadge} ${styles[reserva.status.toLowerCase()]}`}>
-                {reserva.status}
-              </span>
-              {reserva.status === 'Pendente' && (
-                <div className={styles.actionButtons}>
-                  <button title="Negar" className={`${styles.iconButton} ${styles.denyButton}`} onClick={() => handleStatus(reserva.id, 'Negado')}>✕</button>
-                  <button title="Editar Horário" className={`${styles.iconButton} ${styles.editButton}`} onClick={() => handleOpenEditModal(reserva)}>✎</button>
-                  <button title="Confirmar" className={`${styles.iconButton} ${styles.confirmButton}`} onClick={() => handleStatus(reserva.id, 'Confirmado')}>✓</button>
+
+            {isDetailsModalOpen && selectedAmbiente && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                        <div className={styles.modalHeader}>
+                            <h3>Reservas para: <strong>{selectedAmbiente}</strong></h3>
+                            <button onClick={() => setIsDetailsModalOpen(false)} className={styles.modalCloseButton}>
+                                <IoClose size={24} />
+                            </button>
+                        </div>
+                        <div className={styles.cardGrid}>
+                            {reservasDoAmbienteSelecionado.length > 0 ? (
+                                reservasDoAmbienteSelecionado.map((reserva) => (
+                                    <div key={reserva.id} className={`${styles.requestCard} ${styles[reserva.status.toLowerCase()]}`}>
+                                        <div className={styles.cardHeader}><strong>{reserva.morador}</strong></div>
+                                        <div className={styles.cardBody}>
+                                            <p><strong>Para:</strong> {formatDateSafe(reserva.dataReserva, "dd/MM/yyyy 'às' HH:mm")}</p>
+                                            <p><strong>Pedido em:</strong> {formatDateSafe(reserva.dataPedido, 'dd/MM/yyyy')}</p>
+                                        </div>
+                                        <div className={styles.cardFooter}>
+                                            <span className={`${styles.statusBadge} ${styles[reserva.status.toLowerCase()]}`}>{reserva.status}</span>
+                                            {reserva.status === 'Pendente' && (
+                                                <div className={styles.actionButtons}>
+                                                    <button title="Negar" className={`${styles.iconButton} ${styles.denyButton}`} onClick={() => handleStatus(reserva.id, 'Cancelado')}>✕</button>
+                                                    <button title="Editar Horário" className={`${styles.iconButton} ${styles.editButton}`} onClick={() => handleOpenEditModal(reserva)}>✎</button>
+                                                    <button title="Confirmar" className={`${styles.iconButton} ${styles.confirmButton}`} onClick={() => handleStatus(reserva.id, 'Reservado')}>✓</button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <p>Nenhuma reserva para este ambiente no período selecionado.</p>
+                            )}
+                        </div>
+                    </div>
                 </div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+            )}
+
+            <EditReservationModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                reserva={editingReserva}
+                onUpdate={handleUpdateReserva}
+                excludeDatesArray={blockedDates}
+            />
+        </div>
+    );
 }

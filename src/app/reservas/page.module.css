@@ -813,7 +813,128 @@
   justify-content: center;
   margin: 1.2rem 0;
 }
+/* ... (código anterior do modal e outros) ... */
 
+.ambientesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.ambienteSection {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.ambienteTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.requestCard {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  border-left: 5px solid;
+  transition: transform 0.2s ease-in-out;
+}
+
+.requestCard:hover {
+  transform: translateY(-4px);
+}
+
+/* NOVAS CORES DOS STATUS */
+.pendente { border-left-color: #ffc107; } /* Amarelo */
+.reservado { border-left-color: #28a745; } /* Verde */
+.cancelado { border-left-color: #dc3545; } /* Vermelho */
+
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #f1f3f5;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+.cardHeader strong {
+  color: #212529;
+}
+
+.cardBody p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.cardFooter {
+  margin-top: auto;
+  padding-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.statusBadge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+/* Cores de fundo para os badges */
+.pendente .statusBadge { background-color: #fff3cd; color: #856404; }
+.reservado .statusBadge { background-color: #d4edda; color: #155724; }
+.cancelado .statusBadge { background-color: #f8d7da; color: #721c24; }
+
+.actionButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.iconButton {
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.iconButton:hover {
+  transform: scale(1.1);
+  filter: brightness(1.15);
+}
+
+.confirmButton { background-color: #28a745; }
+.denyButton { background-color: #dc3545; }
+.editButton { background-color: #ffc107; }
+
+/* ... (restante do seu CSS, como modal, etc.) ... */
 .btnDecisao {
   background: #2563eb;
   color: #fff;
@@ -891,4 +1012,113 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px) scale(0.98); }
   to { opacity: 1; transform: translateY(0) scale(1); }
+}
+/* ... (mantenha todo o CSS anterior) ... */
+
+/* ESTILOS PARA OS NOVOS CARDS DE AMBIENTE */
+.ambienteGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.ambienteCard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border-left: 5px solid #ddd; /* Borda padrão cinza */
+}
+
+.ambienteCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+/* Estilo especial para ambientes com pendências */
+.ambientePendente {
+  border-left-color: #ffc107; /* Borda amarela */
+}
+
+.ambienteCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.ambienteCardTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #343a40;
+}
+
+/* Ícone de notificação pendente */
+.pendingIcon {
+  background-color: #ffc107;
+  color: #fff;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  box-shadow: 0 0 10px rgba(255, 193, 7, 0.7);
+}
+
+.ambienteCardBody p {
+  margin: 0 0 0.5rem 0;
+  color: #6c757d;
+}
+
+.ambienteCardAction {
+  font-weight: 500;
+  color: #007bff;
+}
+
+/* Ajuste no Modal de Detalhes para melhor visualização */
+.modalContent {
+  /* ... (outros estilos do modal) ... */
+  width: 90%;
+  max-width: 900px; /* Aumenta a largura máxima para caber mais cards */
+}
+/* ... (mantenha todo o CSS anterior) ... */
+
+/* ESTILOS PARA OS FILTROS DE PERÍODO */
+.filtrosContainer {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 0.5rem;
+  background-color: #e9ecef;
+  border-radius: 50px;
+  width: fit-content;
+}
+
+.filtroAtivo, .filtroInativo {
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.filtroAtivo {
+  background-color: #007bff;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+.filtroInativo {
+  background-color: transparent;
+  color: #495057;
+}
+
+.filtroInativo:hover {
+  background-color: #dee2e6;
 }
