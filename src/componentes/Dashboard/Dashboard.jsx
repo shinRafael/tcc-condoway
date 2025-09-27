@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiCalendar, FiBox, FiBell, FiUsers, FiCheckCircle, FiMessageSquare, FiUserPlus } from 'react-icons/fi';
 import { KpiCard } from './KpiCard';
 import ActionListCard from '../ActionListCard/ActionListCard';
@@ -7,61 +7,24 @@ import { StatusChamadosCard } from './StatusChamadosCard';
 import { StatusOcorrenciasCard } from './StatusOcorrenciasCard';
 import RecentOccurrences from './RecentOccurrences';
 import styles from './Dashboard.module.css';
-// import NotificationService from '../../utils/notificationService'; // Descomente para usar dados reais
+import api from '../../services/api'; // Importe o serviço da API
 
-// Simulação de dados das outras rotas
-// NOTA: Para usar dados reais, substitua esta função por NotificationService.getAllNotifications()
-const getNotificacoesDasRotas = () => {
-  // Dados de reservas pendentes (baseado em initialReservas do reservas/page.jsx)
-  const reservasPendentes = [
-    {
-      id: 101,
-      categoria: 'reserva',
-      titulo: 'Solicitação: Salão de Festas (João Silva - Apto 201)',
-      data: '15 min atrás',
-      status: 'pendente',
-      canApprove: true,
-      detalhes: {
-        usuario: 'João Silva',
-        ambiente: 'Salão de Festas',
-        data: '2025-08-28 18:00',
-        apartamento: '201'
-      }
-    }
-  ];
-
-  // Dados de visitantes recentes/pendentes
-  const visitantesRecentes = [
-    {
-      id: 201,
-      categoria: 'visitante',
-      titulo: 'Visitante na portaria: Ana Costa (Apto 305)',
-      data: 'Agora mesmo',
-      status: 'pendente',
-      canApprove: true,
-      detalhes: {
-        nome: 'Ana Costa',
-        documento: '555.666.777-88',
-        apartamento: '305',
-        tipo: 'entrada'
-      }
-    },
-    {
-      id: 202,
-      categoria: 'visitante',
-      titulo: 'Entrada autorizada: Carlos Pereira (Apto 201)',
-      data: '5 min atrás',
-      status: 'aprovada',
-      canApprove: false
-    }
-  ];
-
-  return [...reservasPendentes, ...visitantesRecentes];
+// Dados iniciais para KPIs e Ações (pode ser removido quando a API estiver integrada)
+const initialKpis = {
+  reservas: { value: 0, title: 'Reservas Pendentes', icon: <FiCalendar />, href: '/reservas?status=pendente' },
+  encomendas: { value: 0, title: 'Encomendas a Retirar', icon: <FiBox />, href: '/encomendas' },
+  ocorrencias: { value: 0, title: 'Ocorrências Abertas', icon: <FiBell />, href: '/ocorrencias' },
+  visitantes: { value: 0, title: 'Visitantes Hoje', icon: <FiUsers />, href: '/visitantes' },
 };
 
+const initialActions = [
+  { id: 1, type: 'aprovar', description: 'Aprovar Reserva: Salão de Festas (Apto 101)', link: '/reservas/123', icon: <FiCheckCircle /> },
+  { id: 2, type: 'responder', description: 'Responder Mensagem: Maria (Apto 302)', link: '/mensagens/456', icon: <FiMessageSquare /> },
+  { id: 3, type: 'validar', description: 'Validar Novo Cadastro: Apto 504', link: '/usuarios/789', icon: <FiUserPlus /> },
+];
+
 // Fonte de dados por filtro
-function getDashboardData(scope) {
-  const notificacoesReais = getNotificacoesDasRotas();
+function getDashboardData(scope, notifications) {
   if (scope === 'Esta Semana') {
     return {
       kpis: {
@@ -76,7 +39,7 @@ function getDashboardData(scope) {
         { id: 3, type: 'validar', description: 'Validar Novo Cadastro: Apto 804', link: '/usuarios/987', icon: <FiUserPlus /> },
         { id: 4, type: 'aprovar', description: 'Aprovar Reserva: Salão de Festas (Apto 305)', link: '/reservas/305', icon: <FiCheckCircle /> },
       ],
-      ocorrenciasRecentes: notificacoesReais,
+      ocorrenciasRecentes: notifications,
     };
   }
 
@@ -95,36 +58,57 @@ function getDashboardData(scope) {
         { id: 4, type: 'aprovar', description: 'Aprovar Reserva: Churrasqueira (Apto 402)', link: '/reservas/402', icon: <FiCheckCircle /> },
         { id: 5, type: 'responder', description: 'Responder Mensagem: Portaria', link: '/mensagens/888', icon: <FiMessageSquare /> },
       ],
-      ocorrenciasRecentes: notificacoesReais,
+      ocorrenciasRecentes: notifications,
     };
   }
 
   // Default: Hoje
   return {
-    kpis: {
-      reservas: { value: 3, title: 'Reservas Pendentes', icon: <FiCalendar />, href: '/reservas?status=pendente' },
-      encomendas: { value: 7, title: 'Encomendas a Retirar', icon: <FiBox />, href: '/encomendas' },
-      ocorrencias: { value: 2, title: 'Ocorrências Abertas', icon: <FiBell />, href: '/ocorrencias' },
-      visitantes: { value: 12, title: 'Visitantes Hoje', icon: <FiUsers />, href: '/visitantes' },
-    },
-    acoesRequeridas: [
-      { id: 1, type: 'aprovar', description: 'Aprovar Reserva: Salão de Festas (Apto 101)', link: '/reservas/123', icon: <FiCheckCircle /> },
-      { id: 2, type: 'responder', description: 'Responder Mensagem: Maria (Apto 302)', link: '/mensagens/456', icon: <FiMessageSquare /> },
-      { id: 3, type: 'validar', description: 'Validar Novo Cadastro: Apto 504', link: '/usuarios/789', icon: <FiUserPlus /> },
-    ],
-    ocorrenciasRecentes: notificacoesReais,
+    kpis: initialKpis,
+    acoesRequeridas: initialActions,
+    ocorrenciasRecentes: notifications,
   };
 }
 
 const Dashboard = () => {
   const [filter, setFilter] = useState('Hoje');
-  const [notificacoes, setNotificacoes] = useState(getNotificacoesDasRotas());
+  const [kpis, setKpis] = useState(initialKpis);
+  const [actions, setActions] = useState(initialActions);
   const [processedActions, setProcessedActions] = useState(new Set());
+  const [notifications, setNotifications] = useState([]); // Visitantes ativos
+  const [isExpanded, setIsExpanded] = useState(false);
   const [removedActions, setRemovedActions] = useState(new Set());
   
+  useEffect(() => {
+    const fetchVisitorNotifications = async () => {
+      try {
+        // Chama a rota da API que você criou
+        const response = await api.get("/visitantes/dashboard");
+        
+        // Acessa a chave "dados" da resposta da API
+        if (response.data && response.data.sucesso && Array.isArray(response.data.dados)) {
+          setNotifications(response.data.dados);
+        } else {
+          // Limpa a lista se a resposta não for o esperado
+          setNotifications([]);
+          console.warn("A resposta da API de visitantes não continha dados válidos.", response.data);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar notificações de visitantes:", error);
+        setNotifications([]); // Limpa a lista em caso de erro
+      }
+    };
+
+    fetchVisitorNotifications();
+    // Atualiza a lista a cada 30 segundos
+    const intervalId = setInterval(fetchVisitorNotifications, 30000);
+
+    return () => clearInterval(intervalId); // Limpa o intervalo ao sair da página
+  }, []);
+
   // Obter dados do dashboard filtrando ações removidas
   const getDashboardDataFiltered = (scope) => {
-    const data = getDashboardData(scope);
+    const data = getDashboardData(scope, notifications);
     data.acoesRequeridas = data.acoesRequeridas.filter(action => !removedActions.has(action.id));
     return data;
   };
@@ -245,9 +229,9 @@ const Dashboard = () => {
           />
           <div className={styles.cardLarge}>
             <RecentOccurrences 
-              occurrences={notificacoes} 
-              onApprove={handleApproveNotification}
-              onReject={handleRejectNotification}
+              notifications={notifications}
+              isExpanded={isExpanded}
+              onExpand={() => setIsExpanded(true)}
             />
           </div>
 

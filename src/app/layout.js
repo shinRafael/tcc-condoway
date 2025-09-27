@@ -1,6 +1,6 @@
 // app/layout.js
 import '../styles/globals.css';
-import SidebarWrapper from '@/componentes/Layout/SidebarWrapper';
+import ClientLayout from '@/componentes/Layout/ClientLayout';
 
 export const metadata = {
   title: 'CondoWay',
@@ -11,7 +11,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-br">
       <body>
-        <SidebarWrapper>{children}</SidebarWrapper>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );

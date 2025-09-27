@@ -1,255 +1,317 @@
-.main {
-  min-height: 100vh;
-  background-color: #f5f6fa;
-  padding: 2.5rem;
+/* Importar o CSS global se necessário */
 
-  /* Centralizar conteúdo */
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  font-family: 'Poppins', sans-serif;
+
+/* Layout Principal do Dashboard (Grid) */
+.dashboardGrid {
+    display: grid;
+    /* Define 4 áreas principais: 
+       scanner e lista de espera na primeira coluna, 
+       log e fluxo inesperado na segunda coluna. */
+    grid-template-areas: 
+        "scanner lista"
+        "inesperado log";
+    gap: 2rem;
+    padding: 2rem 0;
+    max-width: 1200px; /* Aumenta a largura para o dashboard */
+    margin: 0 auto;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem 2.5rem;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+/* Configuração de áreas */
+.scannerArea {
+    grid-area: scanner;
+    min-height: 250px;
+}
+.listaAguardando {
+    grid-area: lista;
+}
+.logAtividade {
+    grid-area: log;
+}
+.fluxoInesperado {
+    grid-area: inesperado;
 }
 
-.headerTitle {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #2c3e50;
-  margin: 0;
+
+/* Estilo Geral do Widget (Caixa) */
+.widget {
+    background-color: #ffffff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.userInfo {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: #7f8c8d;
-  font-size: 0.9rem;
+.widgetTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #34495e;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #ecf0f1;
+    padding-bottom: 0.5rem;
 }
 
-.userAvatar {
-  border-radius: 50%;
-  width: 35px;
-  height: 35px;
-  object-fit: cover;
-  border: 2px solid #ecf0f1;
+/* 1. Scanner Area */
+.scanButton {
+    width: 100%;
+    padding: 1.5rem;
+    background-color: #f39c12; /* Cor de atenção */
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.scanButton:hover {
+    background-color: #e67e22;
 }
 
-.content {
-  margin-top: 2rem;
-  background-color: #ffffff;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-
-  /* Centralização e limite de largura */
-  width: 100%;
-  max-width: 1000px;
+.scannerAtivo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    background-color: #ecf0f1;
+    border-radius: 8px;
+    padding: 1rem;
 }
 
-.contentHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
+.scannerAnimation {
+    width: 100px;
+    height: 100px;
+    border: 5px solid #3498db;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
 }
 
-.contentTitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #34495e;
-  margin: 0;
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
-.addButton {
-  background-color: #3498db;
-  color: #ffffff;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3);
+/* 2. Lista de Espera */
+.searchInput {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #dcdfe6;
+    border-radius: 8px;
 }
 
-.addButton:hover {
-  background-color: #2980b9;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.4);
+.listContainer {
+    max-height: 300px; /* Limite de altura para scroll */
+    overflow-y: auto;
 }
 
-.tableContainer {
-  overflow-x: auto;
+.visitanteList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-.table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+.visitanteItem {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #ecf0f1;
+    display: flex;
+    flex-direction: column;
 }
 
-.table thead th {
-  background-color: #ecf0f1;
-  color: #34495e;
-  padding: 1rem 1.25rem;
-  text-align: left;
-  font-weight: 600;
-  font-size: 0.9rem;
-  border-bottom: 2px solid #bdc3c7;
+.visitanteItem:last-child {
+    border-bottom: none;
 }
 
-.table tbody tr {
-  transition: background-color 0.2s ease;
+.visitanteNome {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.1rem;
 }
 
-.table tbody tr:hover {
-  background-color: #f8f9fa;
+.visitanteDestino {
+    color: #3498db;
+    font-size: 0.9rem;
+    margin-top: 2px;
 }
 
-.table tbody td {
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid #e0e6ed;
-  color: #555;
+.visitanteMorador {
+    color: #7f8c8d;
+    font-size: 0.8rem;
 }
 
-.table tbody tr:last-child td {
-  border-bottom: none;
+.emptyList {
+    text-align: center;
+    color: #95a5a6;
+    padding: 1rem;
 }
 
-/* Modal */
+/* 3. Log de Atividade */
+.logList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.logItem {
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed #e0e6ed;
+    font-size: 0.9rem;
+}
+
+.logItem:last-child {
+    border-bottom: none;
+}
+
+.logHora {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-right: 0.5rem;
+}
+
+.entrada { color: #2ecc71; }
+.saida { color: #e74c3c; }
+
+
+/* 4. Fluxo Inesperado */
+.notifyButton {
+    width: 100%;
+    padding: 1rem;
+    background-color: #3498db;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 1rem;
+}
+
+.notifyButton:hover {
+    background-color: #2980b9;
+}
+
+.formGroup select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #dcdfe6;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.statusBox {
+    text-align: center;
+    padding: 1.5rem;
+    border: 2px solid;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.statusText {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.confirmButton {
+    background-color: #2ecc71;
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 10px;
+}
+
+.cancelButton { /* Reutiliza o estilo do modal, mas ajusta a cor para ser secundário no box de status */
+    background-color: #bdc3c7;
+    color: #34495e;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+
+/* Modal de Acesso (Fluxo QR Code) */
 .modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(44, 62, 80, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  opacity: 0;
-  animation: fadeIn 0.3s forwards;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(44, 62, 80, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s forwards;
 }
 
 .modalContent {
-  background-color: #ffffff;
-  padding: 2rem;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  transform: scale(0.95);
-  animation: scaleIn 0.3s forwards;
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    animation: scaleIn 0.3s forwards;
+    text-align: center;
 }
 
-.modalTitle {
-  margin-top: 0;
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
-  color: #34495e;
-  text-align: center;
-}
-
-.formGroup {
-  margin-bottom: 1rem;
-}
-
-.formGroup label {
-  display: block;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  color: #34495e;
-}
-
-.formGroup input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #dcdfe6;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.formGroup input:focus {
-  outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+.acessoInfo {
+    text-align: left;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border: 1px solid #ecf0f1;
+    border-radius: 8px;
 }
 
 .modalActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
+    display: flex;
+    justify-content: space-around;
+    gap: 1rem;
+    margin-top: 2rem;
 }
 
-.saveButton,
-.cancelButton {
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
+.denyButton {
+    background-color: #e74c3c;
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.saveButton {
-  background-color: #2ecc71;
-  color: #ffffff;
-}
-
-.saveButton:hover {
-  background-color: #27ae60;
-}
-
-.cancelButton {
-  background-color: #bdc3c7;
-  color: #34495e;
-}
-
-.cancelButton:hover {
-  background-color: #95a5a6;
-}
-
-/* Animações */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes scaleIn {
-  from { transform: scale(0.95); }
-  to { transform: scale(1); }
+/* Media Queries para Responsividade */
+@media (max-width: 992px) {
+    .dashboardGrid {
+        grid-template-areas: 
+            "scanner lista"
+            "inesperado inesperado"
+            "log log";
+        gap: 1.5rem;
+    }
 }
 
 @media (max-width: 768px) {
-  .main {
-    padding: 1rem;
-  }
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1.5rem;
-  }
-  .contentHeader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  .addButton {
-    width: 100%;
-    text-align: center;
-  }
+    .dashboardGrid {
+        grid-template-areas: 
+            "scanner"
+            "lista"
+            "inesperado"
+            "log";
+        gap: 1.5rem;
+        padding: 1rem 0;
+    }
 }
