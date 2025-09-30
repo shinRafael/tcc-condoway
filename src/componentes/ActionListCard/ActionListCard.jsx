@@ -184,8 +184,13 @@ const ActionItem = ({ action, priority, timestamp, avatarInitials, isNew, onQuic
         <div className={styles.actionMainContent}>
           <div className={styles.actionLeft}>
             {/* Avatar */}
-            <div className={styles.avatar}>
-              {avatarInitials}
+            <div className={styles.avatar} aria-hidden="true">
+              {/* Se não houver iniciais (retorna '??'), mostra o ícone da ação */}
+              {avatarInitials && avatarInitials !== '??' ? (
+                avatarInitials
+              ) : (
+                action.icon
+              )}
             </div>
             
             {/* Detalhes da ação */}
