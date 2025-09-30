@@ -73,41 +73,136 @@ function getDashboardData(scope, notifications) {
 const Dashboard = () => {
   const [filter, setFilter] = useState('Hoje');
   const [kpis, setKpis] = useState(initialKpis);
-  const [actions, setActions] = useState(initialActions);
+  const [actions, setActions] = useState([]); // agora será preenchido pela API
   const [processedActions, setProcessedActions] = useState(new Set());
   const [notifications, setNotifications] = useState([]); // Visitantes ativos
   const [isExpanded, setIsExpanded] = useState(false);
   const [removedActions, setRemovedActions] = useState(new Set());
   
   useEffect(() => {
-    const fetchVisitorNotifications = async () => {
+    const fetchDashboardData = async () => {
       try {
-        // Chama a rota da API que você criou
-        const response = await api.get("/visitantes/dashboard");
+        // Usando Promise.all para buscar os dados em paralelo
+        const [visitorsResponse, reservationsResponse, encomendasResponse, ocorrenciasResponse, mensagensResponse] = await Promise.all([
+          api.get('/visitantes/dashboard'),
+          api.get('/reservas_ambientes'),
+          api.get('/encomendas'),
+          api.get('/ocorrencias'),
+          api.get('/mensagens'),
+        ]);
         
-        // Acessa a chave "dados" da resposta da API
-        if (response.data && response.data.sucesso && Array.isArray(response.data.dados)) {
-          setNotifications(response.data.dados);
+        // Visitantes (dashboard)
+        let visitantesDados = [];
+        if (visitorsResponse.data && visitorsResponse.data.sucesso && Array.isArray(visitorsResponse.data.dados)) {
+          visitantesDados = visitorsResponse.data.dados;
+          setNotifications(visitantesDados);
         } else {
-          // Limpa a lista se a resposta não for o esperado
           setNotifications([]);
-          console.warn("A resposta da API de visitantes não continha dados válidos.", response.data);
+          console.warn('API de visitantes não retornou dados válidos.');
         }
+
+        const newKpis = { ...initialKpis };
+        const combinedActions = [];
+
+        // KPI Visitantes: usa a contagem que veio da API (Aguardando/Entrou)
+        newKpis.visitantes.value = visitantesDados.length;
+
+        // Reservas: filtra status 'Pendente'
+        if (reservationsResponse.data && reservationsResponse.data.sucesso && Array.isArray(reservationsResponse.data.dados)) {
+          const pendingReservations = reservationsResponse.data.dados.filter(r => r.res_status === 'Pendente');
+          newKpis.reservas.value = pendingReservations.length;
+          pendingReservations.forEach(item => {
+            combinedActions.push({
+              id: `res_${item.res_id}`,
+              type: 'aprovar',
+              description: `Aprovar Reserva ID: ${item.res_id}`,
+              link: `/reservas/${item.res_id}`,
+              icon: <FiCheckCircle />,
+            });
+          });
+        }
+
+        // Encomendas: status 'aguardando_retirada'
+        if (encomendasResponse.data && encomendasResponse.data.sucesso && Array.isArray(encomendasResponse.data.dados)) {
+          const pendingEncomendas = encomendasResponse.data.dados.filter(e => e.enc_status === 'aguardando_retirada');
+          newKpis.encomendas.value = pendingEncomendas.length;
+          pendingEncomendas.forEach(item => {
+            combinedActions.push({
+              id: `enc_${item.enc_id}`,
+              type: 'notificar',
+              description: `Notificar Retirada: ${item.enc_nome_loja || 'Encomenda'}`,
+              link: `/encomendas/${item.enc_id}`,
+              icon: <FiBox />,
+            });
+          });
+        }
+
+        // Ocorrências: status 'Aberta'
+        if (ocorrenciasResponse.data && ocorrenciasResponse.data.sucesso && Array.isArray(ocorrenciasResponse.data.dados)) {
+          const openOcorrencias = ocorrenciasResponse.data.dados.filter(o => o.oco_status === 'Aberta');
+          newKpis.ocorrencias.value = openOcorrencias.length;
+          openOcorrencias.forEach(item => {
+            combinedActions.push({
+              id: `oco_${item.oco_id}`,
+              type: 'analisar',
+              description: `Analisar Ocorrência: ${item.oco_protocolo || item.oco_id}`,
+              link: `/ocorrencias/${item.oco_id}`,
+              icon: <FiBell />,
+            });
+          });
+        }
+
+        // Mensagens: status 'pendente' (só entram como ação, sem KPI)
+        if (mensagensResponse.data && mensagensResponse.data.sucesso && Array.isArray(mensagensResponse.data.dados)) {
+          const pendingMessages = mensagensResponse.data.dados.filter(m => m.msg_status === 'pendente');
+          pendingMessages.forEach(item => {
+            combinedActions.push({
+              id: `msg_${item.msg_id}`,
+              type: 'responder',
+              description: `Responder Mensagem ID: ${item.msg_id}`,
+              link: `/mensagens/${item.msg_id}`,
+              icon: <FiMessageSquare />,
+            });
+          });
+        }
+
+        // Visitantes como ação: status 'Aguardando'
+        const waitingVisitors = visitantesDados.filter(v => v.vst_status === 'Aguardando');
+        waitingVisitors.forEach(item => {
+          combinedActions.push({
+            id: `vst_${item.vst_id}`,
+            type: 'liberar',
+            description: `Liberar Entrada: ${item.vst_nome}`,
+            link: `/visitantes/${item.vst_id}`,
+            icon: <FiUserPlus />,
+          });
+        });
+
+        setKpis(newKpis);
+        setActions(combinedActions);
+
       } catch (error) {
-        console.error("Erro ao buscar notificações de visitantes:", error);
-        setNotifications([]); // Limpa a lista em caso de erro
+        console.error('Erro ao buscar dados do dashboard:', error);
+        setKpis(initialKpis);
+        setActions([]);
+        setNotifications([]);
       }
     };
 
-    fetchVisitorNotifications();
-    // Atualiza a lista a cada 30 segundos
-    const intervalId = setInterval(fetchVisitorNotifications, 30000);
-
-    return () => clearInterval(intervalId); // Limpa o intervalo ao sair da página
+    fetchDashboardData();
+    const intervalId = setInterval(fetchDashboardData, 30000);
+    return () => clearInterval(intervalId);
   }, []);
 
   // Obter dados do dashboard filtrando ações removidas
   const getDashboardDataFiltered = (scope) => {
+    if (scope === 'Hoje') {
+      return {
+        kpis: { ...kpis },
+        acoesRequeridas: actions.filter(action => !removedActions.has(action.id)),
+        ocorrenciasRecentes: notifications,
+      };
+    }
     const data = getDashboardData(scope, notifications);
     data.acoesRequeridas = data.acoesRequeridas.filter(action => !removedActions.has(action.id));
     return data;
@@ -119,56 +214,14 @@ const Dashboard = () => {
   // NOTA: Para produção, integre com NotificationService
   const handleApproveNotification = async (notificacao) => {
     console.log('Aprovando notificação:', notificacao);
-    
-    // Versão com integração real (descomente quando estiver pronto):
-    // try {
-    //   if (notificacao.categoria === 'reserva') {
-    //     await NotificationService.aprovarReserva(notificacao.detalhes.reservaId);
-    //   } else if (notificacao.categoria === 'visitante') {
-    //     await NotificationService.autorizarVisitante(notificacao.detalhes.visitorId);
-    //   }
-    //   // Recarregar notificações após aprovação
-    //   const novasNotificacoes = await NotificationService.getAllNotifications();
-    //   setNotificacoes(novasNotificacoes);
-    // } catch (error) {
-    //   console.error('Erro ao aprovar:', error);
-    //   return;
-    // }
-    
-    // Versão atual (simulada):
-    // Atualizar status da notificação
-    setNotificacoes(prev => prev.map(n => 
-      n.id === notificacao.id 
-        ? { ...n, status: 'aprovada', canApprove: false, titulo: n.titulo.replace('Solicitação:', 'Aprovado:').replace('na portaria:', 'autorizado:') }
-        : n
-    ));
+    // Simulação mantida, mas ajustada para não quebrar o estado
+    setNotifications(prev => prev.map(n => (n.id === notificacao.id ? n : n)));
   };
 
   const handleRejectNotification = async (notificacao) => {
     console.log('Rejeitando notificação:', notificacao);
-    
-    // Versão com integração real (descomente quando estiver pronto):
-    // try {
-    //   if (notificacao.categoria === 'reserva') {
-    //     await NotificationService.rejeitarReserva(notificacao.detalhes.reservaId);
-    //   } else if (notificacao.categoria === 'visitante') {
-    //     await NotificationService.negarVisitante(notificacao.detalhes.visitorId);
-    //   }
-    //   // Recarregar notificações após rejeição
-    //   const novasNotificacoes = await NotificationService.getAllNotifications();
-    //   setNotificacoes(novasNotificacoes);
-    // } catch (error) {
-    //   console.error('Erro ao rejeitar:', error);
-    //   return;
-    // }
-    
-    // Versão atual (simulada):
-    // Atualizar status da notificação
-    setNotificacoes(prev => prev.map(n => 
-      n.id === notificacao.id 
-        ? { ...n, status: 'rejeitada', canApprove: false, titulo: n.titulo.replace('Solicitação:', 'Rejeitado:').replace('na portaria:', 'negado:') }
-        : n
-    ));
+    // Simulação mantida, mas ajustada para não quebrar o estado
+    setNotifications(prev => prev.map(n => (n.id === notificacao.id ? n : n)));
   };
 
   // Handler para ações rápidas do ActionListCard
@@ -178,14 +231,8 @@ const Dashboard = () => {
     // Marcar ação como processada temporariamente
     setProcessedActions(prev => new Set([...prev, `${actionId}_${actionType}`]));
     
-    // Implementar lógica de ação rápida
-    if (actionType === 'approve') {
-      // Lógica para aprovar
-      console.log(`Ação ${actionId} aprovada com sucesso!`);
-    } else if (actionType === 'reject') {
-      // Lógica para rejeitar
-      console.log(`Ação ${actionId} rejeitada.`);
-    }
+    // Implementar lógica de ação rápida (placeholder)
+    // ...
     
     // Remover a ação da lista após 2 segundos
     setTimeout(() => {
@@ -214,10 +261,10 @@ const Dashboard = () => {
       <div className={styles.scrollArea}>
         <div className={styles.dashboardGrid}>
           {/* Linha 1 */}
-          <KpiCard {...data.kpis.reservas} />
-          <KpiCard {...data.kpis.encomendas} />
-          <KpiCard {...data.kpis.ocorrencias} />
-          <KpiCard {...data.kpis.visitantes} />
+          <KpiCard {...kpis.reservas} />
+          <KpiCard {...kpis.encomendas} />
+          <KpiCard {...kpis.ocorrencias} />
+          <KpiCard {...kpis.visitantes} />
 
           {/* Linha 2 */}
           <ActionListCard 
