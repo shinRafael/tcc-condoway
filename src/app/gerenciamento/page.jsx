@@ -3,13 +3,10 @@
 import { useState, useEffect } from 'react';
 import styles from './index.module.css';
 
-// Componentes da UI
 import PageHeader from '@/componentes/PageHeader';
 import RightHeaderBrand from '@/componentes/PageHeader/RightHeaderBrand';
-// componente botão/modal
-import BotaoCadastrar from './botãoCadastrar'; 
+import BotaoCadastrar from './botãoCadastrar';
 
-// Serviço da API
 import api from '../../services/api';
 
 export default function GerenciamentoPage() {
@@ -19,7 +16,6 @@ export default function GerenciamentoPage() {
     const fetchData = async () => {
       try {
         const response = await api.get("/gerenciamento");
-        console.log("Dados recebidos:", response.data);
         const dadosDaApi = response.data.dados;
         setDados(Array.isArray(dadosDaApi) ? dadosDaApi : []);
       } catch (error) {
@@ -27,15 +23,32 @@ export default function GerenciamentoPage() {
         setDados([]);
       }
     };
-
     fetchData();
   }, []);
 
-  // Função para adicionar item novo na tabela
   const handleSaved = (item) => {
     if (!item) return;
     const safeItem = item.ger_id ? item : { ...item, ger_id: `local-${Date.now()}` };
     setDados(prev => [...prev, safeItem]);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await api.delete(`/gerenciamento/${id}`);
+      // Convertemos para número caso seja necessário
+      setDados(prev => prev.filter(item => item.ger_id !== Number(id)));
+    } catch (error) {
+      console.error("Erro ao deletar:", error);
+    }
+  };
+
+  const handleEdit = async (itemAtualizado) => {
+    try {
+      const response = await api.put(`/gerenciamento/${itemAtualizado.ger_id}`, itemAtualizado);
+      setDados(prev => prev.map(item => item.ger_id === itemAtualizado.ger_id ? response.data : item));
+    } catch (error) {
+      console.error("Erro ao editar:", error);
+    }
   };
 
   return (
@@ -46,7 +59,6 @@ export default function GerenciamentoPage() {
         <div className={styles.content}>
           <div className={styles.contentHeader}>
             <h2 className={styles.contentTitle}>Despesas do Condomínio</h2>
-            {/* Botão de cadastrar agora controla o modal internamente */}
             <BotaoCadastrar onSaved={handleSaved} />
           </div>
 
@@ -58,6 +70,7 @@ export default function GerenciamentoPage() {
                   <th>Data</th>
                   <th>Descrição</th>
                   <th>Valor</th>
+                  <th>Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -65,14 +78,18 @@ export default function GerenciamentoPage() {
                   dados.map((item, index) => (
                     <tr key={item.ger_id ?? `row-${index}`}>
                       <td>{item.cond_nome}</td>
-                      <td>{item.ger_data}</td>
+                      <td>{new Date(item.ger_data).toLocaleDateString('pt-BR')}</td>
                       <td>{item.ger_descricao}</td>
                       <td>{Number(item.ger_valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                      <td>
+                        <button className={styles.editButton} onClick={() => handleEdit(item)}>✏️</button>
+                        <button className={styles.deleteButton} onClick={() => handleDelete(item.ger_id)}>🗑️</button>
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={4}>Nenhuma despesa encontrada.</td>
+                    <td colSpan={5}>Nenhuma despesa encontrada.</td>
                   </tr>
                 )}
               </tbody>
