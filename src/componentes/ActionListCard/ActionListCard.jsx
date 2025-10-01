@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import styles from './ActionListCard.module.css';
 import { FiChevronRight, FiCheck, FiX, FiClock, FiFilter, FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 const ActionListCard = ({ title, actions, viewAllLink, onQuickAction, processedActions = new Set() }) => {
   const [filter, setFilter] = useState('all');
@@ -18,15 +20,14 @@ const ActionListCard = ({ title, actions, viewAllLink, onQuickAction, processedA
   };
 
   // Função para obter timestamp simulado
-  const getTimestamp = (id) => {
-    const timestamps = {
-      1: 'há 15 min',
-      2: 'há 2 horas', 
-      3: 'há 1 dia',
-      4: 'há 30 min',
-      5: 'há 3 horas'
-    };
-    return timestamps[id] || 'há 1 hora';
+  const getTimestamp = (date) => {
+    if (!date) return 'há um tempo';
+    try {
+      return formatDistanceToNow(new Date(date), { addSuffix: true, locale: ptBR });
+    } catch (error) {
+      console.error("Erro ao formatar data:", date, error);
+      return 'data inválida';
+    }
   };
 
   // Função para obter iniciais do apartamento
@@ -103,7 +104,7 @@ const ActionListCard = ({ title, actions, viewAllLink, onQuickAction, processedA
                     key={action.id}
                     action={action}
                     priority={getPriority(action.type)}
-                    timestamp={getTimestamp(action.id)}
+                    timestamp={getTimestamp(action.createdAt)}
                     avatarInitials={getAvatarInitials(action.description)}
                     isNew={isNew(action.id)}
                     onQuickAction={handleQuickAction}
@@ -121,7 +122,7 @@ const ActionListCard = ({ title, actions, viewAllLink, onQuickAction, processedA
                     key={action.id}
                     action={action}
                     priority={getPriority(action.type)}
-                    timestamp={getTimestamp(action.id)}
+                    timestamp={getTimestamp(action.createdAt)}
                     avatarInitials={getAvatarInitials(action.description)}
                     isNew={isNew(action.id)}
                     onQuickAction={handleQuickAction}
@@ -140,7 +141,7 @@ const ActionListCard = ({ title, actions, viewAllLink, onQuickAction, processedA
                 <ActionItem
                   action={action}
                   priority={getPriority(action.type)}
-                  timestamp={getTimestamp(action.id)}
+                  timestamp={getTimestamp(action.createdAt)}
                   avatarInitials={getAvatarInitials(action.description)}
                   isNew={isNew(action.id)}
                   onQuickAction={handleQuickAction}

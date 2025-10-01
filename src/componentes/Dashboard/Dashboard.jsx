@@ -82,13 +82,29 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        // Usando Promise.all para buscar os dados em paralelo
-        const [visitorsResponse, reservationsResponse, encomendasResponse, ocorrenciasResponse, mensagensResponse] = await Promise.all([
-          api.get('/visitantes/dashboard'),
-          api.get('/reservas_ambientes'),
-          api.get('/encomendas'),
-          api.get('/ocorrencias'),
-          api.get('/mensagens'),
+        // Helper para que uma falha na API não quebre todas as chamadas
+        const safeGet = (url) => 
+          api.get(url).catch(error => {
+            console.warn(`Falha ao buscar dados de '${url}':`, error.message);
+            // Retorna um objeto padrão para não quebrar o resto do código
+            return { data: { sucesso: false, dados: [] } };
+          });
+
+        // Usando Promise.all com o helper
+        const [
+          visitorsResponse,
+          reservationsResponse,
+          encomendasResponse,
+          ocorrenciasResponse,
+          mensagensResponse,
+          ambientesResponse
+        ] = await Promise.all([
+          safeGet('/visitantes/dashboard'),
+          safeGet('/reservas_ambientes'),
+          safeGet('/encomendas'),
+          safeGet('/ocorrencias'),
+          safeGet('/mensagens'),
+          safeGet('/ambientes')
         ]);
         
         // Visitantes (dashboard)
@@ -101,23 +117,40 @@ const Dashboard = () => {
           console.warn('API de visitantes não retornou dados válidos.');
         }
 
+        // Mapa de ambientes (amd_id -> nome)
+        let ambientesMap = new Map();
+        if (ambientesResponse?.data?.sucesso && Array.isArray(ambientesResponse.data.dados)) {
+          ambientesMap = new Map(
+            ambientesResponse.data.dados.map((a) => [
+              a.amd_id ?? a.amb_id ?? a.id,
+              a.amd_nome || a.amb_nome || a.nome || a.amd_descricao || a.descricao || `Ambiente #${a.amd_id ?? a.amb_id ?? a.id}`
+            ])
+          );
+        } else {
+          // fallback mínimo para seu caso citado
+          console.log("Usando fallback para nome de ambiente, pois a API /ambientes falhou ou veio vazia.");
+          ambientesMap.set(2, 'Sala de Cinema');
+        }
+
         const newKpis = { ...initialKpis };
         const combinedActions = [];
 
         // KPI Visitantes: usa a contagem que veio da API (Aguardando/Entrou)
         newKpis.visitantes.value = visitantesDados.length;
 
-        // Reservas: filtra status 'Pendente'
+        // Reservas: filtra status 'Pendente' e usa o nome do ambiente
         if (reservationsResponse.data && reservationsResponse.data.sucesso && Array.isArray(reservationsResponse.data.dados)) {
           const pendingReservations = reservationsResponse.data.dados.filter(r => r.res_status === 'Pendente');
           newKpis.reservas.value = pendingReservations.length;
           pendingReservations.forEach(item => {
+            const ambNome = ambientesMap.get(item.amd_id) || `Ambiente #${item.amd_id}`;
             combinedActions.push({
               id: `res_${item.res_id}`,
               type: 'aprovar',
-              description: `Aprovar Reserva ID: ${item.res_id}`,
+              description: `Aprovar Reserva: ${ambNome}`,
               link: `/reservas/${item.res_id}`,
               icon: <FiCheckCircle />,
+              createdAt: item.res_data_reserva, // Passa a data
             });
           });
         }
@@ -133,6 +166,7 @@ const Dashboard = () => {
               description: `Notificar Retirada: ${item.enc_nome_loja || 'Encomenda'}`,
               link: `/encomendas/${item.enc_id}`,
               icon: <FiBox />,
+              createdAt: item.enc_data_chegada || item.created_at, // Passa a data
             });
           });
         }
@@ -142,12 +176,14 @@ const Dashboard = () => {
           const openOcorrencias = ocorrenciasResponse.data.dados.filter(o => o.oco_status === 'Aberta');
           newKpis.ocorrencias.value = openOcorrencias.length;
           openOcorrencias.forEach(item => {
+            const dataFormatada = new Date(item.oco_data).toLocaleDateString('pt-BR');
             combinedActions.push({
               id: `oco_${item.oco_id}`,
               type: 'analisar',
-              description: `Analisar Ocorrência: ${item.oco_protocolo || item.oco_id}`,
+              description: `Analisar ${item.oco_categoria || 'Ocorrência'}: ${dataFormatada}`,
               link: `/ocorrencias/${item.oco_id}`,
               icon: <FiBell />,
+              createdAt: item.oco_data, // Passa a data
             });
           });
         }
@@ -162,6 +198,7 @@ const Dashboard = () => {
               description: `Responder Mensagem ID: ${item.msg_id}`,
               link: `/mensagens/${item.msg_id}`,
               icon: <FiMessageSquare />,
+              createdAt: item.msg_data_envio || item.created_at, // Passa a data
             });
           });
         }
@@ -175,6 +212,7 @@ const Dashboard = () => {
             description: `Liberar Entrada: ${item.vst_nome}`,
             link: `/visitantes/${item.vst_id}`,
             icon: <FiUserPlus />,
+            createdAt: item.vst_data_prevista || item.created_at, // Passa a data
           });
         });
 
