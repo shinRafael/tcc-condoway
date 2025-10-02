@@ -23,55 +23,7 @@ const initialActions = [
   { id: 3, type: 'validar', description: 'Validar Novo Cadastro: Apto 504', link: '/usuarios/789', icon: <FiUserPlus /> },
 ];
 
-// Fonte de dados por filtro
-function getDashboardData(scope, notifications) {
-  if (scope === 'Esta Semana') {
-    return {
-      kpis: {
-        reservas: { value: 12, title: 'Reservas na Semana', icon: <FiCalendar />, href: '/reservas?periodo=semana' },
-        encomendas: { value: 25, title: 'Encomendas na Semana', icon: <FiBox />, href: '/encomendas?periodo=semana' },
-        ocorrencias: { value: 9, title: 'Ocorrências na Semana', icon: <FiBell />, href: '/ocorrencias?periodo=semana' },
-        visitantes: { value: 210, title: 'Visitantes na Semana', icon: <FiUsers />, href: '/visitantes?periodo=semana' },
-      },
-      acoesRequeridas: [
-        { id: 1, type: 'aprovar', description: 'Aprovar Reserva: Churrasqueira (Apto 402)', link: '/reservas/321', icon: <FiCheckCircle /> },
-        { id: 2, type: 'responder', description: 'Responder Mensagem: João (Apto 1203)', link: '/mensagens/654', icon: <FiMessageSquare /> },
-        { id: 3, type: 'validar', description: 'Validar Novo Cadastro: Apto 804', link: '/usuarios/987', icon: <FiUserPlus /> },
-        { id: 4, type: 'aprovar', description: 'Aprovar Reserva: Salão de Festas (Apto 305)', link: '/reservas/305', icon: <FiCheckCircle /> },
-      ],
-      ocorrenciasRecentes: notifications,
-    };
-  }
-
-  if (scope === 'Este Mês') {
-    return {
-      kpis: {
-        reservas: { value: 48, title: 'Reservas no Mês', icon: <FiCalendar />, href: '/reservas?periodo=mes' },
-        encomendas: { value: 102, title: 'Encomendas no Mês', icon: <FiBox />, href: '/encomendas?periodo=mes' },
-        ocorrencias: { value: 34, title: 'Ocorrências no Mês', icon: <FiBell />, href: '/ocorrencias?periodo=mes' },
-        visitantes: { value: 910, title: 'Visitantes no Mês', icon: <FiUsers />, href: '/visitantes?periodo=mes' },
-      },
-      acoesRequeridas: [
-        { id: 1, type: 'aprovar', description: 'Aprovar Reserva: Salão (Apto 1201)', link: '/reservas/1201', icon: <FiCheckCircle /> },
-        { id: 2, type: 'responder', description: 'Responder Mensagem: Síndico', link: '/mensagens/777', icon: <FiMessageSquare /> },
-        { id: 3, type: 'validar', description: 'Validar Cadastro: Apto 301', link: '/usuarios/301', icon: <FiUserPlus /> },
-        { id: 4, type: 'aprovar', description: 'Aprovar Reserva: Churrasqueira (Apto 402)', link: '/reservas/402', icon: <FiCheckCircle /> },
-        { id: 5, type: 'responder', description: 'Responder Mensagem: Portaria', link: '/mensagens/888', icon: <FiMessageSquare /> },
-      ],
-      ocorrenciasRecentes: notifications,
-    };
-  }
-
-  // Default: Hoje
-  return {
-    kpis: initialKpis,
-    acoesRequeridas: initialActions,
-    ocorrenciasRecentes: notifications,
-  };
-}
-
 const Dashboard = () => {
-  const [filter, setFilter] = useState('Hoje');
   const [kpis, setKpis] = useState(initialKpis);
   const [actions, setActions] = useState([]); // agora será preenchido pela API
   const [processedActions, setProcessedActions] = useState(new Set());
@@ -117,19 +69,20 @@ const Dashboard = () => {
           console.warn('API de visitantes não retornou dados válidos.');
         }
 
-        // Mapa de ambientes (amd_id -> nome)
+        // Mapa de ambientes (id -> nome)
         let ambientesMap = new Map();
+        console.log('Resposta da API de ambientes:', ambientesResponse?.data);
         if (ambientesResponse?.data?.sucesso && Array.isArray(ambientesResponse.data.dados)) {
+          console.log('Dados dos ambientes:', ambientesResponse.data.dados);
           ambientesMap = new Map(
-            ambientesResponse.data.dados.map((a) => [
-              a.amd_id ?? a.amb_id ?? a.id,
-              a.amd_nome || a.amb_nome || a.nome || a.amd_descricao || a.descricao || `Ambiente #${a.amd_id ?? a.amb_id ?? a.id}`
-            ])
+            ambientesResponse.data.dados.map((a) => {
+              console.log('Mapeando ambiente:', a.id, '->', a.nome);
+              return [a.id, a.nome];
+            })
           );
+          console.log('Mapa de ambientes criado:', Array.from(ambientesMap.entries()));
         } else {
-          // fallback mínimo para seu caso citado
-          console.log("Usando fallback para nome de ambiente, pois a API /ambientes falhou ou veio vazia.");
-          ambientesMap.set(2, 'Sala de Cinema');
+          console.warn("API de ambientes falhou ou não retornou dados válidos. Os nomes dos ambientes podem não ser exibidos.");
         }
 
         const newKpis = { ...initialKpis };
@@ -143,7 +96,9 @@ const Dashboard = () => {
           const pendingReservations = reservationsResponse.data.dados.filter(r => r.res_status === 'Pendente');
           newKpis.reservas.value = pendingReservations.length;
           pendingReservations.forEach(item => {
-            const ambNome = ambientesMap.get(item.amd_id) || `Ambiente #${item.amd_id}`;
+            console.log('Processando reserva:', item.res_id, 'com amd_id:', item.amd_id);
+            const ambNome = item.amd_nome || ambientesMap.get(item.amd_id) || `Ambiente #${item.amd_id}`;
+            console.log('Nome do ambiente encontrado:', ambNome);
             combinedActions.push({
               id: `res_${item.res_id}`,
               type: 'aprovar',
@@ -232,21 +187,8 @@ const Dashboard = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  // Obter dados do dashboard filtrando ações removidas
-  const getDashboardDataFiltered = (scope) => {
-    if (scope === 'Hoje') {
-      return {
-        kpis: { ...kpis },
-        acoesRequeridas: actions.filter(action => !removedActions.has(action.id)),
-        ocorrenciasRecentes: notifications,
-      };
-    }
-    const data = getDashboardData(scope, notifications);
-    data.acoesRequeridas = data.acoesRequeridas.filter(action => !removedActions.has(action.id));
-    return data;
-  };
-  
-  const data = getDashboardDataFiltered(filter);
+  // Filtrar ações removidas
+  const filteredActions = actions.filter(action => !removedActions.has(action.id));
 
   // Handlers para aprovar/rejeitar notificações
   // NOTA: Para produção, integre com NotificationService
@@ -288,14 +230,6 @@ const Dashboard = () => {
 
   return (
     <div className={styles.dashboardContainer}>
-      <header className={styles.dashboardHeader}>
-        <select className={styles.filterSelect} value={filter} onChange={(e) => setFilter(e.target.value)} >
-          <option>Hoje</option>
-          <option>Esta Semana</option>
-          <option>Este Mês</option>
-        </select>
-      </header>
-
       <div className={styles.scrollArea}>
         <div className={styles.dashboardGrid}>
           {/* Linha 1 */}
@@ -307,7 +241,7 @@ const Dashboard = () => {
           {/* Linha 2 */}
           <ActionListCard 
             title="Ações Requeridas" 
-            actions={data.acoesRequeridas} 
+            actions={filteredActions} 
             viewAllLink="/reservas"
             onQuickAction={handleQuickAction}
             processedActions={processedActions}
