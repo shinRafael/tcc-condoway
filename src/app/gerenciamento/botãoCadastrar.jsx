@@ -1,18 +1,38 @@
 'use client';
 
-import { useState } from 'react';
-import styles from './index.module.css'; // usar o mesmo CSS compartilhado
+import { useState, useEffect } from 'react'; // Adicione useEffect
+import styles from './index.module.css';
 import api from '@/services/api';
 
 export default function BotaoCadastrar({ onSaved }) {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  // Lista para guardar os condomínios que vêm da API
+  const [condominios, setCondominios] = useState([]);
   const [formData, setFormData] = useState({
-    cond_nome: '',
+    // MUDANÇA: Trocamos cond_nome por cond_id
+    cond_id: '',
     ger_data: '',
     ger_descricao: '',
     ger_valor: '',
   });
   const [loading, setLoading] = useState(false);
+
+  // Efeito para buscar os condomínios quando o modal é aberto
+  useEffect(() => {
+    if (mostrarFormulario) {
+      const fetchCondominios = async () => {
+        try {
+          const response = await api.get('/condominio');
+          if (response.data?.sucesso) {
+            setCondominios(response.data.dados);
+          }
+        } catch (error) {
+          console.error("Erro ao buscar condomínios:", error);
+        }
+      };
+      fetchCondominios();
+    }
+  }, [mostrarFormulario]);
 
   const toggleModal = () => setMostrarFormulario(prev => !prev);
 
@@ -25,22 +45,21 @@ export default function BotaoCadastrar({ onSaved }) {
     e.preventDefault();
     setLoading(true);
     try {
-      // enviar o objeto que sua API espera; aqui enviamos os campos do form
       const response = await api.post('/gerenciamento', formData);
-      // tenta pegar response.data.dados, response.data ou fallback para formData
       const itemSalvo = response.data?.dados ?? response.data ?? { ...formData, ger_id: `local-${Date.now()}` };
 
       if (onSaved) onSaved(itemSalvo);
 
-      setFormData({ cond_nome: '', ger_data: '', ger_descricao: '', ger_valor: '' });
+      setFormData({ cond_id: '', ger_data: '', ger_descricao: '', ger_valor: '' });
       setMostrarFormulario(false);
     } catch (error) {
       console.error('Erro ao salvar despesa:', error);
+      alert('Erro ao salvar despesa. Verifique os dados e tente novamente.'); // Feedback para o usuário
     } finally {
       setLoading(false);
     }
   };
-
+  
   const closeOnOverlay = (e) => {
     if (e.target === e.currentTarget) toggleModal();
   };
@@ -57,9 +76,17 @@ export default function BotaoCadastrar({ onSaved }) {
             <h3 style={{textAlign: 'center'}}>Cadastrar Despesa</h3>
 
             <form onSubmit={handleSubmit} className={styles.form}>
+              {/* MUDANÇA: Trocamos o input de texto por um select */}
               <label className={styles.label}>
                 Condomínio:
-                <input className={styles.input} type="text" name="cond_nome" value={formData.cond_nome} onChange={handleChange} required />
+                <select className={styles.input} name="cond_id" value={formData.cond_id} onChange={handleChange} required>
+                  <option value="">Selecione um condomínio</option>
+                  {condominios.map(cond => (
+                    <option key={cond.cond_id} value={cond.cond_id}>
+                      {cond.cond_nome}
+                    </option>
+                  ))}
+                </select>
               </label>
 
               <label className={styles.label}>

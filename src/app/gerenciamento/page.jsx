@@ -93,7 +93,9 @@ export default function GerenciamentoPage() {
         ...formEdit
       };
 
-      const response = await api.put(`/gerenciamento/${editando.ger_id}`, atualizado);
+      // CORREÇÃO AQUI: Trocado 'put' por 'patch'
+      const response = await api.patch(`/gerenciamento/${editando.ger_id}`, atualizado);
+      
       // aceita response.data.dados ou response.data ou fallback para atualizado
       const updatedItem = response.data?.dados ?? response.data ?? atualizado;
 
@@ -106,6 +108,7 @@ export default function GerenciamentoPage() {
       fecharModal();
     } catch (error) {
       console.error("Erro ao editar:", error);
+      alert("Não foi possível salvar as alterações. Verifique o console para mais detalhes.");
     }
   };
 
