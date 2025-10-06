@@ -1,65 +1,115 @@
+/* ====== LAYOUT PRINCIPAL ====== */
 .loginContainer {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
-  justify-content: right;
+  justify-content: center;
   align-items: center;
-  background-color: #eeeeee;
-  padding: 6vh;
-  
+  background: linear-gradient(135deg, #4a90e2, #50c9c3);
+  font-family: "Inter", "Segoe UI", sans-serif;
+  padding: 3rem 1rem;
 }
 
+/* ====== CARD DO LOGIN ====== */
 .loginForm {
-  background-color: #ffffff;
-  padding: 3rem 2rem 2rem 2rem; /* mais espaço em cima */
-  border-radius: 45px;
-  box-shadow: 0 7px 20px rgba(8, 65, 221, 0.15);
-  width: 600px;         /* mais largura */
-  max-width: 90%;       /* se quiser responsivo */
-  min-height: 650px;    /* força o formulário a esticar pra cima */
+  background: rgba(255, 255, 255, 0.98);
+  padding: 3rem 3rem 2.5rem;
+  border-radius: 25px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+  width: 480px;
+  max-width: 95%;
+  animation: fadeIn 0.8s ease-in-out;
 }
 
+/* ====== TÍTULO ====== */
 .loginTitle {
-  margin-bottom: 1.5rem;
-  color: #0263eb;
-  font-size: 1.8rem;
   text-align: center;
+  color: #2979e2;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  letter-spacing: 0.5px;
 }
 
+/* ====== LABELS E INPUTS ====== */
 .label {
- font-weight: bold;
-  margin-bottom: 0.5rem;
   display: block;
-  color: #1c65cc;
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 0.4rem;
+  font-size: 1rem;
 }
 
 .input {
   width: 100%;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+  padding: 0.85rem;
+  border: 1px solid #cfd8dc;
+  border-radius: 10px;
   font-size: 1rem;
+  margin-bottom: 1.3rem;
+  transition: all 0.3s ease;
+  background-color: #fafafa;
 }
 
+.input:focus {
+  border-color: #4a90e2;
+  background-color: #fff;
+  box-shadow: 0 0 6px rgba(74, 144, 226, 0.3);
+  outline: none;
+}
+
+/* ====== BOTÃO ====== */
 .button {
-  background-color: #1c65cc;
-  color: #ffffff;
-  padding: 0.75rem;
+  background: linear-gradient(135deg, #4a90e2, #357ab8);
+  color: #fff;
+  padding: 0.9rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   width: 100%;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 1.1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 15px rgba(74, 144, 226, 0.25);
 }
 
 .button:hover {
-  background-color: #183a6b;
+  background: linear-gradient(135deg, #3d7fcb, #2f5fa3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(74, 144, 226, 0.35);
 }
 
+/* ====== ERROS ====== */
 .error {
-  color: red;
-  margin-bottom: 1rem;
+  color: #e53935;
   font-size: 0.9rem;
+  margin-bottom: 0.8rem;
   text-align: center;
+}
+
+/* ====== ANIMAÇÕES ====== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ====== RESPONSIVO ====== */
+@media (max-width: 600px) {
+  .loginForm {
+    padding: 2rem 1.5rem;
+    border-radius: 20px;
+  }
+
+  .loginTitle {
+    font-size: 1.6rem;
+  }
+
+  .button {
+    font-size: 1rem;
+  }
 }
