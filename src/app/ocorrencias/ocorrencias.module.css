@@ -1,9 +1,24 @@
+/* ====== GRID ====== */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
+  font-family: 'Inter', sans-serif;
 }
 
+/* ====== ANIMAÇÕES ====== */
+@keyframes cardEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ====== CARD ====== */
 .card {
   background: #fff;
   padding: 16px;
@@ -11,42 +26,91 @@
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   display: flex;
   flex-direction: column;
-  transition: border-left 0.3s;
+  animation: cardEnter 0.35s ease forwards;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
 
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
+  border: 1px solid rgba(14, 165, 233, 0.15);
+}
+
+/* ====== HEADER ====== */
 .cardHeader {
   display: flex;
   justify-content: space-between;
   margin-bottom: 12px;
 }
 
-.data { font-size: 13px; color: #666; }
-.mensagem { font-size: 14px; color: #333; margin-bottom: 12px; }
-
-.actions { display: flex; justify-content: flex-end; gap: 8px; }
-.actions button {
-  border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: 500;
+.cardHeader h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
 }
-.editButton { background: #fbbf24; color: #fff; }
-.editButton:hover { background: #f6c23e; }
-.saveButton { background: #28a745; color: #fff; }
-.saveButton:hover { background: #218838; }
 
-/* src/app/ocorrencias/ocorrencias.module.css */
-/* ... (outras classes existentes) */
+.data {
+  font-size: 13px;
+  color: #666;
+  font-weight: 600;
+}
 
-.emAndamento { border-left: 5px solid #ffc107; } /* amarelo */
-.resolvida { border-left: 5px solid #28a745; }   /* verde */
-.cancelada { border-left: 5px solid #dc3545; }   /* vermelho */
+/* ====== TIPOGRAFIA ====== */
+.mensagem {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* ====== BOTÕES ====== */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
 .actions button {
-  /* ... (estilos existentes dos botões) */
   background: #007bff;
-  color: white;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 32px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: background 0.3s, transform 0.2s, opacity 0.2s;
 }
+
 .actions button:hover {
-  background: #0056b3;
+  background: #007bff;
+  transform: translateY(-1px);
+  opacity: 0.95;
 }
+
 .actions button:disabled {
   background: #cccccc;
   cursor: not-allowed;
+  transform: none;
+  opacity: 1;
+}
+
+/* ====== STATUS ====== */
+.pendente {
+  border-left: 5px solid #0ea5e9; /* azul */
+}
+
+.emAndamento {
+  border-left: 5px solid #ffc107; /* amarelo */
+}
+
+.resolvida {
+  border-left: 5px solid #28a745; /* verde */
+}
+
+.cancelada {
+  border-left: 5px solid #dc3545; /* vermelho */
 }

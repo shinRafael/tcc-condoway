@@ -2,11 +2,11 @@
 
 /* Botão primário */
 .botaoCadastrar {
-  background-color: #4f46e5; /* azul consistente com o projeto */
+  background-color: #007bff; /* azul consistente com o projeto */
   color: #fff;
   border: none;
   padding: 0.6rem 1.2rem;
-  border-radius: 0.5rem;
+  border-radius: 32px;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.18s ease;

@@ -55,15 +55,15 @@
 /* Botão adicionar */
 .addBtn {
   padding: 10px 20px;
-  background: #2ed573;
+  background: #007bff;
   color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: 32px;
   cursor: pointer;
   margin-bottom: 15px;
 }
 .addBtn:hover {
-  background: #009975;
+  background: #007bff;
 }
 
 /* Tabela */
@@ -94,10 +94,10 @@
 /* Botões tabela */
 .editBtn {
   padding: 6px 12px;
-  background: #0984e3;
+  background: #007bff;
   color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: 32px;
   cursor: pointer;
   margin-right: 6px;
 }
