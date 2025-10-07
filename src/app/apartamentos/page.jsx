@@ -1,18 +1,33 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./apartamentos.module.css";
 import PageHeader from "@/componentes/PageHeader";
 import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
+import api from "@/services/api";
 
 export default function Apartamentos() {
   const [showModal, setShowModal] = useState(false);
   const [editingAp, setEditingAp] = useState(null);
 
-  const [apartamentos, setApartamentos] = useState([
-    { id: 101, bloco: "A", numero: 12, andar: "1º" },
-    { id: 102, bloco: "B", numero: 34, andar: "3º" },
-    { id: 103, bloco: "C", numero: 21, andar: "2º" },
-  ]);
+  const [apartamentos, setApartamentos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const listarApartamentos = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get('/apartamentos');
+      setApartamentos(response.data.dados); 
+    } catch(error) {
+      console.error('Erro ao buscar apartamentos:', error);
+      alert('Não foi possível carregar a lista de apartamentos');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    listarApartamentos();
+  }, []);
 
   const handleAddAp = () => {
     setEditingAp(null);
@@ -29,27 +44,46 @@ export default function Apartamentos() {
     setEditingAp(null);
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const newAp = Object.fromEntries(formData);
-    newAp.id = Number(newAp.id);
-    newAp.numero = Number(newAp.numero);
+    const formAp = Object.fromEntries(formData);
 
-    if (editingAp) {
-      setApartamentos(
-        apartamentos.map((a) => (a.id === editingAp.id ? { ...a, ...newAp } : a))
-      );
-    } else {
-      setApartamentos([...apartamentos, newAp]);
+    const payload = {
+      bloc: formAp.bloco, 
+      numero: Number(formAp.numero),
+      andar: formAp.andar,
+    };
+    
+    const url = `/apartamentos/${editingAp?.ap_id}`;
+    
+    try {
+      if (editingAp) {
+          await api.patch(url, payload); 
+      } else {
+          await api.post('/apartamentos', payload);
+      }
+      
+      await listarApartamentos(); 
+      handleClose();
+      
+    } catch (error) {
+      console.error(`Erro ao salvar apartamento:`, error);
+      alert(`Erro ao salvar apartamento. Verifique o console.`);
     }
-
-    handleClose();
   };
 
-  const handleDelete = (id) => {
-    if (confirm("Deseja realmente excluir este apartamento?")) {
-      setApartamentos(apartamentos.filter((a) => a.id !== id));
+  const handleDelete = async (id) => {
+    if (!confirm("Deseja realmente excluir este apartamento?")) {
+      return;
+    }
+
+    try {
+      await api.delete(`/apartamentos/${id}`);
+      await listarApartamentos(); 
+    } catch (error) {
+      console.error("Erro ao excluir apartamento:", error);
+      alert("Erro ao excluir apartamento. Veja o console.");
     }
   };
 
@@ -66,57 +100,63 @@ export default function Apartamentos() {
             + Adicionar Apartamento
           </button>
 
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Bloco</th>
-                <th>Número</th>
-                <th>Andar</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {apartamentos.map((ap) => (
-                <tr key={ap.id} className={styles.apRow}>
-                  <td>
-                    {ap.id}
-                    <div className={styles.tooltip}>
-                      <p>
-                        <strong>ID:</strong> {ap.id}
-                      </p>
-                      <p>
-                        <strong>Bloco:</strong> {ap.bloco}
-                      </p>
-                      <p>
-                        <strong>Número:</strong> {ap.numero}
-                      </p>
-                      <p>
-                        <strong>Andar:</strong> {ap.andar}
-                      </p>
-                    </div>
-                  </td>
-                  <td>{ap.bloco}</td>
-                  <td>{ap.numero}</td>
-                  <td>{ap.andar}</td>
-                  <td>
-                    <button
-                      className={styles.editBtn}
-                      onClick={() => handleEditAp(ap)}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      className={styles.deleteBtn}
-                      onClick={() => handleDelete(ap.id)}
-                    >
-                      Excluir
-                    </button>
-                  </td>
+          {loading ? (
+            <p>Carregando lista de apartamentos...</p>
+          ) : apartamentos.length === 0 ? (
+            <p>Nenhum apartamento encontrado.</p>
+          ) : (
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Bloco</th>
+                  <th>Número</th>
+                  <th>Andar</th>
+                  <th>Ações</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {apartamentos.map((ap) => (
+                  <tr key={ap.ap_id} className={styles.apRow}>
+                    <td>
+                      {ap.ap_id}
+                      <div className={styles.tooltip}>
+                        <p>
+                          <strong>ID:</strong> {ap.ap_id}
+                        </p>
+                        <p>
+                          <strong>Bloco:</strong> {ap.bloco_id}
+                        </p>
+                        <p>
+                          <strong>Número:</strong> {ap.ap_numero}
+                        </p>
+                        <p>
+                          <strong>Andar:</strong> {ap.ap_andar}
+                        </p>
+                      </div>
+                    </td>
+                    <td>{ap.bloco_id}</td>
+                    <td>{ap.ap_numero}</td>
+                    <td>{ap.ap_andar}</td>
+                    <td>
+                      <button
+                        className={styles.editBtn}
+                        onClick={() => handleEditAp(ap)}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        className={styles.deleteBtn}
+                        onClick={() => handleDelete(ap.ap_id)}
+                      >
+                        Excluir
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 
@@ -132,29 +172,30 @@ export default function Apartamentos() {
               <input
                 type="number"
                 name="id"
-                placeholder="ID"
-                defaultValue={editingAp?.id || ""}
+                placeholder="ID (Gerado automaticamente)"
+                defaultValue={editingAp?.ap_id || ""}
+                disabled={editingAp ? true : false} 
                 required
               />
               <input
                 type="text"
                 name="bloco"
                 placeholder="Bloco"
-                defaultValue={editingAp?.bloco || ""}
+                defaultValue={editingAp?.bloco_id || ""}
                 required
               />
               <input
                 type="number"
                 name="numero"
                 placeholder="Número"
-                defaultValue={editingAp?.numero || ""}
+                defaultValue={editingAp?.ap_numero || ""}
                 required
               />
               <input
                 type="text"
                 name="andar"
                 placeholder="Andar"
-                defaultValue={editingAp?.andar || ""}
+                defaultValue={editingAp?.ap_andar || ""}
                 required
               />
               <div className={styles.modalActions}>
