@@ -63,7 +63,7 @@
   color: white;
   border: none;
   padding: 12px 20px;
-  border-radius: 8px;
+  border-radius: 32px;
   cursor: pointer;
   font-size: 16px;
   font-weight: bold;
@@ -168,11 +168,11 @@
 }
 
 .editButton {
-  background: #ffc107;
+  background: #007bff;
   color: #fff;
   border: none;
   padding: 6px 12px;
-  border-radius: 6px;
+  border-radius: 32px;
   cursor: pointer;
   font-size: 14px;
   transition: 0.3s;

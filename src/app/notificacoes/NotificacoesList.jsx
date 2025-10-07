@@ -184,7 +184,7 @@ export default function NotificacoesList({ initialNotificacoes, adicionarNotific
               <p className={styles.infoItem}><strong>Enviado para:</strong> {n.destinatarios} destinatário(s)</p>
               <div className={styles.actions}>
                 <button className={styles.editButton} onClick={() => handleAbrirEdicao(n)}>Editar</button>
-                <button className={styles.deleteButton} onClick={() => handleExcluir(n)}>Excluir Envio</button>
+                <button className={styles.deleteButton} onClick={() => handleExcluir(n)}>Excluir</button>
               </div>
             </div>
           )
