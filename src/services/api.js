@@ -2,11 +2,7 @@ import axios from 'axios';
 
 // Crie a instância do Axios com a URL base
 const api = axios.create({
-<<<<<<< Updated upstream
   baseURL: 'http://localhost:3333',
-=======
-  baseURL: "http://localhost:3333",
->>>>>>> Stashed changes
 });
 
 // Adicione o interceptor de requisições

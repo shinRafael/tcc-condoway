@@ -55,21 +55,13 @@ export default function Apartamentos() {
       andar: formAp.andar,
     };
     
-<<<<<<< Updated upstream
     const url = `/apartamentos/${editingAp?.ap_id}`;
-=======
-    const url = editingAp ? `/apartamentos/${editingAp.ap_id}` : "/apartamentos";
->>>>>>> Stashed changes
     
     try {
       if (editingAp) {
           await api.patch(url, payload); 
       } else {
-<<<<<<< Updated upstream
           await api.post('/apartamentos', payload);
-=======
-          await api.post(url, payload);
->>>>>>> Stashed changes
       }
       
       await listarApartamentos(); 
@@ -88,10 +80,6 @@ export default function Apartamentos() {
 
     try {
       await api.delete(`/apartamentos/${id}`);
-<<<<<<< Updated upstream
-=======
-      
->>>>>>> Stashed changes
       await listarApartamentos(); 
     } catch (error) {
       console.error("Erro ao excluir apartamento:", error);
@@ -159,11 +147,7 @@ export default function Apartamentos() {
                       </button>
                       <button
                         className={styles.deleteBtn}
-<<<<<<< Updated upstream
                         onClick={() => handleDelete(ap.ap_id)}
-=======
-                        onClick={() => handleDelete(ap.ap_id)} 
->>>>>>> Stashed changes
                       >
                         Excluir
                       </button>
