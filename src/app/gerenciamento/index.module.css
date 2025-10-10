@@ -139,3 +139,10 @@
   .modalActions, .formButtons { flex-direction: column; }
   .saveButton, .cancelButton, .botaoCadastrar { width: 100%; }
 }
+/* Adicione este código ao final do arquivo */
+
+.disabledInput {
+  background-color: #f3f4f6; /* cinza claro */
+  cursor: not-allowed;
+  color: #6b7280; /* texto cinza escuro */
+}
