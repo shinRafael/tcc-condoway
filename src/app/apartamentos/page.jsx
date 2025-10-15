@@ -9,8 +9,15 @@ export default function Apartamentos() {
   const [showModal, setShowModal] = useState(false);
   const [editingAp, setEditingAp] = useState(null);
 
+  const [showLoteModal, setShowLoteModal] = useState(false);
+
   const [apartamentos, setApartamentos] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [showList, setShowList] = useState(true);
+  const [filterField, setFilterField] = useState('bloco');
+
+  const [searchTerm, setSearchTerm] = useState('');
 
   const listarApartamentos = async () => {
     setLoading(true);
@@ -37,11 +44,13 @@ export default function Apartamentos() {
   const handleEditAp = (ap) => {
     setEditingAp(ap);
     setShowModal(true);
+    setShowLoteModal(false);
   };
 
   const handleClose = () => {
     setShowModal(false);
     setEditingAp(null);
+    setShowLoteModal(false);
   };
 
   const handleSave = async (e) => {
@@ -87,6 +96,60 @@ export default function Apartamentos() {
     }
   };
 
+  const handleSaveLote = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const formLote = Object.fromEntries(formData);
+    
+    const bloco = formLote.bloco;
+    const andar = formLote.andar;
+    const numInicial = Number(formLote.numInicial);
+    const numFinal = Number(formLote.numFinal);
+    
+    if (numFinal <= numInicial) {
+      alert("O número final deve ser maior que o número inicial.");
+      return;
+    }
+    
+    const total = numFinal - numInicial + 1;
+    let requests = [];
+    
+    for (let i = 0; i < total; i++) {
+        const apNumero = numInicial + i;
+        const payload = {
+            bloc: bloco,
+            numero: apNumero,
+            andar: andar
+        };
+        requests.push(api.post('/apartamentos', payload));
+    }
+    
+    try {
+        await Promise.all(requests);
+        alert(`${total} apartamentos cadastrados com sucesso no Bloco ${bloco}!`);
+        await listarApartamentos();
+        handleClose();
+    } catch (error) {
+        console.error('Erro ao cadastrar lote:', error);
+        alert('Erro ao cadastrar apartamentos em lote. Verifique o console.');
+    }
+  };
+
+
+  const filteredApartamentos = apartamentos.filter(ap => {
+    const term = searchTerm.toLowerCase();
+
+    if (!term) return true;
+
+    if (filterField === 'bloco') {
+      return ap.bloco_id && ap.bloco_id.toString().toLowerCase().includes(term);
+    } else if (filterField === 'numero') {
+      return ap.ap_numero && ap.ap_numero.toString().includes(term);
+    }
+
+    return false;
+  });
+
   return (
     <div className="page-container">
       <PageHeader
@@ -99,67 +162,119 @@ export default function Apartamentos() {
           <button className={styles.addBtn} onClick={handleAddAp}>
             + Adicionar Apartamento
           </button>
+          
+          <button 
+              className={`${styles.addBtn} ${styles.buttonMarginLeft}`}
+              onClick={() => setShowLoteModal(true)}
+          >
+            + Cadastro Rápido (Lote)
+          </button>
+          
+          {/* APLICAÇÃO DA CLASSE CSS: Contêiner de Filtro */}
+          <div className={styles.filterContainer}>
+            
+            {/* Rádio Buttons com Classes CSS */}
+            <div className={styles.radioGroup}>
+              <span style={{ marginRight: '10px' }}>Buscar por:</span>
+              <label style={{ marginRight: '15px' }}>
+                <input
+                  type="radio"
+                  name="filterGroup"
+                  value="bloco"
+                  checked={filterField === 'bloco'}
+                  onChange={() => setFilterField('bloco')}
+                  style={{ marginRight: '5px' }}
+                />
+                Bloco
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="filterGroup"
+                  value="numero"
+                  checked={filterField === 'numero'}
+                  onChange={() => setFilterField('numero')}
+                  style={{ marginRight: '5px' }}
+                />
+                Número
+              </label>
+            </div>
+            
+            {/* Input de Pesquisa com Classe CSS */}
+            <input
+              type="text"
+              placeholder={`Digite o ${filterField === 'bloco' ? 'Bloco (Ex: A)' : 'Número (Ex: 101)'}...`}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={styles.searchInput}
+            />
+          </div>
 
-          {loading ? (
-            <p>Carregando lista de apartamentos...</p>
-          ) : apartamentos.length === 0 ? (
-            <p>Nenhum apartamento encontrado.</p>
-          ) : (
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Bloco</th>
-                  <th>Número</th>
-                  <th>Andar</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {apartamentos.map((ap) => (
-                  <tr key={ap.ap_id} className={styles.apRow}>
-                    <td>
-                      {ap.ap_id}
-                      <div className={styles.tooltip}>
-                        <p>
-                          <strong>ID:</strong> {ap.ap_id}
-                        </p>
-                        <p>
-                          <strong>Bloco:</strong> {ap.bloco_id}
-                        </p>
-                        <p>
-                          <strong>Número:</strong> {ap.ap_numero}
-                        </p>
-                        <p>
-                          <strong>Andar:</strong> {ap.ap_andar}
-                        </p>
-                      </div>
-                    </td>
-                    <td>{ap.bloco_id}</td>
-                    <td>{ap.ap_numero}</td>
-                    <td>{ap.ap_andar}</td>
-                    <td>
-                      <button
-                        className={styles.editBtn}
-                        onClick={() => handleEditAp(ap)}
-                      >
-                        Editar
-                      </button>
-                      <button
-                        className={styles.deleteBtn}
-                        onClick={() => handleDelete(ap.ap_id)}
-                      >
-                        Excluir
-                      </button>
-                    </td>
+          {showList ? (
+            loading ? (
+              <p>Carregando lista de apartamentos...</p>
+            ) : filteredApartamentos.length === 0 && searchTerm !== '' ? ( // Se não houver resultados E a busca não for vazia
+              <p>Nenhum apartamento encontrado com o filtro atual.</p>
+            ) : filteredApartamentos.length === 0 && searchTerm === '' ? ( // Se não houver resultados e a lista estiver vazia (problema na API)
+              <p>Nenhum apartamento encontrado. Verifique o banco de dados.</p>
+            ) : (
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Bloco</th>
+                    <th>Número</th>
+                    <th>Andar</th>
+                    <th>Ações</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                </thead>
+                <tbody>
+                  {filteredApartamentos.map((ap) => (
+                    <tr key={ap.ap_id} className={styles.apRow}>
+                      <td>
+                        {ap.ap_id}
+                        <div className={styles.tooltip}>
+                          <p>
+                            <strong>ID:</strong> {ap.ap_id}
+                          </p>
+                          <p>
+                            <strong>Bloco:</strong> {ap.bloco_id}
+                          </p>
+                          <p>
+                            <strong>Número:</strong> {ap.ap_numero}
+                          </p>
+                          <p>
+                            <strong>Andar:</strong> {ap.ap_andar}
+                          </p>
+                        </div>
+                      </td>
+                      <td>{ap.bloco_id}</td>
+                      <td>{ap.ap_numero}</td>
+                      <td>{ap.ap_andar}</td>
+                      <td>
+                        <button
+                          className={styles.editBtn}
+                          onClick={() => handleEditAp(ap)}
+                        >
+                          Editar
+                        </button>
+                        <button
+                          className={styles.deleteBtn}
+                          onClick={() => handleDelete(ap.ap_id)}
+                        >
+                          Excluir
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )
+          ) : null}
         </div>
       </div>
-
+      
+      {/* MODAL PADRÃO (Adicionar/Editar) */}
       {showModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
@@ -174,8 +289,10 @@ export default function Apartamentos() {
                 name="id"
                 placeholder="ID (Gerado automaticamente)"
                 defaultValue={editingAp?.ap_id || ""}
+                // APLICAÇÃO DA CLASSE CONDICIONAL
+                className={editingAp ? styles.visibleOnEdit : styles.hiddenOnAdd}
                 disabled={editingAp ? true : false} 
-                required
+                required={editingAp}
               />
               <input
                 type="text"
@@ -205,6 +322,53 @@ export default function Apartamentos() {
                 <button
                   type="button"
                   onClick={handleClose}
+                  className={styles.cancelBtn}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      
+      {/* NOVO MODAL DE CADASTRO EM LOTE */}
+      {showLoteModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h2>Cadastro Rápido (Lote)</h2>
+            <form onSubmit={handleSaveLote} className={styles.form}> 
+              <input
+                type="text"
+                name="bloco"
+                placeholder="Bloco"
+                required
+              />
+              <input
+                type="text"
+                name="andar"
+                placeholder="Andar"
+                required
+              />
+              <input
+                type="number"
+                name="numInicial"
+                placeholder="Número Inicial (Ex: 101)"
+                required
+              />
+              <input
+                type="number"
+                name="numFinal"
+                placeholder="Número Final (Ex: 110)"
+                required
+              />
+              <div className={styles.modalActions}>
+                <button type="submit" className={styles.saveBtn}>
+                  Criar Lote
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClose} 
                   className={styles.cancelBtn}
                 >
                   Cancelar
