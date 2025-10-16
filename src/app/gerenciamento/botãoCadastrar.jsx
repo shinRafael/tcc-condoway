@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react'; // Adicione useEffect
 import styles from './index.module.css';
 import api from '@/services/api';
+import FabButton from '@/componentes/FabButton/FabButton';
+import IconAction from '@/componentes/IconAction/IconAction';
+import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 
 export default function BotaoCadastrar({ onSaved }) {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
@@ -66,9 +69,7 @@ export default function BotaoCadastrar({ onSaved }) {
 
   return (
     <>
-      <button className={styles.botaoCadastrar} onClick={toggleModal}>
-        Cadastrar Despesa
-      </button>
+      <FabButton label="Cadastrar Despesa" onClick={toggleModal} />
 
       {mostrarFormulario && (
         <div className={styles.modalOverlay} onClick={closeOnOverlay}>

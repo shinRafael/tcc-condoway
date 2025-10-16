@@ -4,6 +4,9 @@ import api from "@/services/api"; // Certifique-se que o caminho para seu 'api.j
 import styles from "./usuario.module.css";
 import PageHeader from "@/componentes/PageHeader";
 import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
+import FabButton from '@/componentes/FabButton/FabButton';
+import IconAction from '@/componentes/IconAction/IconAction';
+import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 
 // Objeto para limpar o formulário
 const usuarioInicial = {
@@ -135,9 +138,7 @@ export default function UsuariosPage() {
       <PageHeader title="Gerenciamento de Usuários" rightContent={<RightHeaderBrand />} />
       <div className="page-content">
         <div style={{ marginBottom: "20px" }}>
-          <button className={styles.addUserBtn} onClick={handleAddClick}>
-            + Adicionar Usuário
-          </button>
+          <FabButton label="Adicionar Usuário" onClick={handleAddClick} />
         </div>
 
         {showForm && (
@@ -196,9 +197,9 @@ export default function UsuariosPage() {
                     </td>
                     <td>
                       <div className={styles.actionButtons}>
-                        <button className={styles.editBtn} onClick={() => handleEditClick(user)}>Editar</button>
-                        <button className={styles.deleteBtn} onClick={() => handleDeleteUsuario(user.user_id)}>Excluir</button>
-                      </div>
+                        <IconAction icon={FiEdit2} label="Editar" onClick={() => handleEditClick(user)} variant="edit" />
+                        <IconAction icon={FiTrash2} label="Excluir" onClick={() => handleDeleteUsuario(user.user_id)} variant="delete" />
+                        </div>
                     </td>
                   </tr>
                 ))}

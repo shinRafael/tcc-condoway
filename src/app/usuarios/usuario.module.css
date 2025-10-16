@@ -260,3 +260,69 @@
 .morador {
   background-color: #28a745;
 }
+
+/* ====== BOTÃO ADICIONAR ANIMADO AJUSTES ====== */
+.animatedAddButtonContainer {
+  margin-bottom: 28px; /* aumenta o espaçamento entre o botão e os cards abaixo */
+}
+
+.animatedAddButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg,#007bff,#0056b3);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  height: 44px;
+  width: 44px; /* tamanho inicial menor */
+  padding: 0 10px; /* reduz o padding para diminuir área azul */
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(0,123,255,0.16);
+  transition: all 0.28s cubic-bezier(.4,0,.2,1);
+  overflow: hidden;
+}
+
+.animatedAddButton:hover {
+  width: 150px; /* reduz a largura expandida para evitar grande área azul */
+  border-radius: 28px;
+  transform: translateY(-3px);
+}
+
+.animatedAddButton .icon {
+  position: absolute;
+  left: 10px; /* aproxima o ícone da borda esquerda */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity .16s ease, transform .16s ease;
+  opacity: 1;
+}
+
+.animatedAddButton:hover .icon {
+  opacity: 0;
+  transform: scale(0.7) rotate(-90deg);
+}
+
+.animatedAddButton .text {
+  margin-left: 34px; /* reduz distância entre ícone e texto */
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity .16s ease .04s, transform .16s ease .04s;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.animatedAddButton:hover .text {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (max-width: 640px) {
+  .animatedAddButton:hover { width: 120px; }
+  .animatedAddButton .text { font-size: 13px; }
+}
+
+/* fim ajustes botão animado */

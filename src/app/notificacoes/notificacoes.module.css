@@ -15,6 +15,65 @@
   transform: translateY(-2px);
 }
 
+/* ====== BOTÃO ADICIONAR ANIMADO ====== */
+.animatedAddButtonContainer {
+  margin-bottom: 16px;
+}
+
+.animatedAddButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg,#007bff,#0056b3);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  height: 48px;
+  width: 48px;
+  padding: 0 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,123,255,0.18);
+  transition: all 0.32s cubic-bezier(.4,0,.2,1);
+  overflow: hidden;
+}
+
+.animatedAddButton:hover {
+  width: 180px; /* expande para mostrar texto */
+  border-radius: 28px;
+  transform: translateY(-3px);
+}
+
+.animatedAddButton .icon {
+  position: absolute;
+  left: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity .18s ease, transform .18s ease;
+  opacity: 1;
+}
+
+.animatedAddButton:hover .icon {
+  opacity: 0;
+  transform: scale(0.6) rotate(-90deg);
+}
+
+.animatedAddButton .text {
+  margin-left: 40px;
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity .18s ease .06s, transform .18s ease .06s;
+  white-space: nowrap;
+  font-size: 15px;
+}
+
+.animatedAddButton:hover .text {
+  opacity: 1;
+  transform: translateX(0);
+}
+
 /* ====== GRID ====== */
 .grid {
   display: grid;
@@ -82,6 +141,12 @@
   margin-bottom: 12px;
   font-weight: 600;
   line-height: 1.4;
+  /* Limita a altura do bloco de mensagem e permite rolagem interna quando necessário */
+  max-height: 120px; /* ajuste se precisar de mais/menos espaço */
+  overflow-y: auto;
+  white-space: pre-wrap; /* preserva quebras de linha e permite wrap */
+  word-break: break-word; /* quebra palavras longas sem espaços */
+  -webkit-overflow-scrolling: touch; /* suaviza rolagem em dispositivos móveis */
 }
 
 .infoItem {
@@ -155,6 +220,15 @@
   border-radius: 6px;
   border: 1px solid #ccc;
   font-weight: 600;
+}
+
+/* Textarea fixo no modal: não deve expandir o card, apenas rolar internamente */
+.modalContent textarea {
+  height: 140px; /* altura fixa confortável */
+  max-height: 240px; /* limite superior caso queira alterar */
+  overflow-y: auto; /* rolagem interna quando o conteúdo ultrapassar a altura */
+  resize: none; /* impede que o usuário redimensione e que o card cresça */
+  white-space: pre-wrap; /* preserva quebras de linha mas permite wrap */
 }
 
 .modalActions {

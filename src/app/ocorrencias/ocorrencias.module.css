@@ -1,9 +1,50 @@
-/* ====== GRID ====== */
-.grid {
+/* ====== LAYOUT PRINCIPAL (KANBAN) ====== */
+.containerPrincipal {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Colunas responsivas */
+  gap: 20px;
   font-family: 'Inter', sans-serif;
+  width: 100%;
+}
+
+.coluna {
+  background-color: #f4f5f7;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh; /* Altura máxima para a coluna */
+  overflow-y: hidden; /* Esconde a barra de rolagem principal da coluna */
+}
+
+.colunaTitulo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  padding: 0 8px 12px 8px;
+  margin: 0;
+  position: sticky; /* Mantém o título no topo ao rolar */
+  top: 0;
+  background-color: #f4f5f7; /* Fundo para o título fixo */
+  z-index: 1;
+}
+
+/* ====== GRID INTERNO DA COLUNA ====== */
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto; /* Adiciona rolagem apenas aos cards */
+  padding: 4px; /* Pequeno espaçamento para a barra de rolagem não colar nos cards */
+}
+
+/* ====== AVISO DE COLUNA VAZIA ====== */
+.avisoVazio {
+  color: #6b7280;
+  font-size: 0.9rem;
+  padding: 20px;
+  text-align: center;
+  font-style: italic;
 }
 
 /* ====== ANIMAÇÕES ====== */
@@ -28,18 +69,20 @@
   flex-direction: column;
   animation: cardEnter 0.35s ease forwards;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
+  border: 1px solid transparent; /* Borda inicial transparente */
 }
 
 .card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
-  border: 1px solid rgba(14, 165, 233, 0.15);
+  border-color: rgba(14, 165, 233, 0.15); /* Cor da borda no hover */
 }
 
 /* ====== HEADER ====== */
 .cardHeader {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 12px;
 }
 
@@ -52,49 +95,51 @@
 
 .data {
   font-size: 13px;
-  color: #666;
-  font-weight: 600;
+  color: #64748b;
+  font-weight: 500;
 }
 
 /* ====== TIPOGRAFIA ====== */
 .mensagem {
   font-size: 14px;
-  color: #333;
+  color: #334155;
   margin-bottom: 12px;
-  font-weight: 600;
-  line-height: 1.4;
+  font-weight: 400;
+  line-height: 1.5;
+  flex-grow: 1; /* Faz a descrição ocupar o espaço disponível */
 }
 
 /* ====== BOTÕES ====== */
 .actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start; /* Alinhado à esquerda para um visual mais limpo */
+  flex-wrap: wrap; /* Permite que os botões quebrem a linha se não couberem */
   gap: 8px;
-  margin-top: 8px;
+  margin-top: auto; /* Empurra os botões para o final do card */
+  padding-top: 12px;
 }
 
 .actions button {
-  background: #007bff;
-  color: #fff;
+  background: #e2e8f0;
+  color: #475569;
   border: none;
-  padding: 6px 10px;
-  border-radius: 32px;
+  padding: 6px 12px;
+  border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 13px;
-  transition: background 0.3s, transform 0.2s, opacity 0.2s;
+  font-size: 12px;
+  transition: all 0.2s ease;
 }
 
 .actions button:hover {
-  background: #007bff;
-  transform: translateY(-1px);
-  opacity: 0.95;
+  background: #cbd5e1;
+  color: #1e293b;
 }
 
 .actions button:disabled {
-  background: #cccccc;
+  background: #0ea5e9; /* Cor azul para destacar o status atual */
+  color: #ffffff;
   cursor: not-allowed;
-  transform: none;
   opacity: 1;
 }
 
@@ -104,13 +149,148 @@
 }
 
 .emAndamento {
-  border-left: 5px solid #ffc107; /* amarelo */
+  border-left: 5px solid #f59e0b; /* amarelo */
 }
 
 .resolvida {
-  border-left: 5px solid #28a745; /* verde */
+  border-left: 5px solid #10b981; /* verde */
 }
 
 .cancelada {
-  border-left: 5px solid #dc3545; /* vermelho */
+  border-left: 5px solid #ef4444; /* vermelho */
 }
+
+/* ====== LAYOUT PRINCIPAL (ABAS) ====== */
+.containerPrincipalAbas {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+}
+
+/* ====== BOTÕES DE NAVEGAÇÃO ====== */
+.botoesNavegacao {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 8px;
+}
+
+.botoesNavegacao button {
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  background-color: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  transition: background-color 0.2s, color 0.2s;
+  position: relative;
+  bottom: -10px; /* Alinha com a borda inferior */
+}
+
+.botoesNavegacao button.ativo {
+  color: #0ea5e9;
+  border-bottom: 2px solid #0ea5e9;
+}
+
+.botoesNavegacao button:hover:not(.ativo) {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+/* ====== GRID DE CARDS ====== */
+.gridCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* ====== AVISO DE ABA VAZIA ====== */
+.avisoVazio {
+  color: #6b7280;
+  font-size: 1rem;
+  padding: 40px 20px;
+  text-align: center;
+  font-style: italic;
+  grid-column: 1 / -1; /* Ocupa toda a largura do grid */
+  background-color: #f9fafb;
+  border-radius: 12px;
+}
+
+/* ====== ANIMAÇÕES ====== */
+@keyframes cardEnter {
+  0% { opacity: 0; transform: translateY(12px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ====== CARD ====== */
+.card {
+  background: #fff;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  animation: cardEnter 0.35s ease forwards;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
+  border-color: rgba(14, 165, 233, 0.15);
+}
+
+/* ====== HEADER ====== */
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.cardHeader h3 { font-size: 1rem; font-weight: 700; color: #1e293b; margin: 0; }
+.data { font-size: 13px; color: #64748b; font-weight: 500; }
+
+/* ====== TIPOGRAFIA ====== */
+.mensagem {
+  font-size: 14px;
+  color: #334155;
+  margin-bottom: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  flex-grow: 1;
+}
+
+/* ====== BOTÕES DE AÇÃO ====== */
+.actions {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+.actions button {
+  background: #e2e8f0;
+  color: #475569;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+.actions button:hover { background: #cbd5e1; color: #1e293b; }
+.actions button:disabled { background: #0ea5e9; color: #ffffff; cursor: not-allowed; opacity: 1; }
+
+/* ====== STATUS ====== */
+.pendente { border-left: 5px solid #0ea5e9; }
+.emAndamento { border-left: 5px solid #f59e0b; }
+.resolvida { border-left: 5px solid #10b981; }
+.cancelada { border-left: 5px solid #ef4444; }

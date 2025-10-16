@@ -95,20 +95,61 @@ export default function Page() {
    */
   const excluirNotificacao = async (notificacaoParaExcluir) => {
     if (window.confirm("Tem certeza que deseja excluir este envio para TODOS os destinatários?")) {
+
+      const capitalizeLocal = (s) => {
+        if (!s || typeof s !== 'string') return 'Media';
+        return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+      };
+
+      const payload = {
+        not_titulo: notificacaoParaExcluir.titulo || notificacaoParaExcluir.not_titulo,
+        not_mensagem: notificacaoParaExcluir.mensagem || notificacaoParaExcluir.not_mensagem,
+        not_prioridade: capitalizeLocal(notificacaoParaExcluir.prioridade || notificacaoParaExcluir.not_prioridade),
+        not_tipo: notificacaoParaExcluir.tipo || notificacaoParaExcluir.not_tipo,
+      };
+
+      // Helper para log detalhado
+      const logError = (prefix, err) => {
+        console.error(prefix, err);
+        if (err?.response) {
+          console.error(prefix + ' - status:', err.response.status);
+          console.error(prefix + ' - data:', err.response.data);
+        }
+      };
+
       try {
-        // Para enviar um corpo em uma requisição DELETE com Axios, usamos a propriedade 'data'.
-        await api.delete("/notificacoes/envio", {
-          data: {
-            not_titulo: notificacaoParaExcluir.titulo,
-            not_mensagem: notificacaoParaExcluir.mensagem,
-            not_prioridade: notificacaoParaExcluir.prioridade,
-            not_tipo: notificacaoParaExcluir.tipo,
-          }
-        });
+        console.log("Tentando excluir envio com payload (body):", payload);
+        // 1) DELETE com body (Axios suporta via `data`)
+        await api.delete("/notificacoes/envio", { data: payload });
         axiosNotificacoes(); // Recarrega a lista
+        return;
       } catch (error) {
-        console.error("Falha ao excluir o envio:", error);
-        alert("Erro ao excluir o envio. Verifique o console para mais detalhes.");
+        logError('Falha ao excluir (DELETE body)', error);
+
+        // 2) Tentar DELETE usando query params (alguns servidores aceitam)
+        try {
+          console.log('Tentando DELETE com query params', payload);
+          await api.delete('/notificacoes/envio', { params: payload });
+          axiosNotificacoes();
+          return;
+        } catch (err2) {
+          logError('Falha ao excluir (DELETE params)', err2);
+
+          // 3) Fallback: POST com _method=DELETE
+          try {
+            console.log('Tentando fallback via POST com _method=DELETE', payload);
+            await api.post("/notificacoes/envio", { ...payload, _method: "DELETE" });
+            axiosNotificacoes();
+            return;
+          } catch (err3) {
+            logError('Falha no fallback (POST _method)', err3);
+
+            // Por fim, mostra mensagem de erro amigável
+            const status = err3?.response?.status || err2?.response?.status || error?.response?.status;
+            const data = err3?.response?.data || err2?.response?.data || error?.response?.data;
+            alert(`Erro ao excluir o envio. Status: ${status || 'desconhecido'}. Veja console para detalhes.`);
+          }
+        }
       }
     }
   };

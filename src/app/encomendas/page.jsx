@@ -3,6 +3,9 @@ import { useState } from "react";
 import styles from "./encomendas.module.css";
 import PageHeader from "@/componentes/PageHeader";
 import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
+import FabButton from '@/componentes/FabButton/FabButton';
+import IconAction from '@/componentes/IconAction/IconAction';
+import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 
 export default function Page() {
   const [encomendas, setEncomendas] = useState([
@@ -80,10 +83,8 @@ export default function Page() {
 
         {/* Botão adicionar */}
         <div style={{ marginBottom: "20px" }}>
-        <button className={styles.addButton} onClick={() => setShowForm(!showForm)}>
-          {showForm ? "Cancelar" : "Adicionar Encomenda"}
-        </button>
-      </div>
+          <FabButton label={showForm ? "Cancelar" : "Adicionar Encomenda"} onClick={() => setShowForm(!showForm)} />
+        </div>
 
       {/* Formulário */}
       {showForm && (
@@ -167,15 +168,9 @@ export default function Page() {
                         Salvar
                       </button>
                     ) : (
-                      <button
-                        className={styles.editButton}
-                        onClick={() => {
-                          setEditandoId(enc.enc_id);
-                          setNovoStatus(enc.enc_status);
-                        }}
-                      >
-                        Editar
-                      </button>
+                      <>
+                        <IconAction icon={FiEdit2} label="Editar" onClick={() => { setEditandoId(enc.enc_id); setNovoStatus(enc.enc_status); }} variant="edit" />
+                      </>
                     )}
                   </td>
                 </tr>

@@ -1,0 +1,70 @@
+/* Container para manter fluxo da página */
+.fabContainer { margin-bottom: 16px; }
+
+.fab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg,#007bff,#0056b3);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  height: 48px;
+  width: 48px;
+  padding: 0 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,123,255,0.18);
+  transition: all 0.32s cubic-bezier(.4,0,.2,1);
+  overflow: hidden;
+}
+
+/* Expande ao passar o mouse para exibir o texto */
+.fab:hover {
+  width: 160px;
+  border-radius: 28px;
+  transform: translateY(-3px);
+}
+
+.icon {
+  position: absolute;
+  left: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity .18s ease, transform .18s ease;
+  opacity: 1;
+}
+
+.fab:hover .icon {
+  opacity: 0;
+  transform: scale(0.6) rotate(-90deg);
+}
+
+.text {
+  margin-left: 40px;
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity .18s ease .06s, transform .18s ease .06s;
+  white-space: nowrap;
+  font-size: 15px;
+}
+
+.fab:hover .text {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Acessibilidade - foco via teclado */
+.fab:focus {
+  outline: 3px solid rgba(0,123,255,0.18);
+  outline-offset: 3px;
+}
+
+/* Responsivo - não expande tanto em telas pequenas */
+@media (max-width: 480px) {
+  .fab { width: 48px; }
+  .fab:hover { width: 120px; }
+  .text { font-size: 13px; }
+}

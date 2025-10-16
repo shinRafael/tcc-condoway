@@ -2,6 +2,9 @@
 import { useState, useEffect } from "react";
 import styles from "./notificacoes.module.css";
 import api from "@/services/api";
+import { Plus } from 'lucide-react';
+import IconAction from '@/componentes/IconAction/IconAction';
+import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 
 export default function NotificacoesList({ initialNotificacoes, adicionarNotificacao, salvarEdicao, excluirNotificacao }) {
   const [notificacoes, setNotificacoes] = useState(initialNotificacoes);
@@ -74,7 +77,7 @@ export default function NotificacoesList({ initialNotificacoes, adicionarNotific
   };
 
   const handleExcluir = (notificacao) => {
-    excluirNotificacao(notificacao);
+    excluirNotificacao({ titulo: notificacao.titulo, mensagem: notificacao.mensagem, prioridade: notificacao.prioridade, tipo: notificacao.tipo });
   };
 
   const handleAbrirEdicao = (notificacao) => {
@@ -101,8 +104,19 @@ export default function NotificacoesList({ initialNotificacoes, adicionarNotific
   };
 
   return (
-    <div>
-      <button className={styles.addButton} onClick={() => setShowModal(true)}>+ Adicionar Notificação</button>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <div className={styles.leftActions}>
+          <button className={styles.animatedAddButton} onClick={() => setShowModal(true)}>
+            <span className={styles.icon}><Plus size={20} /></span>
+            <span className={styles.text}>Adicionar</span>
+          </button>
+        </div>
+
+        <div className={styles.rightActions}>
+          {/* filtros e controles existentes */}
+        </div>
+      </div>
 
       {showModal && (
         <div className={styles.modalOverlay}>
@@ -156,14 +170,14 @@ export default function NotificacoesList({ initialNotificacoes, adicionarNotific
 
               {/* Campo Prioridade (sem alteração) */}
               <div className={styles.formGroup}><label>Prioridade</label><select value={nova.prioridade} onChange={(e) => setNova({ ...nova, prioridade: e.target.value })}><option value="baixa">Baixa</option><option value="media">Média</option><option value="alta">Alta</option></select></div>
-              <div className={styles.modalActions}><button type="submit">Salvar</button><button type="button" onClick={() => setShowModal(false)}>Cancelar</button></div>
+              <div className={styles.modalActions}><button type="submit" className={styles.saveButton}>Salvar</button><button type="button" className={styles.cancelButton} onClick={() => setShowModal(false)}>Cancelar</button></div>
             </form>
           </div>
         </div>
       )}
 
       <div className={styles.grid}>
-        {notificacoes.map((n) =>
+        {notificacoes.map((n) => (
           editandoId === n.id ? (
             // FORMULÁRIO DE EDIÇÃO
             <div key={n.id} className={styles.card}>
@@ -183,12 +197,17 @@ export default function NotificacoesList({ initialNotificacoes, adicionarNotific
               <p className={styles.infoItem}><strong>Prioridade:</strong> <span className={getPrioridadeClass(n.prioridade)}>{n.prioridade?.toUpperCase()}</span></p>
               <p className={styles.infoItem}><strong>Enviado para:</strong> {n.destinatarios} destinatário(s)</p>
               <div className={styles.actions}>
-                <button className={styles.editButton} onClick={() => handleAbrirEdicao(n)}>Editar</button>
-                <button className={styles.deleteButton} onClick={() => handleExcluir(n)}>Excluir</button>
+                <IconAction icon={FiEdit2} label="Editar" onClick={() => handleAbrirEdicao(n)} variant="edit" />
+                <IconAction
+                  icon={FiTrash2}
+                  label="Excluir"
+                  onClick={() => handleExcluir({ titulo: n.titulo, mensagem: n.mensagem, prioridade: n.prioridade, tipo: n.tipo })}
+                  variant="delete"
+                />
               </div>
             </div>
           )
-        )}
+        ))}
       </div>
     </div>
   );
