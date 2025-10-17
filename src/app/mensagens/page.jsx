@@ -3,81 +3,65 @@ import MensagensList from "./MensagensList";
 import PageHeader from "@/componentes/PageHeader";
 import { useEffect, useState } from "react";
 import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
-
-const conversasIniciais = [
-  {
-    moradorId: 1,
-    moradorNome: "João Silva",
-    apartamento: "Bloco A - 102",
-    mensagens: [
-      {
-        id: 1,
-        remetente: "morador",
-        texto: "Boa noite, estou com problema na garagem.",
-        data: "2025-08-28 20:10",
-      },
-      {
-        id: 2,
-        remetente: "sindico",
-        texto: "Boa noite! Qual seria o problema?",
-        data: "2025-08-28 20:12",
-      },
-    ],
-  },
-  {
-    moradorId: 2,
-    moradorNome: "Maria Souza",
-    apartamento: "Bloco B - 305",
-    mensagens: [
-      {
-        id: 1,
-        remetente: "morador",
-        texto: "Gostaria de agendar uma reunião.",
-        data: "2025-08-28 18:00",
-      },
-    ],
-  },
-];
+import api from "@/services/api";
 
 export default function Page() {
-  const [conversas, setConversas] = useState(conversasIniciais);
+  const [conversasIniciais, setConversasIniciais] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Função para atualizar o badge quando as mensagens mudarem
-  const atualizarBadge = (conversasAtualizadas) => {
-    const mensagensNaoLidas = conversasAtualizadas.filter(conversa => 
+  // Busca os dados iniciais da API
+  useEffect(() => {
+    const fetchConversas = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get('/mensagens');
+        if (response.data?.sucesso) {
+          const conversasDaApi = response.data.dados;
+          setConversasIniciais(conversasDaApi);
+          // Atualiza o badge uma vez após carregar os dados
+          atualizarBadge(conversasDaApi);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar mensagens:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchConversas();
+  }, []);
+  
+  // Função para atualizar o badge (agora chamada internamente ou pelo filho)
+  const atualizarBadge = (conversas) => {
+    const mensagensNaoLidas = conversas.filter(conversa => 
       conversa.mensagens.some(msg => msg.remetente === "morador" && !msg.lida)
     ).length;
     
+    // Dispara um evento customizado que o Sidebar pode ouvir
     try {
       const ev = new CustomEvent("sidebar-badge-event", {
         detail: { type: "sidebar-badge-update", key: "mensagens", count: mensagensNaoLidas },
       });
       window.dispatchEvent(ev);
+      // Salva no localStorage para persistir
       const map = JSON.parse(localStorage.getItem("sidebarBadges") || "{}");
       map.mensagens = mensagensNaoLidas;
       localStorage.setItem("sidebarBadges", JSON.stringify(map));
     } catch {}
   };
 
-  // Calcular badge inicial
-  useEffect(() => {
-    atualizarBadge(conversas);
-  }, []);
-
-  // Callback para quando as mensagens forem atualizadas no componente filho
-  const handleMensagensUpdate = (conversasAtualizadas) => {
-    setConversas(conversasAtualizadas);
-    atualizarBadge(conversasAtualizadas);
-  };
-
   return (
     <div className="page-container">
       <PageHeader title="Mensagens" rightContent={<RightHeaderBrand />} />
       <div className="page-content">
-        <MensagensList 
-          conversasIniciais={conversas} 
-          onMensagensUpdate={handleMensagensUpdate}
-        />
+        {loading ? (
+          <p>Carregando conversas...</p>
+        ) : (
+          // Passamos a função de atualizar o badge para o filho
+          <MensagensList 
+            conversasIniciais={conversasIniciais} 
+            onBadgeUpdate={atualizarBadge}
+          />
+        )}
       </div>
     </div>
   );
