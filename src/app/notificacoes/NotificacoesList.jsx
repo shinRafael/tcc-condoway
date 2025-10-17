@@ -2,9 +2,8 @@
 import { useState, useEffect } from "react";
 import styles from "./notificacoes.module.css";
 import api from "@/services/api";
-import { Plus } from 'lucide-react';
+import { FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi';
 import IconAction from '@/componentes/IconAction/IconAction';
-import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 
 export default function NotificacoesList({ initialNotificacoes, adicionarNotificacao, salvarEdicao, excluirNotificacao }) {
   const [notificacoes, setNotificacoes] = useState(initialNotificacoes);
@@ -108,7 +107,7 @@ export default function NotificacoesList({ initialNotificacoes, adicionarNotific
       <div className={styles.header}>
         <div className={styles.leftActions}>
           <button className={styles.animatedAddButton} onClick={() => setShowModal(true)}>
-            <span className={styles.icon}><Plus size={20} /></span>
+            <span className={styles.icon}><FiPlus size={20} /></span>
             <span className={styles.text}>Adicionar</span>
           </button>
         </div>
