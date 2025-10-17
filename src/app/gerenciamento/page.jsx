@@ -6,6 +6,8 @@ import styles from './index.module.css'; // caminho compartilhado
 import PageHeader from '@/componentes/PageHeader';
 import RightHeaderBrand from '@/componentes/PageHeader/RightHeaderBrand';
 import BotaoCadastrar from './botãoCadastrar';
+import IconAction from '@/componentes/IconAction/IconAction'; // Importado
+import { FiEdit2, FiTrash2 } from 'react-icons/fi'; // Importado
 
 import api from '@/services/api';
 
@@ -162,8 +164,20 @@ export default function GerenciamentoPage() {
                           : "—"}
                       </td>
                       <td>
-                        <button className={styles.iconButton} onClick={() => abrirEdicao(item)}>✏️</button>
-                        <button className={styles.iconButton} onClick={() => handleDelete(item.ger_id)}>🗑️</button>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <IconAction 
+                            icon={FiEdit2} 
+                            label="Editar" 
+                            variant="edit"
+                            onClick={() => abrirEdicao(item)} 
+                          />
+                          <IconAction 
+                            icon={FiTrash2} 
+                            label="Excluir" 
+                            variant="delete"
+                            onClick={() => handleDelete(item.ger_id)} 
+                          />
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -209,4 +223,4 @@ export default function GerenciamentoPage() {
       )}
     </div>
   );
-} 
+}

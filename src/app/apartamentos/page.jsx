@@ -4,6 +4,9 @@ import styles from "./apartamentos.module.css";
 import PageHeader from "@/componentes/PageHeader";
 import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
 import api from "@/services/api";
+import FabButton from '@/componentes/FabButton/FabButton';
+import IconAction from '@/componentes/IconAction/IconAction'; // Importado
+import { FiEdit2, FiTrash2 } from 'react-icons/fi'; // Importado
 
 export default function Apartamentos() {
   const [showModal, setShowModal] = useState(false);
@@ -159,16 +162,10 @@ export default function Apartamentos() {
 
       <div className="page-content">
         <div className={styles.content}>
-          <button className={styles.addBtn} onClick={handleAddAp}>
-            + Adicionar Apartamento
-          </button>
-          
-          <button 
-              className={`${styles.addBtn} ${styles.buttonMarginLeft}`}
-              onClick={() => setShowLoteModal(true)}
-          >
-            + Cadastro Rápido (Lote)
-          </button>
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+            <FabButton label="Adicionar Apartamento" onClick={handleAddAp} />
+            <FabButton label="Cadastro Rápido (Lote)" onClick={() => setShowLoteModal(true)} />
+          </div>
           
           {/* APLICAÇÃO DA CLASSE CSS: Contêiner de Filtro */}
           <div className={styles.filterContainer}>
@@ -252,18 +249,20 @@ export default function Apartamentos() {
                       <td>{ap.ap_numero}</td>
                       <td>{ap.ap_andar}</td>
                       <td>
-                        <button
-                          className={styles.editBtn}
-                          onClick={() => handleEditAp(ap)}
-                        >
-                          Editar
-                        </button>
-                        <button
-                          className={styles.deleteBtn}
-                          onClick={() => handleDelete(ap.ap_id)}
-                        >
-                          Excluir
-                        </button>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <IconAction 
+                            icon={FiEdit2} 
+                            label="Editar" 
+                            variant="edit"
+                            onClick={() => handleEditAp(ap)} 
+                          />
+                          <IconAction 
+                            icon={FiTrash2} 
+                            label="Excluir" 
+                            variant="delete"
+                            onClick={() => handleDelete(ap.ap_id)} 
+                          />
+                        </div>
                       </td>
                     </tr>
                   ))}

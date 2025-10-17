@@ -22,7 +22,7 @@
 
 /* Expande ao passar o mouse para exibir o texto */
 .fab:hover {
-  width: 160px;
+  width: 240px; /* Aumentei de 160px para 240px */
   border-radius: 28px;
   transform: translateY(-3px);
 }
@@ -65,6 +65,6 @@
 /* Responsivo - não expande tanto em telas pequenas */
 @media (max-width: 480px) {
   .fab { width: 48px; }
-  .fab:hover { width: 120px; }
+  .fab:hover { width: 220px; } /* Aumentei de 120px para 220px */
   .text { font-size: 13px; }
 }
