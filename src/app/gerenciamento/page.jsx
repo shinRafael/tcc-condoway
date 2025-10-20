@@ -1,36 +1,33 @@
 'use client';
-
 import { useState, useEffect } from 'react';
-import styles from './index.module.css'; // caminho compartilhado
-
+import styles from './index.module.css';
 import PageHeader from '@/componentes/PageHeader';
 import RightHeaderBrand from '@/componentes/PageHeader/RightHeaderBrand';
 import BotaoCadastrar from './botãoCadastrar';
-import IconAction from '@/componentes/IconAction/IconAction'; // Importado
-import { FiEdit2, FiTrash2 } from 'react-icons/fi'; // Importado
-
+import IconAction from '@/componentes/IconAction/IconAction';
+import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 import api from '@/services/api';
+import { useModal } from "@/context/ModalContext"; // Importe o hook
 
 export default function GerenciamentoPage() {
   const [dados, setDados] = useState([]);
   const [editando, setEditando] = useState(null);
   const [formEdit, setFormEdit] = useState({
-    cond_nome: "", // Mantemos para exibição, mas não será editável
+    cond_nome: "",
     ger_data: "",
     ger_descricao: "",
     ger_valor: ""
   });
+  const { showModal } = useModal(); // Use o hook
 
-  // UTIL: formata data pra mostrar na tabela
   const formatDisplayDate = (val) => {
     if (!val) return '—';
     if (/^\d{2}\/\d{2}\/\d{4}$/.test(val)) return val;
     const d = new Date(val);
-    if (!isNaN(d)) return d.toLocaleDateString('pt-BR', { timeZone: 'UTC' }); // Adicionado timeZone para evitar problemas de fuso
+    if (!isNaN(d)) return d.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
     return val;
   };
 
-  // UTIL: converte data para o formato yyyy-mm-dd
   const toISODate = (val) => {
     if (!val) return '';
     if (/^\d{4}-\d{2}-\d{2}/.test(val)) return val.split('T')[0];
@@ -43,7 +40,6 @@ export default function GerenciamentoPage() {
     return '';
   };
 
-  // Buscar lista inicial
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -58,26 +54,22 @@ export default function GerenciamentoPage() {
     fetchData();
   }, []);
 
-  // Cadastro
   const handleSaved = (item) => {
     setDados(prev => [...prev, item]);
   };
 
-  // Exclusão
   const handleDelete = async (id) => {
-    // Adicionado um pop-up de confirmação para segurança
     if (window.confirm("Tem certeza que deseja excluir esta despesa?")) {
       try {
         await api.delete(`/gerenciamento/${id}`);
         setDados(prev => prev.filter(item => Number(item.ger_id) !== Number(id)));
       } catch (error) {
         console.error("Erro ao deletar:", error);
-        alert("Não foi possível excluir a despesa.");
+        showModal("Erro", "Não foi possível excluir a despesa.", "error");
       }
     }
   };
 
-  // Abrir modal de edição
   const abrirEdicao = (item) => {
     setEditando(item);
     setFormEdit({
@@ -88,7 +80,6 @@ export default function GerenciamentoPage() {
     });
   };
 
-  // Salvar edição
   const salvarEdicao = async () => {
     if (!editando) return;
     try {
@@ -101,8 +92,6 @@ export default function GerenciamentoPage() {
 
       const response = await api.patch(`/gerenciamento/${editando.ger_id}`, payload);
       
-      // ***** CORREÇÃO AQUI *****
-      // Mesclamos o item original (que tem o cond_nome) com a resposta da API.
       const updatedItem = {
         ...editando, 
         ...(response.data?.dados ?? {})
@@ -117,7 +106,7 @@ export default function GerenciamentoPage() {
       fecharModal();
     } catch (error) {
       console.error("Erro ao editar:", error);
-      alert("Não foi possível salvar as alterações. Verifique o console para mais detalhes.");
+      showModal("Erro", "Não foi possível salvar as alterações. Verifique o console para mais detalhes.", "error");
     }
   };
 

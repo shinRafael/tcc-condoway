@@ -1,6 +1,6 @@
-// app/layout.js
 import '../styles/globals.css';
 import ClientLayout from '@/componentes/Layout/ClientLayout';
+import { ModalProvider } from '@/context/ModalContext'; // Importe o provider
 
 export const metadata = {
   title: 'CondoWay',
@@ -11,7 +11,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-br">
       <body>
-        <ClientLayout>{children}</ClientLayout>
+        <ModalProvider> {/* Envolva com o provider */}
+          <ClientLayout>{children}</ClientLayout>
+        </ModalProvider>
       </body>
     </html>
   );

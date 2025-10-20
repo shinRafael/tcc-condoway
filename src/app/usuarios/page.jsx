@@ -1,14 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
-import api from "@/services/api"; // Certifique-se que o caminho para seu 'api.js' está correto
+import api from "@/services/api";
 import styles from "./usuario.module.css";
 import PageHeader from "@/componentes/PageHeader";
 import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
 import FabButton from '@/componentes/FabButton/FabButton';
 import IconAction from '@/componentes/IconAction/IconAction';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { useModal } from "@/context/ModalContext"; // Importe o hook
 
-// Objeto para limpar o formulário
 const usuarioInicial = {
   user_nome: "",
   user_email: "",
@@ -17,7 +17,6 @@ const usuarioInicial = {
   user_tipo: "Morador",
 };
 
-// Função para formatar o telefone
 const formatarTelefone = (telefone) => {
   if (!telefone) return "";
   const digitos = telefone.replace(/\D/g, "");
@@ -32,29 +31,24 @@ export default function UsuariosPage() {
   const [showForm, setShowForm] = useState(false);
   const [usuarioEmEdicao, setUsuarioEmEdicao] = useState(usuarioInicial);
   const [isEditing, setIsEditing] = useState(false);
+  const { showModal } = useModal(); // Use o hook
 
-  // Busca os usuários da API
   const fetchUsuarios = async () => {
     try {
       const response = await api.get("/Usuario");
       setUsuarios(response.data.dados);
     } catch (error) {
-      // Este erro de 401 é o que estamos vendo.
-      // Significa que a API exige login.
       if (error.response && error.response.status === 401) {
-        alert("Acesso não autorizado. A API está exigindo autenticação.");
+        showModal("Erro", "Acesso não autorizado. A API está exigindo autenticação.", "error");
       } else {
-        alert("Não foi possível carregar os usuários. Verifique se a API está online.");
+        showModal("Erro", "Não foi possível carregar os usuários. Verifique se a API está online.", "error");
       }
     }
   };
   
-  // Roda a busca de usuários quando a página é carregada
   useEffect(() => {
     fetchUsuarios();
   }, []);
-
-  // --- Funções de Ação ---
 
   const handleAddUsuario = async () => {
     try {
@@ -63,12 +57,12 @@ export default function UsuariosPage() {
         user_telefone: usuarioEmEdicao.user_telefone.replace(/\D/g, ""),
       };
       await api.post("/Usuario", dadosParaEnviar);
-      alert("Usuário cadastrado com sucesso!");
+      showModal("Sucesso", "Usuário cadastrado com sucesso!");
       fetchUsuarios();
       setShowForm(false);
     } catch (error) {
       const erroMsg = error.response?.data?.nmensagem || "Verifique o console da API para mais detalhes.";
-      alert(`Erro ao cadastrar: ${erroMsg}`);
+      showModal("Erro ao cadastrar", erroMsg, "error");
       console.error("Erro detalhado:", error.response || error);
     }
   };
@@ -79,12 +73,12 @@ export default function UsuariosPage() {
       dadosParaAtualizar.user_telefone = dadosParaAtualizar.user_telefone.replace(/\D/g, "");
       
       await api.patch(`/Usuario/${user_id}`, dadosParaAtualizar);
-      alert("Usuário atualizado com sucesso!");
+      showModal("Sucesso", "Usuário atualizado com sucesso!");
       fetchUsuarios();
       setShowForm(false);
     } catch (error) {
       const erroMsg = error.response?.data?.nmensagem || "Erro desconhecido.";
-      alert(`Erro ao atualizar: ${erroMsg}`);
+      showModal("Erro ao atualizar", erroMsg, "error");
     }
   };
 
@@ -92,16 +86,14 @@ export default function UsuariosPage() {
     if (window.confirm("Tem certeza que deseja excluir este usuário?")) {
       try {
         await api.delete(`/Usuario/${id}`);
-        alert("Usuário excluído com sucesso!");
+        showModal("Sucesso", "Usuário excluído com sucesso!");
         fetchUsuarios();
       } catch (error) {
         const erroMsg = error.response?.data?.nmensagem || "Erro desconhecido.";
-        alert(`Erro ao excluir: ${erroMsg}`);
+        showModal("Erro ao excluir", erroMsg, "error");
       }
     }
   };
-
-  // --- Funções de Controle do Formulário ---
 
   const handleSubmit = (e) => {
     e.preventDefault();

@@ -1,26 +1,24 @@
 'use client';
-
-import { useState, useEffect } from 'react'; // Adicione useEffect
+import { useState, useEffect } from 'react';
 import styles from './index.module.css';
 import api from '@/services/api';
 import FabButton from '@/componentes/FabButton/FabButton';
 import IconAction from '@/componentes/IconAction/IconAction';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { useModal } from "@/context/ModalContext"; // Importe o hook
 
 export default function BotaoCadastrar({ onSaved }) {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
-  // Lista para guardar os condomínios que vêm da API
   const [condominios, setCondominios] = useState([]);
   const [formData, setFormData] = useState({
-    // MUDANÇA: Trocamos cond_nome por cond_id
     cond_id: '',
     ger_data: '',
     ger_descricao: '',
     ger_valor: '',
   });
   const [loading, setLoading] = useState(false);
+  const { showModal } = useModal(); // Use o hook
 
-  // Efeito para buscar os condomínios quando o modal é aberto
   useEffect(() => {
     if (mostrarFormulario) {
       const fetchCondominios = async () => {
@@ -57,7 +55,7 @@ export default function BotaoCadastrar({ onSaved }) {
       setMostrarFormulario(false);
     } catch (error) {
       console.error('Erro ao salvar despesa:', error);
-      alert('Erro ao salvar despesa. Verifique os dados e tente novamente.'); // Feedback para o usuário
+      showModal('Erro', 'Erro ao salvar despesa. Verifique os dados e tente novamente.', 'error');
     } finally {
       setLoading(false);
     }
@@ -77,7 +75,6 @@ export default function BotaoCadastrar({ onSaved }) {
             <h3 style={{textAlign: 'center'}}>Cadastrar Despesa</h3>
 
             <form onSubmit={handleSubmit} className={styles.form}>
-              {/* MUDANÇA: Trocamos o input de texto por um select */}
               <label className={styles.label}>
                 Condomínio:
                 <select className={styles.input} name="cond_id" value={formData.cond_id} onChange={handleChange} required>

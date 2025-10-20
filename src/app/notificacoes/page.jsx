@@ -1,28 +1,22 @@
 "use client";
-
 import NotificacoesList from "./NotificacoesList";
 import PageHeader from "@/componentes/PageHeader";
 import { useEffect, useState } from "react";
 import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
 import api from "@/services/api";
+import { useModal } from "@/context/ModalContext"; // Importe o hook
 
 export default function Page() {
   const [notificacoes, setNotificacoes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { showModal } = useModal(); // Use o hook
 
-  /**
-   * Busca os envios de notificação já agrupados pela API.
-   */
   const axiosNotificacoes = async () => {
     setLoading(true);
     try {
-      // 1. Chama o endpoint que retorna os dados já agrupados.
       const response = await api.get("/notificacoes/envios");
       
-      // 2. Formata os dados para o frontend.
       const notificacoesFormatadas = response.data.dados.map(envio => {
-        // Como não temos um ID do banco para o grupo, criamos um ID único para o React
-        // usando o conteúdo da notificação. btoa() cria uma string Base64.
         const idUnicoParaReact = btoa(encodeURIComponent(envio.not_titulo + envio.not_mensagem + envio.not_prioridade + envio.not_tipo));
         
         return {
@@ -31,7 +25,7 @@ export default function Page() {
           mensagem: envio.not_mensagem,
           data: envio.data_ultimo_envio,
           prioridade: envio.not_prioridade,
-          tipo: envio.not_tipo, // Guardamos o tipo, é essencial para editar/excluir
+          tipo: envio.not_tipo,
           destinatarios: envio.total_destinatarios,
         };
       });
@@ -45,9 +39,6 @@ export default function Page() {
     }
   };
 
-  /**
-   * Envia uma nova notificação para a API.
-   */
   const adicionarNotificacao = async (nova) => {
     try {
       const novaNotificacaoAPI = {
@@ -57,19 +48,14 @@ export default function Page() {
         alvo: nova.alvo,
       };
       await api.post("/notificacao", novaNotificacaoAPI);
-      axiosNotificacoes(); // Recarrega a lista para mostrar o novo envio
+      axiosNotificacoes();
     } catch (error) {
       console.error("Falha ao adicionar notificação:", error);
     }
   };
 
-  /**
-   * Salva a edição de um grupo de notificações.
-   */
   const salvarEdicao = async (original, atualizado) => {
     try {
-      // A API precisa do conteúdo original para encontrar os registros
-      // e do novo conteúdo para realizar a atualização.
       await api.patch("/notificacoes/envio", {
         original: {
           not_titulo: original.titulo,
@@ -83,16 +69,13 @@ export default function Page() {
           not_prioridade: atualizado.prioridade,
         }
       });
-      axiosNotificacoes(); // Recarrega a lista para mostrar os dados atualizados
+      axiosNotificacoes();
     } catch (error) {
       console.error("Falha ao editar o envio:", error);
-      alert("Erro ao editar o envio.");
+      showModal("Erro", "Erro ao editar o envio.", "error");
     }
   };
 
-  /**
-   * Exclui um grupo inteiro de notificações.
-   */
   const excluirNotificacao = async (notificacaoParaExcluir) => {
     if (window.confirm("Tem certeza que deseja excluir este envio para TODOS os destinatários?")) {
 
@@ -108,7 +91,6 @@ export default function Page() {
         not_tipo: notificacaoParaExcluir.tipo || notificacaoParaExcluir.not_tipo,
       };
 
-      // Helper para log detalhado
       const logError = (prefix, err) => {
         console.error(prefix, err);
         if (err?.response) {
@@ -119,14 +101,12 @@ export default function Page() {
 
       try {
         console.log("Tentando excluir envio com payload (body):", payload);
-        // 1) DELETE com body (Axios suporta via `data`)
         await api.delete("/notificacoes/envio", { data: payload });
-        axiosNotificacoes(); // Recarrega a lista
+        axiosNotificacoes();
         return;
       } catch (error) {
         logError('Falha ao excluir (DELETE body)', error);
 
-        // 2) Tentar DELETE usando query params (alguns servidores aceitam)
         try {
           console.log('Tentando DELETE com query params', payload);
           await api.delete('/notificacoes/envio', { params: payload });
@@ -135,7 +115,6 @@ export default function Page() {
         } catch (err2) {
           logError('Falha ao excluir (DELETE params)', err2);
 
-          // 3) Fallback: POST com _method=DELETE
           try {
             console.log('Tentando fallback via POST com _method=DELETE', payload);
             await api.post("/notificacoes/envio", { ...payload, _method: "DELETE" });
@@ -144,17 +123,15 @@ export default function Page() {
           } catch (err3) {
             logError('Falha no fallback (POST _method)', err3);
 
-            // Por fim, mostra mensagem de erro amigável
             const status = err3?.response?.status || err2?.response?.status || error?.response?.status;
             const data = err3?.response?.data || err2?.response?.data || error?.response?.data;
-            alert(`Erro ao excluir o envio. Status: ${status || 'desconhecido'}. Veja console para detalhes.`);
+            showModal("Erro", `Erro ao excluir o envio. Status: ${status || 'desconhecido'}. Veja console para detalhes.`, "error");
           }
         }
       }
     }
   };
 
-  // Executa a busca inicial de notificações quando o componente é montado.
   useEffect(() => {
     axiosNotificacoes();
   }, []);

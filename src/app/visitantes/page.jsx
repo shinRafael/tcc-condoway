@@ -2,11 +2,10 @@
 import { useState, useEffect, useMemo } from 'react'
 import api from '../../services/api'
 import '../../styles/globals.css'
-import styles from './visitantes.module.css' // Novo arquivo CSS para o dashboard
+import styles from './visitantes.module.css'
 import PageHeader from '@/componentes/PageHeader';
 import RightHeaderBrand from '@/componentes/PageHeader/RightHeaderBrand';
-
-// --- Dados Mock para simular o Dashboard ---
+import { useModal } from "@/context/ModalContext"; // Importe o hook
 
 const mockVisitantesHoje = [
   { id: 1, nome: 'João da Silva', documento: '123.456.789-00', unidade: 'Bloco A - Apto 101', morador: 'Carlos Souza', qr_code_valido: true, validade: '25/09/2025 23:59' },
@@ -20,28 +19,19 @@ const mockLogAtividades = [
   { id: 3, hora: '19:35', tipo: 'entrada', nome: 'Visitante 123', unidade: 'Apto 205' },
 ];
 
-
-// --- Componente Principal ---
-
 export default function ControleAcessos() {
   const [visitantesHoje, setVisitantesHoje] = useState(mockVisitantesHoje);
-  const [apartamentos, setApartamentos] = useState([]); // Para a busca e notificação
+  const [apartamentos, setApartamentos] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // Fluxo QR Code
   const [scannerAtivo, setScannerAtivo] = useState(false);
-  const [modalAcesso, setModalAcesso] = useState(null); // null, 'autorizado', 'negado'
-
-  // Fluxo Inesperado
+  const [modalAcesso, setModalAcesso] = useState(null);
   const [apartamentoDestino, setApartamentoDestino] = useState('');
   const [notificando, setNotificando] = useState(false);
-  const [statusNotificacao, setStatusNotificacao] = useState(''); // 'aguardando', 'liberado', 'negado'
+  const [statusNotificacao, setStatusNotificacao] = useState('');
   const [visitanteInesperadoNome, setVisitanteInesperadoNome] = useState('');
+  const { showModal } = useModal(); // Use o hook
 
-
-  // Simulando a listagem de apartamentos
   useEffect(() => {
-    // Aqui você chamaria 'listarApartamentos()'
     const mockApartamentos = [
         { ap_id: 1, bloco_id: 'A', ap_andar: 1, ap_numero: 101, morador: 'Carlos Souza' },
         { ap_id: 2, bloco_id: 'A', ap_andar: 2, ap_numero: 205, morador: 'Ana Lima' },
@@ -50,8 +40,6 @@ export default function ControleAcessos() {
     setApartamentos(mockApartamentos);
   }, []);
 
-
-  // --- Lógica para a Lista "Aguardando Chegada Hoje" ---
   const visitantesFiltrados = useMemo(() => {
     if (!searchTerm) return visitantesHoje;
     return visitantesHoje.filter(v =>
@@ -60,13 +48,10 @@ export default function ControleAcessos() {
     );
   }, [visitantesHoje, searchTerm]);
 
-  // --- Lógica para o Fluxo 1: QR Code ---
   const simularScanQR = () => {
     setScannerAtivo(true);
-    // Simula o tempo de leitura da webcam
     setTimeout(() => {
       setScannerAtivo(false);
-      // Simula a validação do QR Code (usando o primeiro mock visitante como exemplo)
       const visitanteValidado = mockVisitantesHoje[0]; 
       
       if (visitanteValidado && visitanteValidado.qr_code_valido) {
@@ -87,48 +72,39 @@ export default function ControleAcessos() {
   };
 
   const handleConfirmarAcesso = (acao) => {
-    // Lógica para chamar API.post('/acesso', { action: acao, ... })
     console.log(`Acesso ${acao} para: ${modalAcesso.visitante.nome}`);
-    // Atualiza o Log de Atividades e remove da lista de espera
     setModalAcesso(null);
-    // setVisitantesHoje(...)
   };
-
-  // --- Lógica para o Fluxo 2: Visitante Inesperado ---
 
   const handleNotificarMorador = () => {
     if (!apartamentoDestino || !visitanteInesperadoNome) {
-        alert('Selecione um apartamento e digite o nome do visitante.');
+        showModal('Atenção', 'Selecione um apartamento e digite o nome do visitante.', 'error');
         return;
     }
     setNotificando(true);
     setStatusNotificacao('Aguardando autorização de Morador...');
     console.log(`Notificando morador do AP ${apartamentoDestino} sobre a chegada de ${visitanteInesperadoNome}`);
     
-    // Simulação da resposta do morador (em tempo real)
     setTimeout(() => {
-        // Simula o morador APROVANDO
         const moradorAprova = true; 
-
         if (moradorAprova) {
             setStatusNotificacao('ENTRADA LIBERADA');
         } else {
             setStatusNotificacao('ACESSO NEGADO PELO MORADOR');
         }
-    }, 4000); // 4 segundos para a resposta
+    }, 4000);
 
   };
 
   const handleConfirmarEntradaInesperado = () => {
     if (statusNotificacao === 'ENTRADA LIBERADA') {
-        // Lógica de registro no sistema
         console.log(`ENTRADA CONFIRMADA para ${visitanteInesperadoNome} (AP ${apartamentoDestino})`);
         setNotificando(false);
         setStatusNotificacao('');
         setVisitanteInesperadoNome('');
         setApartamentoDestino('');
     } else {
-        alert('A entrada não foi liberada pelo morador.');
+        showModal('Atenção', 'A entrada não foi liberada pelo morador.', 'error');
     }
   }
 
@@ -139,8 +115,6 @@ export default function ControleAcessos() {
     setApartamentoDestino('');
   }
 
-
-  // --- Renderização ---
   return (
     <div className="page-container">
       <PageHeader
@@ -151,7 +125,6 @@ export default function ControleAcessos() {
       <div className="page-content">
         <div className={styles.dashboardGrid}>
           
-          {/* 1. Área do Scanner (Widget) */}
           <div className={`${styles.widget} ${styles.scannerArea}`}>
             <h3 className={styles.widgetTitle}>Scanner de QR Code</h3>
             {scannerAtivo ? (
@@ -170,7 +143,6 @@ export default function ControleAcessos() {
             )}
           </div>
           
-          {/* 2. Lista "Aguardando Chegada Hoje" */}
           <div className={`${styles.widget} ${styles.listaAguardando}`}>
             <h3 className={styles.widgetTitle}>Aguardando Chegada Hoje</h3>
             
@@ -199,7 +171,6 @@ export default function ControleAcessos() {
             </div>
           </div>
 
-          {/* 3. Log de Atividade Recente */}
           <div className={`${styles.widget} ${styles.logAtividade}`}>
             <h3 className={styles.widgetTitle}>Log de Atividade Recente</h3>
             <ul className={styles.logList}>
@@ -214,12 +185,10 @@ export default function ControleAcessos() {
             </ul>
           </div>
 
-          {/* 4. Fluxo de Ação 2: Visitante sem QR Code (Inesperado) */}
           <div className={`${styles.widget} ${styles.fluxoInesperado}`}>
             <h3 className={styles.widgetTitle}>Visitante Sem QR Code (Inesperado)</h3>
             
             {notificando && statusNotificacao !== 'ENTRADA LIBERADA' ? (
-                // Exibe o status de espera ou negação
                 <div className={styles.statusBox}>
                     <p className={styles.statusText} style={{ color: statusNotificacao.includes('NEGADO') ? 'red' : '#3498db' }}>
                         {statusNotificacao}
@@ -230,7 +199,6 @@ export default function ControleAcessos() {
                 </div>
 
             ) : notificando && statusNotificacao === 'ENTRADA LIBERADA' ? (
-                // Exibe o status de liberação e botão de confirmação
                 <div className={styles.statusBox}>
                     <p className={styles.statusText} style={{ color: 'green', fontWeight: 'bold' }}>ENTRADA LIBERADA</p>
                     <p>Visitante: {visitanteInesperadoNome}</p>
@@ -246,7 +214,6 @@ export default function ControleAcessos() {
                     </button>
                 </div>
             ) : (
-                // Formulário de Notificação Inicial
                 <form onSubmit={(e) => { e.preventDefault(); handleNotificarMorador(); }}>
                     <div className={styles.formGroup}>
                         <label>Nome do Visitante</label>
@@ -281,8 +248,6 @@ export default function ControleAcessos() {
           </div>
         </div>
 
-
-        {/* Modal de Acesso (Fluxo QR Code) */}
         {modalAcesso && (
           <div className={styles.modalOverlay}>
             <div className={styles.modalContent}>

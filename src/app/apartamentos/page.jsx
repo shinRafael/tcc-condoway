@@ -5,22 +5,20 @@ import PageHeader from "@/componentes/PageHeader";
 import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
 import api from "@/services/api";
 import FabButton from '@/componentes/FabButton/FabButton';
-import IconAction from '@/componentes/IconAction/IconAction'; // Importado
-import { FiEdit2, FiTrash2 } from 'react-icons/fi'; // Importado
+import IconAction from '@/componentes/IconAction/IconAction';
+import { FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { useModal } from "@/context/ModalContext"; // Importe o hook
 
 export default function Apartamentos() {
   const [showModal, setShowModal] = useState(false);
   const [editingAp, setEditingAp] = useState(null);
-
   const [showLoteModal, setShowLoteModal] = useState(false);
-
   const [apartamentos, setApartamentos] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [showList, setShowList] = useState(true);
   const [filterField, setFilterField] = useState('bloco');
-
   const [searchTerm, setSearchTerm] = useState('');
+  const { showModal: showInfoModal } = useModal(); // Renomeie para evitar conflito de nome
 
   const listarApartamentos = async () => {
     setLoading(true);
@@ -29,7 +27,7 @@ export default function Apartamentos() {
       setApartamentos(response.data.dados); 
     } catch(error) {
       console.error('Erro ao buscar apartamentos:', error);
-      alert('Não foi possível carregar a lista de apartamentos');
+      showInfoModal('Erro', 'Não foi possível carregar a lista de apartamentos', 'error');
     } finally {
       setLoading(false);
     }
@@ -81,7 +79,7 @@ export default function Apartamentos() {
       
     } catch (error) {
       console.error(`Erro ao salvar apartamento:`, error);
-      alert(`Erro ao salvar apartamento. Verifique o console.`);
+      showInfoModal('Erro', 'Erro ao salvar apartamento. Verifique o console.', 'error');
     }
   };
 
@@ -95,7 +93,7 @@ export default function Apartamentos() {
       await listarApartamentos(); 
     } catch (error) {
       console.error("Erro ao excluir apartamento:", error);
-      alert("Erro ao excluir apartamento. Veja o console.");
+      showInfoModal("Erro", "Erro ao excluir apartamento. Veja o console.", "error");
     }
   };
 
@@ -110,7 +108,7 @@ export default function Apartamentos() {
     const numFinal = Number(formLote.numFinal);
     
     if (numFinal <= numInicial) {
-      alert("O número final deve ser maior que o número inicial.");
+      showInfoModal("Erro", "O número final deve ser maior que o número inicial.", "error");
       return;
     }
     
@@ -129,12 +127,12 @@ export default function Apartamentos() {
     
     try {
         await Promise.all(requests);
-        alert(`${total} apartamentos cadastrados com sucesso no Bloco ${bloco}!`);
+        showInfoModal("Sucesso", `${total} apartamentos cadastrados com sucesso no Bloco ${bloco}!`);
         await listarApartamentos();
         handleClose();
     } catch (error) {
         console.error('Erro ao cadastrar lote:', error);
-        alert('Erro ao cadastrar apartamentos em lote. Verifique o console.');
+        showInfoModal('Erro', 'Erro ao cadastrar apartamentos em lote. Verifique o console.', 'error');
     }
   };
 
@@ -167,10 +165,8 @@ export default function Apartamentos() {
             <FabButton label="Cadastro Rápido (Lote)" onClick={() => setShowLoteModal(true)} />
           </div>
           
-          {/* APLICAÇÃO DA CLASSE CSS: Contêiner de Filtro */}
           <div className={styles.filterContainer}>
             
-            {/* Rádio Buttons com Classes CSS */}
             <div className={styles.radioGroup}>
               <span style={{ marginRight: '10px' }}>Buscar por:</span>
               <label style={{ marginRight: '15px' }}>
@@ -197,7 +193,6 @@ export default function Apartamentos() {
               </label>
             </div>
             
-            {/* Input de Pesquisa com Classe CSS */}
             <input
               type="text"
               placeholder={`Digite o ${filterField === 'bloco' ? 'Bloco (Ex: A)' : 'Número (Ex: 101)'}...`}
@@ -210,9 +205,9 @@ export default function Apartamentos() {
           {showList ? (
             loading ? (
               <p>Carregando lista de apartamentos...</p>
-            ) : filteredApartamentos.length === 0 && searchTerm !== '' ? ( // Se não houver resultados E a busca não for vazia
+            ) : filteredApartamentos.length === 0 && searchTerm !== '' ? (
               <p>Nenhum apartamento encontrado com o filtro atual.</p>
-            ) : filteredApartamentos.length === 0 && searchTerm === '' ? ( // Se não houver resultados e a lista estiver vazia (problema na API)
+            ) : filteredApartamentos.length === 0 && searchTerm === '' ? (
               <p>Nenhum apartamento encontrado. Verifique o banco de dados.</p>
             ) : (
               <table className={styles.table}>
@@ -273,7 +268,6 @@ export default function Apartamentos() {
         </div>
       </div>
       
-      {/* MODAL PADRÃO (Adicionar/Editar) */}
       {showModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
@@ -288,7 +282,6 @@ export default function Apartamentos() {
                 name="id"
                 placeholder="ID (Gerado automaticamente)"
                 defaultValue={editingAp?.ap_id || ""}
-                // APLICAÇÃO DA CLASSE CONDICIONAL
                 className={editingAp ? styles.visibleOnEdit : styles.hiddenOnAdd}
                 disabled={editingAp ? true : false} 
                 required={editingAp}
@@ -331,7 +324,6 @@ export default function Apartamentos() {
         </div>
       )}
       
-      {/* NOVO MODAL DE CADASTRO EM LOTE */}
       {showLoteModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
