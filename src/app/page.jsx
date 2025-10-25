@@ -2,23 +2,61 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import api from "../services/api"; // sua conexão axios configurada
 
 export default function HomePage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e) => {
-    e.preventDefault();
+  const handleLogin = async (e) => {
+  e.preventDefault();
+  setErro("");
 
-    // Login fixo do síndico
-    if (email === "condoway111@gmail.com" && senha === "way1230") {
-      router.push("/dashboard");
-    } else {
-      setErro("Email ou senha incorretos!");
+  if (!email || !senha) {
+    setErro("Preencha todos os campos.");
+    return;
+  }
+
+  try {
+    setLoading(true);
+    const response = await api.post("/Usuario/login", {
+      user_email: email,
+      user_senha: senha,
+    });
+
+    // Ajuste aqui, conforme o retorno da API
+    const { dados } = response.data;
+
+    const token = dados.token; // vem dentro de "dados"
+    const usuario = dados.usuario;npm 
+
+    if (!token) {
+      setErro("Resposta inesperada da API.");
+      return;
     }
-  };
+
+    localStorage.setItem("authToken", token);
+    localStorage.setItem("userType", usuario.user_tipo);
+
+    if (usuario.user_tipo === "Sindico") {
+      router.push("/dashboard");
+    } else if (usuario.user_tipo === "Funcionario") {
+      router.push("/porteiro");
+    } else if (usuario.user_tipo === "Morador") {
+      router.push("/home");
+    } else {
+      setErro("Tipo de usuário desconhecido.");
+    }
+  } catch (error) {
+    console.error("Erro no login:", error);
+    setErro(error.response?.data?.mensagem || "Email ou senha incorretos!");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="loginContainer">
@@ -27,7 +65,6 @@ export default function HomePage() {
       </header>
 
       <main className="loginMain">
-        {/* LADO ESQUERDO */}
         <aside className="leftSection">
           <div className="logoCircle">
             <img src="/temp/logosemtransparente.png" alt="Logo CondoWay" />
@@ -48,7 +85,6 @@ export default function HomePage() {
           </div>
         </aside>
 
-        {/* LADO DIREITO - FORMULÁRIO */}
         <section className="loginSection">
           <div className="welcomeText">
             <h2>Facilitando o seu dia!</h2>
@@ -78,9 +114,11 @@ export default function HomePage() {
               />
             </label>
 
-            {erro && <p style={{ color: "red", textAlign: "center" }}>{erro}</p>}
+            {erro && <p className="erroLogin">{erro}</p>}
 
-            <button type="submit">Entrar</button>
+            <button type="submit" disabled={loading}>
+              {loading ? "Entrando..." : "Entrar"}
+            </button>
           </form>
         </section>
       </main>
@@ -92,6 +130,7 @@ export default function HomePage() {
         </p>
       </footer>
 
+      {/* 🎨 CSS embutido */}
       <style jsx>{`
         .loginContainer {
           display: flex;
@@ -237,6 +276,12 @@ export default function HomePage() {
           transform: translateY(-2px);
           background: linear-gradient(135deg, #3d7ed0, #2f66a2);
           box-shadow: 0 6px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .erroLogin {
+          color: red;
+          text-align: center;
+          font-weight: 500;
         }
 
         .loginFooter {
