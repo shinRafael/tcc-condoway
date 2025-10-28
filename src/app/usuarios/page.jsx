@@ -7,7 +7,7 @@ import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
 import FabButton from '@/componentes/FabButton/FabButton';
 import IconAction from '@/componentes/IconAction/IconAction';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
-import { useModal } from "@/context/ModalContext"; // Importe o hook
+import { useModal } from "@/context/ModalContext";
 
 const usuarioInicial = {
   user_nome: "",
@@ -31,7 +31,7 @@ export default function UsuariosPage() {
   const [showForm, setShowForm] = useState(false);
   const [usuarioEmEdicao, setUsuarioEmEdicao] = useState(usuarioInicial);
   const [isEditing, setIsEditing] = useState(false);
-  const { showModal } = useModal(); // Use o hook
+  const { showModal, hideModal } = useModal();
 
   const fetchUsuarios = async () => {
     try {
@@ -60,6 +60,8 @@ export default function UsuariosPage() {
       showModal("Sucesso", "Usuário cadastrado com sucesso!");
       fetchUsuarios();
       setShowForm(false);
+      setUsuarioEmEdicao(usuarioInicial);
+      setIsEditing(false);
     } catch (error) {
       const erroMsg = error.response?.data?.nmensagem || "Verifique o console da API para mais detalhes.";
       showModal("Erro ao cadastrar", erroMsg, "error");
@@ -71,28 +73,44 @@ export default function UsuariosPage() {
     try {
       const { user_id, ...dadosParaAtualizar } = usuarioEmEdicao;
       dadosParaAtualizar.user_telefone = dadosParaAtualizar.user_telefone.replace(/\D/g, "");
+      if (!dadosParaAtualizar.user_senha) {
+        delete dadosParaAtualizar.user_senha;
+      }
       
       await api.patch(`/Usuario/${user_id}`, dadosParaAtualizar);
       showModal("Sucesso", "Usuário atualizado com sucesso!");
       fetchUsuarios();
       setShowForm(false);
+      setUsuarioEmEdicao(usuarioInicial);
+      setIsEditing(false);
     } catch (error) {
       const erroMsg = error.response?.data?.nmensagem || "Erro desconhecido.";
       showModal("Erro ao atualizar", erroMsg, "error");
     }
   };
 
-  const handleDeleteUsuario = async (id) => {
-    if (window.confirm("Tem certeza que deseja excluir este usuário?")) {
-      try {
-        await api.delete(`/Usuario/${id}`);
-        showModal("Sucesso", "Usuário excluído com sucesso!");
-        fetchUsuarios();
-      } catch (error) {
-        const erroMsg = error.response?.data?.nmensagem || "Erro desconhecido.";
-        showModal("Erro ao excluir", erroMsg, "error");
+  const handleDeleteUsuario = (id) => {
+    showModal(
+      "Confirmar exclusão",
+      "Tem certeza que deseja excluir este usuário?",
+      "warning",
+      {
+        confirmLabel: "Excluir",
+        cancelLabel: "Cancelar",
+        showCancelButton: true,
+        onConfirm: async () => {
+          hideModal();
+          try {
+            await api.delete(`/Usuario/${id}`);
+            showModal("Sucesso", "Usuário excluído com sucesso!");
+            fetchUsuarios();
+          } catch (error) {
+            const erroMsg = error.response?.data?.nmensagem || "Erro desconhecido.";
+            showModal("Erro ao excluir", erroMsg, "error");
+          }
+        },
       }
-    }
+    );
   };
 
   const handleSubmit = (e) => {
@@ -159,7 +177,17 @@ export default function UsuariosPage() {
                 </select>
                 <div className={styles.modalActions}>
                   <button type="submit" className={styles.saveBtn}>Salvar</button>
-                  <button type="button" onClick={() => setShowForm(false)} className={styles.cancelBtn}>Cancelar</button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowForm(false);
+                      setIsEditing(false);
+                      setUsuarioEmEdicao(usuarioInicial);
+                    }}
+                    className={styles.cancelBtn}
+                  >
+                    Cancelar
+                  </button>
                 </div>
               </form>
             </div>

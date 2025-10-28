@@ -25,6 +25,15 @@
   font-size: 1.5rem;
   font-weight: 600;
   margin: 0 0 1rem;
+  color: #007bff;
+}
+
+.modalTitle[data-type="error"] {
+  color: #dc3545;
+}
+
+.modalTitle[data-type="warning"] {
+  color: #f59e0b;
 }
 
 .modalMessage {
@@ -33,18 +42,40 @@
   margin-bottom: 2rem;
 }
 
+.modalActions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
 .modalButton {
-  background-color: #007bff;
-  color: white;
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-size: 1rem;
   font-weight: 500;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform 0.2s;
 }
 
 .modalButton:hover {
+  transform: translateY(-1px);
+}
+
+.confirmButton {
+  background-color: #007bff;
+  color: white;
+}
+
+.confirmButton:hover {
   background-color: #0056b3;
+}
+
+.cancelButton {
+  background-color: #6b7280;
+  color: white;
+}
+
+.cancelButton:hover {
+  background-color: #4b5563;
 }
