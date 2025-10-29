@@ -1,50 +1,333 @@
+/* ====== FONT FAMILY GLOBAL DA PÁGINA ====== */
+.page-container, .page-content {
+  font-family: 'Inter', sans-serif;
+}
+
+/* ... (outros estilos como .dashboardCards, .card, etc., continuam iguais) ... */
+
+/* ====== BOTÕES DE AÇÃO NA TABELA ====== */
+.actionButtons {
+  display: flex;
+  gap: 10px; /* Espaçamento entre ícones de ação */
+  justify-content: flex-end; /* Alinha ícones à direita por padrão */
+}
+
+/* ====== MODAL GERAL E FORMULÁRIO ====== */
 .modalOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6); /* Mais escuro */
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
+  z-index: 1000;
+  padding: 1rem; /* Espaçamento nas bordas em telas menores */
 }
 
 .modal {
-  background: #fff;
-  padding: 2rem;
+  background: white;
+  padding: 30px; /* Mais padding interno */
   border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25); /* Sombra mais pronunciada */
   width: 90%;
-  max-width: 400px;
+  max-width: 500px;
+  animation: cardEnter 0.3s ease forwards; /* Reutiliza a animação */
+  overflow-y: auto; /* Permite rolagem se o conteúdo for muito grande */
+  max-height: 90vh; /* Limita a altura máxima */
+}
+
+.modal h2 {
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 25px; /* Aumenta espaço abaixo do título */
+  font-size: 1.4rem; /* Tamanho do título */
+  color: #1e293b; /* Cor escura */
   text-align: center;
 }
 
-.modalTitle {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0 0 1rem;
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px; /* Mais espaço entre os campos do formulário */
 }
 
-.modalMessage {
-  font-size: 1rem;
-  color: #333;
-  margin-bottom: 2rem;
+.form input,
+.form select {
+  width: 100%;
+  padding: 12px 15px; /* Padding interno */
+  border: 1px solid #d1d5db; /* Borda cinza clara */
+  border-radius: 8px; /* Bordas arredondadas */
+  box-sizing: border-box;
+  font-weight: 500; /* Peso da fonte */
+  font-size: 1rem; /* Tamanho da fonte */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form input:focus,
+.form select:focus {
+  outline: none;
+  border-color: #007bff; /* Borda azul ao focar */
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15); /* Sombra suave azul ao focar */
 }
 
-.modalButton {
-  background-color: #007bff;
-  color: white;
-  padding: 0.75rem 1.5rem;
+
+/* ====== BOTÕES DENTRO DO MODAL DE FORMULÁRIO ====== */
+.modalActions {
+  display: flex;
+  justify-content: flex-end; /* Alinha botões à direita */
+  gap: 12px; /* Espaço entre botões */
+  margin-top: 25px; /* Espaço acima dos botões */
+  padding-top: 20px; /* Espaço acima com linha */
+  border-top: 1px solid #e5e7eb; /* Linha separadora */
+}
+
+/* Botão Salvar (Verde) - Formulário */
+.saveBtn {
+  padding: 10px 20px;
   border: none;
   border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
   cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform 0.1s;
+  background-color: #28a745; /* Verde */
+  color: white;
+}
+.saveBtn:hover {
+  background-color: #218838; /* Verde escuro */
+  transform: translateY(-1px);
 }
 
-.modalButton:hover {
-  background-color: #0056b3;
+/* Botão Cancelar (Cinza) - Formulário */
+.cancelBtn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  background-color: #6c757d; /* Cinza */
+  color: white;
+}
+.cancelBtn:hover {
+  background-color: #5a6268; /* Cinza escuro */
+  transform: translateY(-1px);
+}
+
+
+/* ====== TABELA ====== */
+.tableSection {
+  margin-top: 30px;
+}
+
+.tableSection h2 {
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: #1e293b;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.table th,
+.table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: #495057;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table td {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #343a40;
+}
+
+.table tr:last-of-type td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background-color: #f1f3f5;
+}
+
+/* ====== STATUS (tipo de usuário) ====== */
+.status {
+  padding: 5px 12px;
+  border-radius: 16px;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: inline-block;
+  line-height: 1.2;
+}
+
+/* Cores dos Badges */
+.adm { background-color: #dc3545; } /* Vermelho */
+.sindico { background-color: #007bff; } /* Azul */
+.funcionario { background-color: #ffc107; color: #333; } /* Amarelo */
+.morador { background-color: #28a745; } /* Verde */
+
+
+/* === ESTILOS PARA O MODAL DE CONFIRMAÇÃO DE EXCLUSÃO === */
+.confirmDeleteModal {
+  max-width: 450px;
+  text-align: center;
+}
+
+.confirmDeleteModal h2 {
+    color: #dc3545; /* Título em vermelho */
+    margin-bottom: 15px;
+}
+
+.confirmDeleteModal p {
+  margin: 15px 0 25px; /* Espaçamento da mensagem */
+  font-size: 1.05rem; /* Tamanho da fonte da mensagem */
+  color: #333;
+  line-height: 1.5;
+}
+
+.confirmDeleteModal strong {
+  color: #1e293b; /* Cor do nome do usuário */
+  font-weight: 600;
+}
+
+/* Container dos botões no modal de confirmação */
+.confirmDeleteModal .modalActions {
+  display: flex;
+  justify-content: flex-end; /* Alinha à direita */
+  gap: 12px; /* Espaçamento entre botões */
+  margin-top: 25px; /* Espaço acima dos botões */
+  border-top: none; /* Garante que não tenha linha separadora */
+  padding-top: 0;
+}
+
+/* Estilo BASE comum aos botões do modal de confirmação */
+.confirmDeleteModal .modalActions button {
+  padding: 0.75rem 1.5rem; /* Mesmo padding do modalButton genérico */
+  border: none;
+  border-radius: 8px; /* Mesmo border-radius */
+  cursor: pointer;
+  font-size: 1rem; /* Mesmo font-size */
+  font-weight: 600; /* Peso da fonte */
+  color: white;
+  transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+  min-width: 110px; /* Largura mínima */
+}
+
+.confirmDeleteModal .modalActions button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Botão Confirmar Exclusão (Azul) */
+.confirmBtnBlue { /* <<< VERIFIQUE ESTE NOME */
+  background-color: #007bff; /* Azul */
+}
+.confirmBtnBlue:hover {
+  background-color: #0056b3; /* Azul mais escuro no hover */
+}
+
+/* Botão Cancelar (Vermelho) */
+.cancelBtnRed { /* <<< VERIFIQUE ESTE NOME */
+  background-color: #dc3545; /* Vermelho */
+}
+.cancelBtnRed:hover {
+  background-color: #c82333; /* Vermelho mais escuro no hover */
+}
+
+
+/* Responsividade Geral */
+@media (max-width: 768px) {
+  .table thead {
+    display: none; /* Oculta cabeçalho */
+  }
+  .table, .table tbody, .table tr, .table td {
+    display: block;
+    width: 100%;
+  }
+  .table tr {
+    margin-bottom: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  .table td {
+    text-align: right; /* Alinha valor à direita */
+    padding-left: 50%; /* Espaço para o label */
+    position: relative;
+    border-bottom: 1px dotted #eee; /* Linha pontilhada entre campos */
+    min-height: 40px; /* Altura mínima para melhor toque */
+    display: flex; /* Para alinhar verticalmente */
+    align-items: center; /* Alinha verticalmente */
+    justify-content: flex-end; /* Garante alinhamento à direita */
+  }
+   .table td:last-child {
+      border-bottom: none; /* Remove borda do último item */
+   }
+  .table td::before {
+    /* Usa o data-label definido no JSX */
+    content: attr(data-label);
+    position: absolute;
+    left: 15px; /* Posição do label */
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    text-align: left; /* Label alinhado à esquerda */
+    font-weight: bold; /* Label em negrito */
+    color: #6c757d; /* Cor do label */
+    font-size: 0.8rem; /* Tamanho fonte label */
+  }
+   /* Ajusta a célula de ações */
+   .table td[data-label="Ações"]::before { /* Seleciona especificamente a célula de ações */
+       content: ""; /* Remove o label "Ações" */
+   }
+    .table td .actionButtons {
+       justify-content: flex-end; /* Alinha botões à direita na célula */
+       width: 100%; /* Faz os botões ocuparem o espaço alinhado à direita */
+   }
+}
+
+@media (max-width: 480px) {
+    .modal {
+        padding: 20px; /* Menos padding no modal */
+        max-width: 95%; /* Ocupa quase toda a tela */
+    }
+    /* Botões um abaixo do outro em telas muito pequenas */
+     .modalActions, .confirmDeleteModal .modalActions {
+        flex-direction: column-reverse; /* Botão principal (Salvar/Confirmar) em cima */
+        gap: 10px;
+    }
+     .modalActions button, .confirmDeleteModal .modalActions button {
+         width: 100%; /* Botões ocupam largura total */
+     }
+}
+
+/* Animação reutilizável (opcional, já estava no seu css) */
+@keyframes cardEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

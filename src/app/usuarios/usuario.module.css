@@ -325,4 +325,24 @@
   .animatedAddButton .text { font-size: 13px; }
 }
 
+.confirmDeleteModal .modalActions button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Botão Confirmar Exclusão (Azul) */
+.confirmBtnBlue { /* <<< VERIFIQUE ESTE NOME */
+  background-color: #007bff; /* Azul */
+}
+.confirmBtnBlue:hover {
+  background-color: #0056b3; /* Azul mais escuro no hover */
+}
+
+/* Botão Cancelar (Vermelho) */
+.cancelBtnRed { /* <<< VERIFIQUE ESTE NOME */
+  background-color: #dc3545; /* Vermelho */
+}
+.cancelBtnRed:hover {
+  background-color: #c82333; /* Vermelho mais escuro no hover */
+}
 /* fim ajustes botão animado */
