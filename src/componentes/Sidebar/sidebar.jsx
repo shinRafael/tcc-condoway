@@ -1,4 +1,3 @@
-'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -10,12 +9,11 @@ import {
   FaUserCheck,
   FaBoxOpen,
   FaBell,
-  FaComments,
   FaExclamationTriangle,
 } from 'react-icons/fa';
 import { MdDashboard, MdManageAccounts } from 'react-icons/md';
 
-// chaves usadas no badge: dashboard, reservas, usuarios, apartamentos, visitantes, encomendas, notificacoes, mensagens
+// chaves usadas no badge: dashboard, reservas, usuarios, apartamentos, visitantes, encomendas, notificacoes, ocorrencias
 const navItems = [
   { key: 'dashboard',     href: '/dashboard',     label: 'Dashboard',     icon: MdDashboard },
   { key: 'reservas',      href: '/reservas',      label: 'Reservas',      icon: FaCalendarAlt },
@@ -24,8 +22,8 @@ const navItems = [
   { key: 'visitantes',    href: '/visitantes',    label: 'Visitantes',    icon: FaUserCheck },
   { key: 'encomendas',    href: '/encomendas',    label: 'Encomendas',    icon: FaBoxOpen },
   { key: 'notificacoes',  href: '/notificacoes',  label: 'Notificações',  icon: FaBell },
-  { key: 'mensagens',     href: '/mensagens',     label: 'Mensagens',     icon: FaComments },
-  { key: 'ocorrencias',     href: '/ocorrencias',     label: 'Ocorrencias',     icon: FaExclamationTriangle },
+  // { key: 'mensagens',     href: '/mensagens',     label: 'Mensagens',     icon: FaComments }, // LINHA REMOVIDA
+  { key: 'ocorrencias',   href: '/ocorrencias',   label: 'Ocorrencias',   icon: FaExclamationTriangle },
   { key: 'gerenciamento', href: '/gerenciamento', label: 'Gerenciamento', icon: MdManageAccounts },
 ];
 
@@ -33,7 +31,6 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [badges, setBadges] = useState({});
 
-  // lê/escuta badges do localStorage e eventos customizados
   useEffect(() => {
     const load = () => {
       try {
@@ -55,6 +52,7 @@ export default function Sidebar() {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.logoBox}>
+        {/* Certifique-se que o caminho da imagem está correto */}
         <img src="/temp/logosemtransparente.png" alt="CondoWay Icon" className={styles.logoImg} />
         <h1 className={styles.logoText}>CondoWay</h1>
       </div>

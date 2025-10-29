@@ -1,296 +1,160 @@
-/* ====== LAYOUT PRINCIPAL (KANBAN) ====== */
-.containerPrincipal {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Colunas responsivas */
-  gap: 20px;
-  font-family: 'Inter', sans-serif;
-  width: 100%;
-}
-
-.coluna {
-  background-color: #f4f5f7;
-  border-radius: 12px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  max-height: 80vh; /* Altura máxima para a coluna */
-  overflow-y: hidden; /* Esconde a barra de rolagem principal da coluna */
-}
-
-.colunaTitulo {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #1e293b;
-  padding: 0 8px 12px 8px;
-  margin: 0;
-  position: sticky; /* Mantém o título no topo ao rolar */
-  top: 0;
-  background-color: #f4f5f7; /* Fundo para o título fixo */
-  z-index: 1;
-}
-
-/* ====== GRID INTERNO DA COLUNA ====== */
-.grid {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  overflow-y: auto; /* Adiciona rolagem apenas aos cards */
-  padding: 4px; /* Pequeno espaçamento para a barra de rolagem não colar nos cards */
-}
-
-/* ====== AVISO DE COLUNA VAZIA ====== */
-.avisoVazio {
-  color: #6b7280;
-  font-size: 0.9rem;
-  padding: 20px;
-  text-align: center;
-  font-style: italic;
-}
-
-/* ====== ANIMAÇÕES ====== */
-@keyframes cardEnter {
-  0% {
-    opacity: 0;
-    transform: translateY(12px) scale(0.98);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* ====== CARD ====== */
-.card {
-  background: #fff;
-  padding: 16px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  display: flex;
-  flex-direction: column;
-  animation: cardEnter 0.35s ease forwards;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
-  border: 1px solid transparent; /* Borda inicial transparente */
-}
-
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
-  border-color: rgba(14, 165, 233, 0.15); /* Cor da borda no hover */
-}
-
-/* ====== HEADER ====== */
-.cardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.cardHeader h3 {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0;
-}
-
-.data {
-  font-size: 13px;
-  color: #64748b;
-  font-weight: 500;
-}
-
-/* ====== TIPOGRAFIA ====== */
-.mensagem {
-  font-size: 14px;
-  color: #334155;
-  margin-bottom: 12px;
-  font-weight: 400;
-  line-height: 1.5;
-  flex-grow: 1; /* Faz a descrição ocupar o espaço disponível */
-}
-
-/* ====== BOTÕES ====== */
-.actions {
-  display: flex;
-  justify-content: flex-start; /* Alinhado à esquerda para um visual mais limpo */
-  flex-wrap: wrap; /* Permite que os botões quebrem a linha se não couberem */
-  gap: 8px;
-  margin-top: auto; /* Empurra os botões para o final do card */
-  padding-top: 12px;
-}
-
-.actions button {
-  background: #e2e8f0;
-  color: #475569;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 12px;
-  transition: all 0.2s ease;
-}
-
-.actions button:hover {
-  background: #cbd5e1;
-  color: #1e293b;
-}
-
-.actions button:disabled {
-  background: #0ea5e9; /* Cor azul para destacar o status atual */
-  color: #ffffff;
-  cursor: not-allowed;
-  opacity: 1;
-}
-
-/* ====== STATUS ====== */
-.pendente {
-  border-left: 5px solid #0ea5e9; /* azul */
-}
-
-.emAndamento {
-  border-left: 5px solid #f59e0b; /* amarelo */
-}
-
-.resolvida {
-  border-left: 5px solid #10b981; /* verde */
-}
-
-.cancelada {
-  border-left: 5px solid #ef4444; /* vermelho */
-}
-
 /* ====== LAYOUT PRINCIPAL (ABAS) ====== */
 .containerPrincipalAbas {
   display: flex;
-  flex-direction: column;
-  gap: 24px;
+  flex-direction: column; /* Organiza abas e grid verticalmente */
+  gap: 20px;
   font-family: 'Inter', sans-serif;
   width: 100%;
 }
 
-/* ====== BOTÕES DE NAVEGAÇÃO ====== */
+/* Container dos botões/abas de navegação */
 .botoesNavegacao {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  border-bottom: 2px solid #e5e7eb;
-  padding-bottom: 8px;
+  gap: 10px; /* Espaço entre os botões */
+  border-bottom: 2px solid #e5e7eb; /* Linha separadora abaixo das abas */
+  padding-bottom: 10px;
+  margin-bottom: 10px; /* Espaço extra abaixo */
+  flex-wrap: wrap; /* Permite quebrar linha em telas menores */
 }
 
+/* Estilo dos botões/abas */
 .botoesNavegacao button {
-  padding: 10px 20px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  border: none;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #64748b; /* Cinza */
   background-color: transparent;
-  color: #6b7280;
+  border: none;
+  border-bottom: 3px solid transparent; /* Borda inferior para indicar ativa */
   cursor: pointer;
-  border-radius: 8px 8px 0 0;
-  transition: background-color 0.2s, color 0.2s;
-  position: relative;
-  bottom: -10px; /* Alinha com a borda inferior */
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap; /* Evita quebra de texto */
 }
-
+.botoesNavegacao button:hover {
+  color: #1e293b; /* Cor mais escura no hover */
+}
+/* Estilo do botão/aba ATIVA */
 .botoesNavegacao button.ativo {
-  color: #0ea5e9;
-  border-bottom: 2px solid #0ea5e9;
+  color: #0ea5e9; /* Azul do seu exemplo */
+  font-weight: 600;
+  border-bottom-color: #0ea5e9;
 }
 
-.botoesNavegacao button:hover:not(.ativo) {
-    background-color: #f3f4f6;
-    color: #374151;
-}
-
-/* ====== GRID DE CARDS ====== */
+/* ====== GRID DE CARDS (Para a aba ativa) ====== */
 .gridCards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
+  /* Cria colunas responsivas */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px; /* Espaço entre os cards */
+  padding-bottom: 20px;
 }
 
-/* ====== AVISO DE ABA VAZIA ====== */
-.avisoVazio {
-  color: #6b7280;
-  font-size: 1rem;
-  padding: 40px 20px;
-  text-align: center;
-  font-style: italic;
-  grid-column: 1 / -1; /* Ocupa toda a largura do grid */
-  background-color: #f9fafb;
-  border-radius: 12px;
-}
-
-/* ====== ANIMAÇÕES ====== */
-@keyframes cardEnter {
-  0% { opacity: 0; transform: translateY(12px) scale(0.98); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* ====== CARD ====== */
+/* ====== CARD (Estilos mantidos das versões anteriores) ====== */
 .card {
-  background: #fff;
-  padding: 16px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  background-color: #ffffff;
+  border-radius: 6px;
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  cursor: grab;
+  animation: fadeIn 0.3s ease-out forwards;
+  transition: transform 0.2s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  border: 1px solid #e5e7eb;
+  border-left-width: 4px; /* Mantém borda para prioridade */
   display: flex;
   flex-direction: column;
-  animation: cardEnter 0.35s ease forwards;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
-  border: 1px solid transparent;
+  height: fit-content;
 }
-
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
-  border-color: rgba(14, 165, 233, 0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
+.card:active { cursor: grabbing; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); }
 
-/* ====== HEADER ====== */
-.cardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-.cardHeader h3 { font-size: 1rem; font-weight: 700; color: #1e293b; margin: 0; }
-.data { font-size: 13px; color: #64748b; font-weight: 500; }
+/* Cores para Prioridades (Borda Esquerda do CARD) */
+.prioridadeBaixa { border-left-color: #22c55e; }
+.prioridadeMedia { border-left-color: #facc15; }
+.prioridadeAlta { border-left-color: #fb923c; }
+.prioridadeUrgente { border-left-color: #f87171; }
 
-/* ====== TIPOGRAFIA ====== */
-.mensagem {
-  font-size: 14px;
-  color: #334155;
-  margin-bottom: 12px;
-  font-weight: 400;
-  line-height: 1.5;
-  flex-grow: 1;
-}
+/* ====== HEADER DO CARD ====== */
+.cardHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;}
+.cardHeader h3 { font-size: 0.9rem; font-weight: 600; color: #1e293b; margin: 0; }
+.data { font-size: 0.75rem; color: #64748b; font-weight: 500; }
 
-/* ====== BOTÕES DE AÇÃO ====== */
-.actions {
-  display: flex;
-  justify-content: flex-start;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: auto;
-  padding-top: 12px;
-}
-.actions button {
-  background: #e2e8f0;
-  color: #475569;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 12px;
-  transition: all 0.2s ease;
-}
-.actions button:hover { background: #cbd5e1; color: #1e293b; }
-.actions button:disabled { background: #0ea5e9; color: #ffffff; cursor: not-allowed; opacity: 1; }
+/* ====== INFORMAÇÕES DO MORADOR ====== */
+.moradorInfo { font-size: 0.8rem; color: #475569; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #e2e8f0; }
+.moradorInfo p { margin: 3px 0; }
+.moradorInfo strong { color: #1e293b; font-weight: 500; }
 
-/* ====== STATUS ====== */
-.pendente { border-left: 5px solid #0ea5e9; }
-.emAndamento { border-left: 5px solid #f59e0b; }
-.resolvida { border-left: 5px solid #10b981; }
-.cancelada { border-left: 5px solid #ef4444; }
+/* ====== MENSAGEM/DESCRIÇÃO ====== */
+.mensagem { font-size: 0.85rem; color: #334155; margin-bottom: 10px; font-weight: 400; line-height: 1.5; flex-grow: 1; }
+
+/* ====== BOTÕES DE STATUS ====== */
+.statusButtons { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; padding-top: 8px; border-top: 1px dashed #e2e8f0; }
+.statusButton, .activeStatusButton { padding: 3px 9px; font-size: 0.7rem; border-radius: 10px; border: 1px solid; cursor: pointer; transition: all 0.2s; font-weight: 500; white-space: nowrap; }
+.statusButton { background-color: #f8fafc; color: #64748b; border-color: #e2e8f0; }
+.statusButton:hover:not(:disabled) { background-color: #f1f5f9; border-color: #cbd5e1; }
+.statusButton:disabled { cursor: not-allowed; opacity: 0.5; }
+.activeStatusButton { font-weight: 600; cursor: default; color: white; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+
+/* Cores dos botões ativos (baseado na classe de status) */
+.statusAberta.activeStatusButton { background-color: #ffc107; border-color: #d9a406; color: #332300;}
+.statusEmAndamento.activeStatusButton { background-color: #0dcaf0; border-color: #0aa3c2; color: #003e4d;}
+.statusResolvida.activeStatusButton { background-color: #198754; border-color: #13653f; color: #ffffff;}
+.statusCancelada.activeStatusButton { background-color: #dc3545; border-color: #b02a37; color: #ffffff;}
+
+/* Nomes de classe para CSS Modules (usados nos botões ativos) */
+.statusAberta { --keep: 1; }
+.statusEmAndamento { --keep: 1; }
+.statusResolvida { --keep: 1; }
+.statusCancelada { --keep: 1; }
+
+/* ====== GRUPO DO SELECT DE PRIORIDADE ====== */
+.fieldGroup { margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.fieldGroup label { font-weight: 500; font-size: 0.75rem; color: #475569; min-width: 55px; }
+.selectField { padding: 4px 8px; border-radius: 5px; border: 1px solid #cbd5e1; font-size: 0.8rem; font-weight: 500; background-color: #fff; flex-grow: 1; cursor: pointer; transition: all 0.2s; -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2364748b'%3E%3Cpath fill-rule='evenodd' d='M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z' clip-rule='evenodd' /%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; background-size: 16px; padding-right: 30px; }
+.selectField:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+/* Cores de fundo do select (baseado na prioridade) */
+.selectField.prioridadeBaixa { background-color: #f0fdf4; border-color: #a3e635; }
+.selectField.prioridadeMedia { background-color: #fefce8; border-color: #facc15; }
+.selectField.prioridadeAlta { background-color: #fff7ed; border-color: #fb923c; }
+.selectField.prioridadeUrgente { background-color: #fef2f2; border-color: #f87171; }
+
+/* ====== AÇÕES (Botão Chat) ====== */
+.actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+.chatButton { background-color: #38bdf8; color: #ffffff; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; font-size: 0.75rem; transition: background-color 0.2s; font-weight: 500; }
+.chatButton:hover { background-color: #0ea5e9; }
+
+/* ====== MENSAGEM COLUNA VAZIA / ABA VAZIA ====== */
+.emptyColumnMessage { text-align: center; color: #94a3b8; font-size: 0.9rem; padding: 20px; }
+
+/* ====== ANIMAÇÃO FADE-IN ====== */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ====== ESTILOS DO MODAL DO CHAT ====== */
+.modalOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1050; padding: 15px; }
+.modalContent { background: white; padding: 0; border-radius: 8px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); width: 100%; max-width: 550px; display: flex; flex-direction: column; max-height: 85vh; }
+.modalHeader { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #dee2e6; background-color: #f8f9fa; border-radius: 8px 8px 0 0; }
+.modalHeader h3 { margin: 0; font-size: 1.1rem; color: #333; }
+.closeButton { background: none; border: none; font-size: 1.6rem; cursor: pointer; color: #6c757d; padding: 0 5px; line-height: 1; }
+.closeButton:hover { color: #333; }
+.modalBody { padding: 16px; overflow-y: auto; flex-grow: 1; background-color: #f1f3f5; }
+.modalBody p { font-size: 0.9rem; margin-bottom: 8px; }
+.divider { border: none; border-top: 1px solid #e0e0e0; margin: 12px 0; }
+.chatMessages { display: flex; flex-direction: column; gap: 12px; min-height: 200px; }
+.chatMessage { padding: 10px 14px; border-radius: 12px; max-width: 80%; line-height: 1.45; box-shadow: 0 1px 2px rgba(0,0,0,0.1); word-wrap: break-word; }
+.msgSender { font-size: 0.75rem; font-weight: 600; display: block; margin-bottom: 4px; color: #555;}
+.msgTimestamp { font-size: 0.7rem; color: #999; text-align: right; display: block; margin-top: 5px; }
+.morador { background-color: #ffffff; align-self: flex-start; border-bottom-left-radius: 4px; }
+.sindico { background-color: #d1e7ff; align-self: flex-end; border-bottom-right-radius: 4px; text-align: left; }
+.sindico .msgSender { color: #0056b3; }
+.sindico .msgTimestamp { text-align: right; }
+.modalFooter { display: flex; padding: 12px 16px; border-top: 1px solid #dee2e6; gap: 8px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; }
+.chatInput { flex-grow: 1; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 20px; font-size: 0.9rem; }
+.chatInput:focus { outline: none; border-color: #86b7fe; box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); }
+.sendButton { background-color: #0d6efd; color: white; border: none; padding: 0 18px; border-radius: 20px; cursor: pointer; font-weight: 500; transition: background-color 0.2s; }
+.sendButton:hover:not(:disabled) { background-color: #0b5ed7; }
+.sendButton:disabled { background-color: #6c757d; cursor: not-allowed; }
+
+/* Remove estilos de coluna se ainda existirem
+   Removido: o conjunto de regras vazio causava erro de lint ("Não usar conjuntos de regras vazios"). */
