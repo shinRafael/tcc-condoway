@@ -60,7 +60,7 @@ export default function Apartamentos() {
     const formAp = Object.fromEntries(formData);
 
     const payload = {
-      bloc: formAp.bloco, 
+      bloco: formAp.bloco, 
       numero: Number(formAp.numero),
       andar: formAp.andar,
     };
@@ -118,7 +118,7 @@ export default function Apartamentos() {
     for (let i = 0; i < total; i++) {
         const apNumero = numInicial + i;
         const payload = {
-            bloc: bloco,
+            bloco: bloco,
             numero: apNumero,
             andar: andar
         };
@@ -230,7 +230,7 @@ export default function Apartamentos() {
                             <strong>ID:</strong> {ap.ap_id}
                           </p>
                           <p>
-                            <strong>Bloco:</strong> {ap.bloco_id}
+                            <strong>Bloco:</strong> {ap.bloc_id}
                           </p>
                           <p>
                             <strong>Número:</strong> {ap.ap_numero}
@@ -240,7 +240,7 @@ export default function Apartamentos() {
                           </p>
                         </div>
                       </td>
-                      <td>{ap.bloco_id}</td>
+                      <td>{ap.bloc_id}</td>
                       <td>{ap.ap_numero}</td>
                       <td>{ap.ap_andar}</td>
                       <td>

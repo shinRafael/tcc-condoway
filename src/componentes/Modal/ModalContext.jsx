@@ -44,7 +44,7 @@ export const ModalProvider = ({ children }) => {
   }, []); // useCallback para otimização
 
   // Renderiza o componente Modal apenas se isOpen for true
-  const modalComponent = modal.isOpen ? <Modal hideModal={hideModal} /> : null;
+  const modalComponent = modal.isOpen ? <Modal /> : null;
 
   return (
     // Fornece o estado e as funções para os componentes descendentes

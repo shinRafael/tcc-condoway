@@ -5,6 +5,7 @@ import { useModal } from "@/context/ModalContext";
 export default function Modal() {
   const { modal, hideModal } = useModal();
 
+
   // Add basic error check for debugging
   if (typeof hideModal !== 'function') {
     console.error("Modal: hideModal is not a function!", { modal });
