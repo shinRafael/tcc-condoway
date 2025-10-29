@@ -224,3 +224,72 @@
 .buttonMarginLeft {
     margin-left: 10px;
 }
+
+/* === ESTILOS PARA O MODAL DE CONFIRMAÇÃO DE EXCLUSÃO === */
+/* (Copiado de usuario.module.css) */
+
+.confirmDeleteModal {
+  max-width: 450px;
+  text-align: center;
+}
+
+.confirmDeleteModal h2 {
+    color: #dc3545; /* Título em vermelho */
+    margin-bottom: 15px;
+}
+
+.confirmDeleteModal p {
+  margin: 15px 0 25px; /* Espaçamento da mensagem */
+  font-size: 1.05rem; /* Tamanho da fonte da mensagem */
+  color: #333;
+  line-height: 1.5;
+}
+
+.confirmDeleteModal strong {
+  color: #1e293b; /* Cor do item */
+  font-weight: 600;
+}
+
+/* Container dos botões no modal de confirmação */
+.confirmDeleteModal .modalActions {
+  display: flex;
+  justify-content: flex-end; /* Alinha à direita */
+  gap: 12px; /* Espaço entre botões */
+  margin-top: 25px; /* Espaço acima dos botões */
+  border-top: none; /* Garante que não tenha linha separadora */
+  padding-top: 0;
+}
+
+/* Estilo BASE comum aos botões do modal de confirmação */
+.confirmDeleteModal .modalActions button {
+  padding: 0.75rem 1.5rem; 
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600; 
+  color: white;
+  transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+  min-width: 110px;
+}
+
+.confirmDeleteModal .modalActions button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Botão Confirmar Exclusão (Azul) */
+.confirmBtnBlue {
+  background-color: #007bff; /* Azul */
+}
+.confirmBtnBlue:hover {
+  background-color: #0056b3; /* Azul mais escuro no hover */
+}
+
+/* Botão Cancelar (Vermelho) */
+.cancelBtnRed {
+  background-color: #dc3545; /* Vermelho */
+}
+.cancelBtnRed:hover {
+  background-color: #c82333; /* Vermelho mais escuro no hover */
+}

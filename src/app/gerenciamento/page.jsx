@@ -1,6 +1,7 @@
+
 'use client';
 import { useState, useEffect } from 'react';
-import styles from './index.module.css';
+import styles from './index.module.css'; // <<< VERIFIQUE SE O NOME DO ARQUIVO CSS ESTÁ CORRETO
 import PageHeader from '@/componentes/PageHeader';
 import RightHeaderBrand from '@/componentes/PageHeader/RightHeaderBrand';
 import BotaoCadastrar from './botãoCadastrar';
@@ -18,7 +19,13 @@ export default function GerenciamentoPage() {
     ger_descricao: "",
     ger_valor: ""
   });
-  const { showModal } = useModal(); // Use o hook
+  const { showModal: showInfoModal } = useModal(); // Use o hook
+
+  // --- INÍCIO: Adicionado estado para o modal de exclusão ---
+  const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
+  const [itemParaExcluir, setItemParaExcluir] = useState(null);
+  // --- FIM: Adicionado estado para o modal de exclusão ---
+
 
   const formatDisplayDate = (val) => {
     if (!val) return '—';
@@ -49,26 +56,46 @@ export default function GerenciamentoPage() {
       } catch (error) {
         console.error("Erro ao buscar dados da API:", error);
         setDados([]);
+        showInfoModal("Erro", "Não foi possível carregar as despesas.", "error"); // Adicionado feedback de erro
       }
     };
     fetchData();
-  }, []);
+  }, [showInfoModal]); // Adicionado showInfoModal como dependência
 
   const handleSaved = (item) => {
-    setDados(prev => [...prev, item]);
+    // Adiciona o item novo no início da lista para melhor visibilidade
+    setDados(prev => [item, ...prev]);
+    showInfoModal("Sucesso", "Despesa cadastrada com sucesso!"); // Feedback de sucesso
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Tem certeza que deseja excluir esta despesa?")) {
-      try {
-        await api.delete(`/gerenciamento/${id}`);
-        setDados(prev => prev.filter(item => Number(item.ger_id) !== Number(id)));
-      } catch (error) {
-        console.error("Erro ao deletar:", error);
-        showModal("Erro", "Não foi possível excluir a despesa.", "error");
-      }
+  // --- INÍCIO: Funções do modal de exclusão ---
+  const handleDelete = (item) => {
+    setItemParaExcluir(item);
+    setShowConfirmDeleteModal(true);
+  };
+
+  const confirmarExclusao = async () => {
+    if (!itemParaExcluir) return;
+    try {
+      await api.delete(`/gerenciamento/${itemParaExcluir.ger_id}`);
+      setDados(prev => prev.filter(item => Number(item.ger_id) !== Number(itemParaExcluir.ger_id)));
+      showInfoModal("Sucesso", "Despesa excluída com sucesso!");
+    } catch (error) {
+      console.error("Erro ao deletar:", error);
+      const erroMsg = error.response?.data?.mensagem || "Não foi possível excluir a despesa.";
+      showInfoModal("Erro", erroMsg, "error");
+    } finally {
+      setShowConfirmDeleteModal(false);
+      setItemParaExcluir(null);
     }
   };
+
+  const cancelarExclusao = () => {
+    setShowConfirmDeleteModal(false);
+    setItemParaExcluir(null);
+  };
+  // --- FIM: Funções do modal de exclusão ---
+
 
   const abrirEdicao = (item) => {
     setEditando(item);
@@ -90,23 +117,24 @@ export default function GerenciamentoPage() {
         ger_valor: formEdit.ger_valor,
       };
 
-      const response = await api.patch(`/gerenciamento/${editando.ger_id}`, payload);
+      await api.patch(`/gerenciamento/${editando.ger_id}`, payload);
       
-      const updatedItem = {
-        ...editando, 
-        ...(response.data?.dados ?? {})
-      };
-
+      // Atualiza o item na lista localmente após sucesso da API
       setDados(prev =>
         prev.map(item =>
-          Number(item.ger_id) === Number(editando.ger_id) ? updatedItem : item
+          Number(item.ger_id) === Number(editando.ger_id) 
+            ? { ...item, ...payload, ger_data: formatDisplayDate(payload.ger_data) } // Atualiza com dados do payload
+            : item
         )
       );
 
       fecharModal();
+      showInfoModal("Sucesso", "Despesa atualizada com sucesso!"); // Feedback de sucesso
+
     } catch (error) {
       console.error("Erro ao editar:", error);
-      showModal("Erro", "Não foi possível salvar as alterações. Verifique o console para mais detalhes.", "error");
+      const erroMsg = error.response?.data?.mensagem || "Não foi possível salvar as alterações.";
+      showInfoModal("Erro", erroMsg, "error");
     }
   };
 
@@ -141,10 +169,10 @@ export default function GerenciamentoPage() {
                 {dados.length > 0 ? (
                   dados.map((item, index) => (
                     <tr key={item.ger_id ?? `row-${index}`}>
-                      <td>{item.cond_nome ?? "—"}</td>
-                      <td>{formatDisplayDate(item.ger_data)}</td>
-                      <td>{item.ger_descricao ?? "—"}</td>
-                      <td>
+                      <td data-label="Condomínio">{item.cond_nome ?? "—"}</td>
+                      <td data-label="Data">{formatDisplayDate(item.ger_data)}</td>
+                      <td data-label="Descrição">{item.ger_descricao ?? "—"}</td>
+                      <td data-label="Valor">
                         {item.ger_valor != null
                           ? Number(item.ger_valor).toLocaleString("pt-BR", {
                               style: "currency",
@@ -152,7 +180,7 @@ export default function GerenciamentoPage() {
                             })
                           : "—"}
                       </td>
-                      <td>
+                      <td data-label="Ações">
                         <div style={{ display: 'flex', gap: '8px' }}>
                           <IconAction 
                             icon={FiEdit2} 
@@ -164,7 +192,7 @@ export default function GerenciamentoPage() {
                             icon={FiTrash2} 
                             label="Excluir" 
                             variant="delete"
-                            onClick={() => handleDelete(item.ger_id)} 
+                            onClick={() => handleDelete(item)} // <<< ATUALIZADO: Passa o objeto 'item'
                           />
                         </div>
                       </td>
@@ -172,7 +200,7 @@ export default function GerenciamentoPage() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5}>Nenhuma despesa encontrada.</td>
+                    <td colSpan={5} style={{ textAlign: 'center', color: '#6c757d' }}>Nenhuma despesa encontrada.</td>
                   </tr>
                 )}
               </tbody>
@@ -210,6 +238,26 @@ export default function GerenciamentoPage() {
           </div>
         </div>
       )}
+
+       {/* --- INÍCIO: Modal de exclusão --- */}
+       {showConfirmDeleteModal && itemParaExcluir && (
+        <div className={styles.modalOverlay} onClick={cancelarExclusao}>
+          <div className={`${styles.modal} ${styles.confirmDeleteModal}`} onClick={(e) => e.stopPropagation()}>
+            <h2>Confirmar Exclusão</h2>
+            <p>
+              Deseja realmente excluir a despesa{" "}
+              <strong>"{itemParaExcluir.ger_descricao}"</strong> do condomínio{" "}
+              <strong>{itemParaExcluir.cond_nome}</strong>?
+            </p>
+            <div className={styles.modalActions}>
+              <button type="button" onClick={confirmarExclusao} className={styles.confirmBtnBlue}>Confirmar Exclusão</button>
+              <button type="button" onClick={cancelarExclusao} className={styles.cancelBtnRed}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* --- FIM: Modal de exclusão --- */}
+
     </div>
   );
 }

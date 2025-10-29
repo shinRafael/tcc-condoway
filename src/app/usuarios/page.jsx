@@ -1,3 +1,4 @@
+
 "use client";
 import { useState, useEffect } from "react";
 import api from "@/services/api";
@@ -71,18 +72,20 @@ export default function UsuariosPage() {
     } catch (error) {
       // console.error("Erro detalhado ao cadastrar:", error.response || error);
 
+      // CORREÇÃO: Verificando a chave "mensagem" da API
+      const erroMsg = error.response?.data?.mensagem;
       const isDuplicateError =
         error.response &&
         (error.response.status === 409 ||
-         (error.response.status === 400 && error.response.data?.nmensagem?.toLowerCase().includes("já existe")) ||
-         (error.response.data?.message?.toLowerCase().includes("duplicate"))
+         (error.response.status === 400 && erroMsg?.toLowerCase().includes("e-mail já cadastrado")) || // Chave correta da API
+         (erroMsg?.toLowerCase().includes("duplicate"))
         );
 
       if (isDuplicateError) {
-        showInfoModal("Erro ao Cadastrar", "Já existe um registro com essas informações.", "error");
+        showInfoModal("Erro ao Cadastrar", "Já existe um usuário cadastrado com este e-mail.", "error");
       } else {
-        const erroMsg = error.response?.data?.mensagem || "Ocorreu um erro inesperado. Verifique os dados ou tente novamente.";
-        showInfoModal("Erro ao Cadastrar", erroMsg, "error");
+        const msg = erroMsg || "Ocorreu um erro inesperado. Verifique os dados ou tente novamente.";
+        showInfoModal("Erro ao Cadastrar", msg, "error");
       }
     }
   };
@@ -103,18 +106,20 @@ export default function UsuariosPage() {
     } catch (error) {
       console.error("Erro ao atualizar usuário:", error.response || error);
 
+      // CORREÇÃO: Verificando a chave "mensagem" da API
+      const erroMsg = error.response?.data?.mensagem;
       const isDuplicateError =
         error.response &&
         (error.response.status === 409 ||
-         (error.response.status === 400 && error.response.data?.nmensagem?.toLowerCase().includes("já existe")) ||
-         (error.response.data?.message?.toLowerCase().includes("duplicate"))
+         (error.response.status === 400 && erroMsg?.toLowerCase().includes("e-mail já cadastrado")) || // Chave correta da API
+         (erroMsg?.toLowerCase().includes("duplicate"))
         );
 
       if (isDuplicateError) {
-        showInfoModal("Erro ao Atualizar", "Já existe um registro com essas informações.", "error");
+        showInfoModal("Erro ao Atualizar", "Já existe um usuário cadastrado com este e-mail.", "error");
       } else {
-        const erroMsg = error.response?.data?.nmensagem || "Erro desconhecido ao atualizar.";
-        showInfoModal("Erro ao Atualizar", erroMsg, "error");
+        const msg = erroMsg || "Erro desconhecido ao atualizar.";
+        showInfoModal("Erro ao Atualizar", msg, "error");
       }
     }
   };
@@ -133,7 +138,7 @@ export default function UsuariosPage() {
       axiosUsuarios();
     } catch (error) {
       console.error("Erro ao excluir usuário:", error.response || error);
-      const erroMsg = error.response?.data?.nmensagem || "Erro desconhecido ao excluir.";
+      const erroMsg = error.response?.data?.mensagem || "Erro desconhecido ao excluir.";
       showInfoModal("Erro ao Excluir", erroMsg, "error");
     } finally {
       setShowConfirmDeleteModal(false);

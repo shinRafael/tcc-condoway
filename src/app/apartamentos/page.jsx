@@ -1,3 +1,4 @@
+
 "use client";
 import React, { useState, useEffect } from "react";
 import styles from "./apartamentos.module.css";
@@ -19,6 +20,11 @@ export default function Apartamentos() {
   const [filterField, setFilterField] = useState('bloco');
   const [searchTerm, setSearchTerm] = useState('');
   const { showModal: showInfoModal } = useModal(); // Renomeie para evitar conflito de nome
+
+  // --- INÍCIO: Adicionado estado para o modal de exclusão ---
+  const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
+  const [apartamentoParaExcluir, setApartamentoParaExcluir] = useState(null);
+  // --- FIM: Adicionado estado para o modal de exclusão ---
 
   const listarApartamentos = async () => {
     setLoading(true);
@@ -65,37 +71,62 @@ export default function Apartamentos() {
       andar: formAp.andar,
     };
     
-    const url = `/apartamentos/${editingAp?.ap_id}`;
+    // ATUALIZAÇÃO: Nome da variável "url" alterado para "apiUrl" para evitar conflito
+    const apiUrl = editingAp 
+      ? `/apartamentos/${editingAp.ap_id}` 
+      : '/apartamentos';
     
     try {
       if (editingAp) {
-          await api.patch(url, payload); 
+          await api.patch(apiUrl, payload); 
       } else {
-          await api.post('/apartamentos', payload);
+          await api.post(apiUrl, payload);
       }
       
       await listarApartamentos(); 
       handleClose();
+      showInfoModal("Sucesso", `Apartamento ${editingAp ? 'atualizado' : 'cadastrado'} com sucesso!`);
       
     } catch (error) {
       console.error(`Erro ao salvar apartamento:`, error);
-      showInfoModal('Erro', 'Erro ao salvar apartamento. Verifique o console.', 'error');
+      // MELHORIA: Tratamento de erro específico
+      const erroMsg = error.response?.data?.mensagem;
+      if (erroMsg && (erroMsg.toLowerCase().includes("já existe") || erroMsg.toLowerCase().includes("duplicate"))) {
+         showInfoModal('Erro', 'Já existe um apartamento com este Bloco e Número.', 'error');
+      } else {
+         showInfoModal('Erro', erroMsg || 'Erro ao salvar apartamento. Verifique o console.', 'error');
+      }
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm("Deseja realmente excluir este apartamento?")) {
-      return;
-    }
+  // --- INÍCIO: Funções do modal de exclusão ---
+  const handleDelete = (ap) => {
+    setApartamentoParaExcluir(ap);
+    setShowConfirmDeleteModal(true);
+  };
 
+  const confirmarExclusao = async () => {
+    if (!apartamentoParaExcluir) return;
     try {
-      await api.delete(`/apartamentos/${id}`);
+      await api.delete(`/apartamentos/${apartamentoParaExcluir.ap_id}`);
+      showInfoModal("Sucesso", "Apartamento excluído com sucesso!");
       await listarApartamentos(); 
     } catch (error) {
       console.error("Erro ao excluir apartamento:", error);
-      showInfoModal("Erro", "Erro ao excluir apartamento. Veja o console.", "error");
+      const erroMsg = error.response?.data?.mensagem || "Erro ao excluir apartamento. Verifique o console.";
+      showInfoModal("Erro", erroMsg, "error");
+    } finally {
+      setShowConfirmDeleteModal(false);
+      setApartamentoParaExcluir(null);
     }
   };
+
+  const cancelarExclusao = () => {
+    setShowConfirmDeleteModal(false);
+    setApartamentoParaExcluir(null);
+  };
+  // --- FIM: Funções do modal de exclusão ---
+
 
   const handleSaveLote = async (e) => {
     e.preventDefault();
@@ -132,7 +163,13 @@ export default function Apartamentos() {
         handleClose();
     } catch (error) {
         console.error('Erro ao cadastrar lote:', error);
-        showInfoModal('Erro', 'Erro ao cadastrar apartamentos em lote. Verifique o console.', 'error');
+        // MELHORIA: Tratamento de erro específico
+        const erroMsg = error.response?.data?.mensagem;
+        if (erroMsg && (erroMsg.toLowerCase().includes("já existe") || erroMsg.toLowerCase().includes("duplicate"))) {
+           showInfoModal('Erro', 'Erro ao cadastrar em lote. Um ou mais apartamentos (Bloco/Número) já existem.', 'error');
+        } else {
+           showInfoModal('Erro', erroMsg || 'Erro ao cadastrar apartamentos em lote. Verifique o console.', 'error');
+        }
     }
   };
 
@@ -255,7 +292,7 @@ export default function Apartamentos() {
                             icon={FiTrash2} 
                             label="Excluir" 
                             variant="delete"
-                            onClick={() => handleDelete(ap.ap_id)} 
+                            onClick={() => handleDelete(ap)} // ATUALIZADO: Passa o objeto 'ap'
                           />
                         </div>
                       </td>
@@ -369,6 +406,26 @@ export default function Apartamentos() {
           </div>
         </div>
       )}
+
+      {/* --- INÍCIO: Modal de exclusão --- */}
+      {showConfirmDeleteModal && apartamentoParaExcluir && (
+        <div className={styles.modalOverlay} onClick={cancelarExclusao}>
+          <div className={`${styles.modal} ${styles.confirmDeleteModal}`} onClick={(e) => e.stopPropagation()}>
+            <h2>Confirmar Exclusão</h2>
+            <p>
+              Deseja realmente excluir o apartamento{" "}
+              <strong>Bloco {apartamentoParaExcluir.bloc_id} - Nº {apartamentoParaExcluir.ap_numero}</strong>?
+              Esta ação não pode ser desfeita.
+            </p>
+            <div className={styles.modalActions}>
+              <button type="button" onClick={confirmarExclusao} className={styles.confirmBtnBlue}>Confirmar Exclusão</button>
+              <button type="button" onClick={cancelarExclusao} className={styles.cancelBtnRed}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* --- FIM: Modal de exclusão --- */}
+
     </div>
   );
 }

@@ -1,3 +1,4 @@
+
 "use client";
 import styles from "./Modal.module.css";
 import { useModal } from "@/context/ModalContext";
@@ -40,7 +41,8 @@ export default function Modal() {
         <p className={styles.modalMessage}>{modal.message}</p>
         {/* --- Button Text Changed --- */}
         <button
-          className={styles.modalButton}
+          // ATUALIZAÇÃO: Adiciona a classe 'error' se o modal.type for 'error'
+          className={`${styles.modalButton} ${modal.type === "error" ? styles.error : ''}`}
           // Ensure hideModal is callable before assigning onClick
           onClick={typeof hideModal === 'function' ? hideModal : undefined}
         >
