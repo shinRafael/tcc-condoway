@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState, useEffect } from "react";
 import styles from "./apartamentos.module.css";
@@ -8,7 +7,7 @@ import api from "@/services/api";
 import FabButton from '@/componentes/FabButton/FabButton';
 import IconAction from '@/componentes/IconAction/IconAction';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
-import { useModal } from "@/context/ModalContext"; // Importe o hook
+import { useModal } from "@/context/ModalContext";
 
 export default function Apartamentos() {
   const [showModal, setShowModal] = useState(false);
@@ -19,12 +18,37 @@ export default function Apartamentos() {
   const [showList, setShowList] = useState(true);
   const [filterField, setFilterField] = useState('bloco');
   const [searchTerm, setSearchTerm] = useState('');
-  const { showModal: showInfoModal } = useModal(); // Renomeie para evitar conflito de nome
+  const { showModal: showInfoModal } = useModal(); 
 
-  // --- INÍCIO: Adicionado estado para o modal de exclusão ---
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
   const [apartamentoParaExcluir, setApartamentoParaExcluir] = useState(null);
-  // --- FIM: Adicionado estado para o modal de exclusão ---
+
+  // --- NOVOS ESTADOS PARA OS BLOCOS ---
+  const [blocosDisponiveis, setBlocosDisponiveis] = useState([]);
+  const [loadingBlocos, setLoadingBlocos] = useState(true);
+  // Mapa para converter ID de bloco em Nome (para a tabela)
+  const [mapaBlocos, setMapaBlocos] = useState(new Map());
+
+  // --- FUNÇÃO ATUALIZADA PARA BUSCAR BLOCOS ---
+  useEffect(() => {
+    const fetchBlocos = async () => {
+      setLoadingBlocos(true);
+      try {
+        const response = await api.get('/blocos');
+        const blocos = response.data.dados || [];
+        setBlocosDisponiveis(blocos);
+        // Cria um mapa para consulta rápida (Ex: 1 => "A")
+        setMapaBlocos(new Map(blocos.map(b => [b.bloc_id, b.bloc_nome])));
+      } catch (error) {
+        console.error('Erro ao buscar blocos:', error);
+        showInfoModal('Erro', 'Não foi possível carregar a lista de blocos.', 'error');
+        setBlocosDisponiveis([]);
+      } finally {
+        setLoadingBlocos(false);
+      }
+    };
+    fetchBlocos();
+  }, [showInfoModal]); // Dependência do showInfoModal
 
   const listarApartamentos = async () => {
     setLoading(true);
@@ -40,8 +64,12 @@ export default function Apartamentos() {
   };
   
   useEffect(() => {
-    listarApartamentos();
-  }, []);
+    // Só lista apartamentos depois que os blocos carregarem,
+    // para que a tabela possa mostrar os nomes corretos.
+    if (!loadingBlocos) {
+      listarApartamentos();
+    }
+  }, [loadingBlocos]); // Dependência do loadingBlocos
 
   const handleAddAp = () => {
     setEditingAp(null);
@@ -60,18 +88,19 @@ export default function Apartamentos() {
     setShowLoteModal(false);
   };
 
+  // --- handleSave ATUALIZADO ---
+  // (Garante que o ID do bloco seja enviado como número)
   const handleSave = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const formAp = Object.fromEntries(formData);
 
     const payload = {
-      bloco: formAp.bloco, 
+      bloc: Number(formAp.bloco), // CORRIGIDO: usa "bloc" e converte para Número
       numero: Number(formAp.numero),
       andar: formAp.andar,
     };
     
-    // ATUALIZAÇÃO: Nome da variável "url" alterado para "apiUrl" para evitar conflito
     const apiUrl = editingAp 
       ? `/apartamentos/${editingAp.ap_id}` 
       : '/apartamentos';
@@ -89,7 +118,6 @@ export default function Apartamentos() {
       
     } catch (error) {
       console.error(`Erro ao salvar apartamento:`, error);
-      // MELHORIA: Tratamento de erro específico
       const erroMsg = error.response?.data?.mensagem;
       if (erroMsg && (erroMsg.toLowerCase().includes("já existe") || erroMsg.toLowerCase().includes("duplicate"))) {
          showInfoModal('Erro', 'Já existe um apartamento com este Bloco e Número.', 'error');
@@ -99,7 +127,7 @@ export default function Apartamentos() {
     }
   };
 
-  // --- INÍCIO: Funções do modal de exclusão ---
+  // Funções de exclusão (sem alteração)
   const handleDelete = (ap) => {
     setApartamentoParaExcluir(ap);
     setShowConfirmDeleteModal(true);
@@ -125,15 +153,14 @@ export default function Apartamentos() {
     setShowConfirmDeleteModal(false);
     setApartamentoParaExcluir(null);
   };
-  // --- FIM: Funções do modal de exclusão ---
 
-
+  // --- handleSaveLote ATUALIZADO ---
   const handleSaveLote = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const formLote = Object.fromEntries(formData);
     
-    const bloco = formLote.bloco;
+    const bloco = Number(formLote.bloco); // CORRIGIDO: Converte para Número
     const andar = formLote.andar;
     const numInicial = Number(formLote.numInicial);
     const numFinal = Number(formLote.numFinal);
@@ -149,7 +176,7 @@ export default function Apartamentos() {
     for (let i = 0; i < total; i++) {
         const apNumero = numInicial + i;
         const payload = {
-            bloco: bloco,
+            bloc: bloco, // CORRIGIDO: usa "bloc"
             numero: apNumero,
             andar: andar
         };
@@ -158,12 +185,11 @@ export default function Apartamentos() {
     
     try {
         await Promise.all(requests);
-        showInfoModal("Sucesso", `${total} apartamentos cadastrados com sucesso no Bloco ${bloco}!`);
+        showInfoModal("Sucesso", `${total} apartamentos cadastrados com sucesso no Bloco ${mapaBlocos.get(bloco) || bloco}!`);
         await listarApartamentos();
         handleClose();
     } catch (error) {
         console.error('Erro ao cadastrar lote:', error);
-        // MELHORIA: Tratamento de erro específico
         const erroMsg = error.response?.data?.mensagem;
         if (erroMsg && (erroMsg.toLowerCase().includes("já existe") || erroMsg.toLowerCase().includes("duplicate"))) {
            showInfoModal('Erro', 'Erro ao cadastrar em lote. Um ou mais apartamentos (Bloco/Número) já existem.', 'error');
@@ -179,8 +205,10 @@ export default function Apartamentos() {
 
     if (!term) return true;
 
+    // Busca pelo NOME do bloco (usando o mapa) ou pelo NÚMERO
     if (filterField === 'bloco') {
-      return ap.bloco_id && ap.bloco_id.toString().toLowerCase().includes(term);
+      const nomeBloco = mapaBlocos.get(ap.bloco_id)?.toLowerCase() || '';
+      return nomeBloco.includes(term);
     } else if (filterField === 'numero') {
       return ap.ap_numero && ap.ap_numero.toString().includes(term);
     }
@@ -203,7 +231,6 @@ export default function Apartamentos() {
           </div>
           
           <div className={styles.filterContainer}>
-            
             <div className={styles.radioGroup}>
               <span style={{ marginRight: '10px' }}>Buscar por:</span>
               <label style={{ marginRight: '15px' }}>
@@ -232,7 +259,7 @@ export default function Apartamentos() {
             
             <input
               type="text"
-              placeholder={`Digite o ${filterField === 'bloco' ? 'Bloco (Ex: A)' : 'Número (Ex: 101)'}...`}
+              placeholder={`Digite o ${filterField === 'bloco' ? 'Nome do Bloco (Ex: A)' : 'Número (Ex: 101)'}...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className={styles.searchInput}
@@ -242,10 +269,8 @@ export default function Apartamentos() {
           {showList ? (
             loading ? (
               <p>Carregando lista de apartamentos...</p>
-            ) : filteredApartamentos.length === 0 && searchTerm !== '' ? (
-              <p>Nenhum apartamento encontrado com o filtro atual.</p>
-            ) : filteredApartamentos.length === 0 && searchTerm === '' ? (
-              <p>Nenhum apartamento encontrado. Verifique o banco de dados.</p>
+            ) : filteredApartamentos.length === 0 ? (
+              <p>Nenhum apartamento encontrado.</p>
             ) : (
               <table className={styles.table}>
                 <thead>
@@ -260,27 +285,14 @@ export default function Apartamentos() {
                 <tbody>
                   {filteredApartamentos.map((ap) => (
                     <tr key={ap.ap_id} className={styles.apRow}>
-                      <td>
-                        {ap.ap_id}
-                        <div className={styles.tooltip}>
-                          <p>
-                            <strong>ID:</strong> {ap.ap_id}
-                          </p>
-                          <p>
-                            <strong>Bloco:</strong> {ap.bloc_id}
-                          </p>
-                          <p>
-                            <strong>Número:</strong> {ap.ap_numero}
-                          </p>
-                          <p>
-                            <strong>Andar:</strong> {ap.ap_andar}
-                          </p>
-                        </div>
+                      <td data-label="ID">{ap.ap_id}</td>
+                      <td data-label="Bloco">
+                        {/* ATUALIZADO: Mostra o NOME do bloco */}
+                        {mapaBlocos.get(ap.bloco_id) || `ID ${ap.bloco_id}`}
                       </td>
-                      <td>{ap.bloc_id}</td>
-                      <td>{ap.ap_numero}</td>
-                      <td>{ap.ap_andar}</td>
-                      <td>
+                      <td data-label="Número">{ap.ap_numero}</td>
+                      <td data-label="Andar">{ap.ap_andar}</td>
+                      <td data-label="Ações">
                         <div style={{ display: 'flex', gap: '8px' }}>
                           <IconAction 
                             icon={FiEdit2} 
@@ -292,7 +304,7 @@ export default function Apartamentos() {
                             icon={FiTrash2} 
                             label="Excluir" 
                             variant="delete"
-                            onClick={() => handleDelete(ap)} // ATUALIZADO: Passa o objeto 'ap'
+                            onClick={() => handleDelete(ap)}
                           />
                         </div>
                       </td>
@@ -305,6 +317,7 @@ export default function Apartamentos() {
         </div>
       </div>
       
+      {/* Modal de Adicionar/Editar */}
       {showModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
@@ -314,22 +327,32 @@ export default function Apartamentos() {
                 : "Adicionar Apartamento"}
             </h2>
             <form onSubmit={handleSave} className={styles.form}>
-              <input
-                type="number"
-                name="id"
-                placeholder="ID (Gerado automaticamente)"
-                defaultValue={editingAp?.ap_id || ""}
-                className={editingAp ? styles.visibleOnEdit : styles.hiddenOnAdd}
-                disabled={editingAp ? true : false} 
-                required={editingAp}
-              />
-              <input
-                type="text"
-                name="bloco"
-                placeholder="Bloco"
+              
+              {/* --- CAMPO DE BLOCO ATUALIZADO --- */}
+              <select
+                name="bloco" // O form envia 'bloco'
                 defaultValue={editingAp?.bloco_id || ""}
                 required
-              />
+                disabled={loadingBlocos}
+                style={{ 
+                  padding: '10px', 
+                  borderRadius: '6px', 
+                  border: '1px solid #ccc', 
+                  fontSize: '14px',
+                  fontWeight: 600
+                }}
+              >
+                <option value="">
+                  {loadingBlocos ? "Carregando blocos..." : "Selecione o Bloco"}
+                </option>
+                {blocosDisponiveis.map((bloco) => (
+                  <option key={bloco.bloc_id} value={bloco.bloc_id}>
+                    {bloco.bloc_nome}
+                  </option>
+                ))}
+              </select>
+              {/* --- FIM DA ATUALIZAÇÃO --- */}
+
               <input
                 type="number"
                 name="numero"
@@ -361,17 +384,37 @@ export default function Apartamentos() {
         </div>
       )}
       
+      {/* Modal de Cadastro em Lote */}
       {showLoteModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
             <h2>Cadastro Rápido (Lote)</h2>
             <form onSubmit={handleSaveLote} className={styles.form}> 
-              <input
-                type="text"
+              
+              {/* --- CAMPO DE BLOCO ATUALIZADO --- */}
+              <select
                 name="bloco"
-                placeholder="Bloco"
                 required
-              />
+                disabled={loadingBlocos}
+                style={{ 
+                  padding: '10px', 
+                  borderRadius: '6px', 
+                  border: '1px solid #ccc', 
+                  fontSize: '14px',
+                  fontWeight: 600
+                }}
+              >
+                <option value="">
+                  {loadingBlocos ? "Carregando blocos..." : "Selecione o Bloco"}
+                </option>
+                {blocosDisponiveis.map((bloco) => (
+                  <option key={bloco.bloc_id} value={bloco.bloc_id}>
+                    {bloco.bloc_nome}
+                  </option>
+                ))}
+              </select>
+              {/* --- FIM DA ATUALIZAÇÃO --- */}
+
               <input
                 type="text"
                 name="andar"
@@ -407,14 +450,14 @@ export default function Apartamentos() {
         </div>
       )}
 
-      {/* --- INÍCIO: Modal de exclusão --- */}
+      {/* Modal de Exclusão (sem alteração) */}
       {showConfirmDeleteModal && apartamentoParaExcluir && (
         <div className={styles.modalOverlay} onClick={cancelarExclusao}>
           <div className={`${styles.modal} ${styles.confirmDeleteModal}`} onClick={(e) => e.stopPropagation()}>
             <h2>Confirmar Exclusão</h2>
             <p>
               Deseja realmente excluir o apartamento{" "}
-              <strong>Bloco {apartamentoParaExcluir.bloc_id} - Nº {apartamentoParaExcluir.ap_numero}</strong>?
+              <strong>Bloco {mapaBlocos.get(apartamentoParaExcluir.bloco_id) || '?'} - Nº {apartamentoParaExcluir.ap_numero}</strong>?
               Esta ação não pode ser desfeita.
             </p>
             <div className={styles.modalActions}>
@@ -424,8 +467,6 @@ export default function Apartamentos() {
           </div>
         </div>
       )}
-      {/* --- FIM: Modal de exclusão --- */}
-
     </div>
   );
 }

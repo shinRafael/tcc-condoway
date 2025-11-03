@@ -18,7 +18,7 @@ const usuarioInicial = {
   user_telefone: "",
   user_tipo: "Morador", // Padrão para Morador
   ap_id: "", // ID do apartamento selecionado
-  bloco_id: "", // ID do bloco selecionado (para controle do filtro)
+  bloc_id: "", // ID do bloco selecionado (para controle do filtro)
 };
 
 // --- Função para formatar telefone ---
@@ -80,7 +80,7 @@ export default function UsuariosPage() {
 
   // --- useEffect para buscar Blocos e Apartamentos (ao montar ou se precisar recarregar) ---
   useEffect(() => {
-    const fetchOptions = async () => {
+    const axiosOptions = async () => {
       setLoadingOptions(true);
       try {
         // Busca blocos e apartamentos em paralelo
@@ -100,15 +100,15 @@ export default function UsuariosPage() {
         setLoadingOptions(false);
       }
     };
-    fetchOptions();
+    axiosOptions();
   }, [showInfoModal]); // Re-executa se showInfoModal mudar (improvável, mas boa prática)
-  // --- Fim useEffect fetchOptions ---
+  // --- Fim useEffect axiosOptions ---
 
   // --- useEffect para filtrar Apartamentos quando o Bloco muda no formulário ---
   useEffect(() => {
-    // Só filtra se um bloco_id estiver selecionado
-    if (usuarioEmEdicao.bloco_id && apartamentosDisponiveis.length > 0) {
-      const blocoIdNum = parseInt(usuarioEmEdicao.bloco_id); // Garante que é número
+    // Só filtra se um bloc_id estiver selecionado
+    if (usuarioEmEdicao.bloc_id && apartamentosDisponiveis.length > 0) {
+      const blocoIdNum = parseInt(usuarioEmEdicao.bloc_id); // Garante que é número
       // Filtra a lista completa de apartamentos
       const filtrados = apartamentosDisponiveis.filter(
         (ap) => ap.bloc_id === blocoIdNum // Comparação numérica
@@ -127,47 +127,81 @@ export default function UsuariosPage() {
           setUsuarioEmEdicao(prev => ({ ...prev, ap_id: "" }));
       }
     }
-  }, [usuarioEmEdicao.bloco_id, usuarioEmEdicao.ap_id, apartamentosDisponiveis]); // Dependências corretas
+  }, [usuarioEmEdicao.bloc_id, usuarioEmEdicao.ap_id, apartamentosDisponiveis]); // Dependências corretas
   // --- Fim useEffect filtro Apartamentos ---
 
-  // --- Handler para Adicionar Usuário ---
+  // --- Handler para Adicionar Usuário (Corrigido com 2 Etapas) ---
   const handleAddUsuario = async () => {
     try {
-      // Prepara os dados para enviar, incluindo o ap_id
+      // Prepara os dados do usuário (sem o ap_id)
       const dadosParaEnviar = {
         user_nome: usuarioEmEdicao.user_nome.trim(),
         user_email: usuarioEmEdicao.user_email.trim(),
-        user_telefone: usuarioEmEdicao.user_telefone.replace(/\D/g, ""), // Remove formatação do telefone
+        user_telefone: usuarioEmEdicao.user_telefone.replace(/\D/g, ""), // Remove formatação
         user_senha: usuarioEmEdicao.user_senha,
         user_tipo: usuarioEmEdicao.user_tipo,
-        // Converte ap_id para número ou null se vazio
-        ap_id: usuarioEmEdicao.ap_id ? parseInt(usuarioEmEdicao.ap_id) : null,
       };
+      
+      // Guarda o ap_id selecionado
+      const ap_id_selecionado = usuarioEmEdicao.ap_id ? parseInt(usuarioEmEdicao.ap_id) : null;
+
+      // Validações (iguais às que você já tinha)
       if (!dadosParaEnviar.user_senha) {
           showInfoModal("Erro", "A senha é obrigatória para novos usuários.", "error");
-          return; // Impede o envio sem senha
+          return;
       }
-
-      // Validação: Morador DEVE ter um apartamento selecionado
-      if (dadosParaEnviar.user_tipo === 'Morador' && !dadosParaEnviar.ap_id) {
+      if (dadosParaEnviar.user_tipo === 'Morador' && !ap_id_selecionado) {
         showInfoModal("Erro", "Para cadastrar um Morador, selecione o Bloco e o Apartamento.", "error");
-        return; // Impede o envio
-      }
-      // Se não for Morador, remove o ap_id para não enviar desnecessariamente
-      if (dadosParaEnviar.user_tipo !== 'Morador') {
-        delete dadosParaEnviar.ap_id;
+        return;
       }
 
-      // Envia os dados para a API
-      await api.post("/Usuario", dadosParaEnviar);
-      showInfoModal("Sucesso", "Usuário cadastrado com sucesso!");
-      axiosUsuarios(); // Recarrega a lista de usuários
+      // --- ETAPA 1: Criar o Usuário ---
+      // A API /Usuario não aceita ap_id, enviamos apenas os dados do usuário
+      const responseUser = await api.post("/Usuario", dadosParaEnviar); //
+      
+      // Precisamos que a API retorne o ID do usuário recém-criado.
+      // O controller Usuario.js retorna: { dados: { id: result.insertId, ... } }
+      const novoUserId = responseUser.data?.dados?.id;
+
+      if (!novoUserId) {
+        // Se a API não retornar o ID, não podemos continuar.
+        throw new Error("A API de usuário não retornou o ID do usuário criado.");
+      }
+
+      // --- ETAPA 2: Vincular o Apartamento (se for Morador) ---
+      if (dadosParaEnviar.user_tipo === 'Morador' && ap_id_selecionado) {
+        try {
+          // Usamos a API /usuarioApartamentos para fazer o vínculo
+          // O controller 'usuarioApartamentos.js' espera { user_id, ap_id }
+          await api.post("/usuarioApartamentos", { 
+            user_id: novoUserId,
+            ap_id: ap_id_selecionado
+          });
+        } catch (linkError) {
+          // Se o vínculo falhar, informamos o usuário.
+          console.error("Erro ao vincular apartamento:", linkError);
+          showInfoModal("Atenção", `Usuário ${dadosParaEnviar.user_nome} foi CRIADO (ID: ${novoUserId}), mas FALHOU ao vincular ao apartamento. Edite o usuário para tentar novamente.`, "error");
+          
+          // Mesmo com erro no vínculo, recarregamos a lista e fechamos o form
+          axiosUsuarios(); 
+          setShowForm(false);
+          setUsuarioEmEdicao(usuarioInicial);
+          return; // Sai da função
+        }
+      }
+
+      // --- Sucesso Completo ---
+      showInfoModal("Sucesso", "Usuário cadastrado e vinculado com sucesso!");
+      axiosUsuarios(); // Recarrega a lista
       setShowForm(false); // Fecha o modal
       setUsuarioEmEdicao(usuarioInicial); // Reseta o formulário
+
     } catch (error) {
-      // Tratamento de Erro (igual ao anterior)
+      // Tratamento de Erro (o mesmo que você já usa para duplicidade, etc.)
+      console.error("Erro ao cadastrar usuário:", error.response || error);
       const erroMsg = error.response?.data?.mensagem;
       const isDuplicateError = error.response && (error.response.status === 409 || (error.response.status === 400 && erroMsg?.toLowerCase().includes("e-mail já cadastrado")) || (erroMsg?.toLowerCase().includes("duplicate")));
+      
       if (isDuplicateError) {
         showInfoModal("Erro ao Cadastrar", "Já existe um usuário cadastrado com este e-mail.", "error");
       } else {
@@ -176,13 +210,12 @@ export default function UsuariosPage() {
       }
     }
   };
-  // --- Fim Handler Adicionar ---
 
   // --- Handler para Atualizar Usuário ---
   const handleUpdateUsuario = async () => {
     try {
       // Extrai IDs e dados a serem atualizados
-      const { user_id, ap_id, bloco_id, ...dadosParaAtualizar } = usuarioEmEdicao;
+      const { user_id, ap_id, bloc_id, ...dadosParaAtualizar } = usuarioEmEdicao;
       dadosParaAtualizar.user_telefone = dadosParaAtualizar.user_telefone.replace(/\D/g, ""); // Limpa telefone
 
       // Remove a senha se estiver vazia (para não atualizar sem querer)
@@ -291,7 +324,7 @@ export default function UsuariosPage() {
        user_senha: '', // Limpa o campo senha
        user_telefone: formatarTelefone(usuario.user_telefone), // Formata o telefone
        ap_id: apAssociado ? apAssociado.ap_id.toString() : "", // Define ap_id se encontrado
-       bloco_id: blocoAssociadoId, // Define bloco_id se encontrado
+       bloc_id: blocoAssociadoId, // Define bloc_id se encontrado
      });
      setShowForm(true); // Abre o modal
   };
@@ -317,9 +350,9 @@ export default function UsuariosPage() {
       }
     }
     // Tratamento especial para seleção de bloco
-    else if (name === "bloco_id") {
-      // Atualiza o bloco_id e LIMPA o ap_id (pois a lista de APs vai mudar)
-      setUsuarioEmEdicao({ ...usuarioEmEdicao, bloco_id: value, ap_id: "" });
+    else if (name === "bloc_id") {
+      // Atualiza o bloc_id e LIMPA o ap_id (pois a lista de APs vai mudar)
+      setUsuarioEmEdicao({ ...usuarioEmEdicao, bloc_id: value, ap_id: "" });
     }
     // Para todos os outros campos, atualiza o valor diretamente
     else {
@@ -359,8 +392,8 @@ export default function UsuariosPage() {
                 {usuarioEmEdicao.user_tipo === 'Morador' && (
                   <>
                     <select
-                      name="bloco_id"
-                      value={usuarioEmEdicao.bloco_id}
+                      name="bloc_id"
+                      value={usuarioEmEdicao.bloc_id}
                       onChange={handleFormChange}
                       required // Obrigatório para morador
                       disabled={loadingOptions || blocosDisponiveis.length === 0}
@@ -378,10 +411,10 @@ export default function UsuariosPage() {
                       value={usuarioEmEdicao.ap_id}
                       onChange={handleFormChange}
                       required // Obrigatório para morador
-                      disabled={!usuarioEmEdicao.bloco_id || apartamentosFiltrados.length === 0 || loadingOptions}
+                      disabled={!usuarioEmEdicao.bloc_id || apartamentosFiltrados.length === 0 || loadingOptions}
                     >
                       <option value="">
-                        {!usuarioEmEdicao.bloco_id
+                        {!usuarioEmEdicao.bloc_id
                           ? 'Selecione um bloco primeiro'
                           : loadingOptions
                           ? 'Carregando Aps...'
