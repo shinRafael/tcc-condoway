@@ -54,7 +54,18 @@ export default function Apartamentos() {
     setLoading(true);
     try {
       const response = await api.get('/apartamentos');
-      setApartamentos(response.data.dados); 
+      const apartamentosData = response.data.dados;
+      console.log('📦 Dados dos apartamentos recebidos:', apartamentosData);
+      if (apartamentosData && apartamentosData.length > 0) {
+        console.log('🔍 Exemplo de apartamento:', apartamentosData[0]);
+        console.log('🏢 Campos de bloco disponíveis:', {
+          bloco_id: apartamentosData[0].bloco_id,
+          bloc_id: apartamentosData[0].bloc_id,
+          bloc: apartamentosData[0].bloc,
+          bloc_nome: apartamentosData[0].bloc_nome
+        });
+      }
+      setApartamentos(apartamentosData); 
     } catch(error) {
       console.error('Erro ao buscar apartamentos:', error);
       showInfoModal('Erro', 'Não foi possível carregar a lista de apartamentos', 'error');
@@ -287,8 +298,8 @@ export default function Apartamentos() {
                     <tr key={ap.ap_id} className={styles.apRow}>
                       <td data-label="ID">{ap.ap_id}</td>
                       <td data-label="Bloco">
-                        {/* ATUALIZADO: Mostra o NOME do bloco */}
-                        {mapaBlocos.get(ap.bloco_id) || `ID ${ap.bloco_id}`}
+                        {/* CORRIGIDO: Verifica múltiplos possíveis nomes de campo */}
+                        {mapaBlocos.get(ap.bloco_id || ap.bloc_id || ap.bloc) || ap.bloc_nome || `ID ${ap.bloco_id || ap.bloc_id || ap.bloc || 'undefined'}`}
                       </td>
                       <td data-label="Número">{ap.ap_numero}</td>
                       <td data-label="Andar">{ap.ap_andar}</td>
