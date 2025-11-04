@@ -33,15 +33,20 @@ const Dashboard = () => {
   
   useEffect(() => {
     const fetchDashboardData = async () => {
+      console.log('🔄 Dashboard: Iniciando busca de dados...');
+      
       try {
         // Helper para que uma falha na API não quebre todas as chamadas
         const safeGet = (url) => 
           api.get(url).catch(error => {
-            console.warn(`Falha ao buscar dados de '${url}':`, error.message);
+            console.error(`❌ Falha ao buscar dados de '${url}':`, error.message);
+            console.warn(`⚠️  Retornando dados vazios para '${url}'`);
             // Retorna um objeto padrão para não quebrar o resto do código
-            return { data: { sucesso: false, dados: [] } };
+            return { data: { sucesso: true, dados: [] } };
           });
 
+        console.log('📡 Fazendo requisições paralelas...');
+        
         // Usando Promise.all com o helper
         const [
           visitorsResponse,
@@ -58,6 +63,12 @@ const Dashboard = () => {
           safeGet('/mensagens'),
           safeGet('/ambientes')
         ]);
+        
+        console.log('✅ Requisições concluídas');
+        console.log('📊 RESERVAS:', JSON.stringify(reservationsResponse?.data, null, 2));
+        console.log('📊 ENCOMENDAS:', JSON.stringify(encomendasResponse?.data, null, 2));
+        console.log('📊 OCORRENCIAS:', JSON.stringify(ocorrenciasResponse?.data, null, 2));
+        console.log('📊 AMBIENTES:', JSON.stringify(ambientesResponse?.data, null, 2));
         
         // Visitantes (dashboard)
         let visitantesDados = [];
@@ -92,8 +103,27 @@ const Dashboard = () => {
         newKpis.visitantes.value = visitantesDados.length;
 
         // Reservas: filtra status 'Pendente' e usa o nome do ambiente
+        console.log('🔍 Verificando reservas...', reservationsResponse.data);
         if (reservationsResponse.data && reservationsResponse.data.sucesso && Array.isArray(reservationsResponse.data.dados)) {
-          const pendingReservations = reservationsResponse.data.dados.filter(r => r.res_status === 'Pendente');
+          console.log('📋 Total de reservas recebidas:', reservationsResponse.data.dados.length);
+          
+          // Log detalhado de cada reserva para debug
+          reservationsResponse.data.dados.forEach((r, index) => {
+            console.log(`🔍 Reserva ${index + 1}:`, {
+              id: r.res_id,
+              status: `"${r.res_status}"`,
+              statusType: typeof r.res_status,
+              todosOsCampos: Object.keys(r)
+            });
+          });
+          
+          const pendingReservations = reservationsResponse.data.dados.filter(r => {
+            const isPendente = r.res_status === 'Pendente';
+            console.log(`⏳ ID ${r.res_id}: Status="${r.res_status}" → Pendente? ${isPendente}`);
+            return isPendente;
+          });
+          console.log('⏳ Total de Reservas Pendentes encontradas:', pendingReservations.length);
+          
           newKpis.reservas.value = pendingReservations.length;
           pendingReservations.forEach(item => {
             console.log('Processando reserva:', item.res_id, 'com amd_id:', item.amd_id);
@@ -108,6 +138,8 @@ const Dashboard = () => {
               createdAt: item.res_data_reserva, // Passa a data
             });
           });
+        } else {
+          console.warn('❌ Dados de reservas inválidos ou não retornados');
         }
 
         // Encomendas: status 'aguardando_retirada'

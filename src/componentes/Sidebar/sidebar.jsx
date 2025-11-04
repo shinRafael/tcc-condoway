@@ -61,7 +61,6 @@ export default function Sidebar() {
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
-            const count = Number(badges?.[item.key] || 0);
             return (
               <li key={item.href} className={styles.navItem}>
                 <Link
@@ -71,7 +70,6 @@ export default function Sidebar() {
                 >
                   <div className={styles.iconWrapper}>{Icon ? <Icon className={styles.icon} aria-hidden /> : null}</div>
                   <span className={styles.label}>{item.label}</span>
-                  {count > 0 && <span className={styles.badgeDot} title={`${count} pendentes`} />}
                 </Link>
               </li>
             );
