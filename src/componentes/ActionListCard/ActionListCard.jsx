@@ -95,7 +95,7 @@ const ActionListCard = ({ title, actions, viewAllLink, onQuickAction, processedA
         {/* Agrupamento por categoria */}
         {filter === 'all' && (
           <div className={styles.categoryGroups}>
-            <div className={styles.categoryGroup}>
+            <div key="aprovar-group" className={styles.categoryGroup}>
               <h4 className={styles.categoryTitle}>Aprovações Pendentes</h4>
               {visibleActions
                 .filter(action => action.type === 'aprovar')
@@ -113,7 +113,7 @@ const ActionListCard = ({ title, actions, viewAllLink, onQuickAction, processedA
                 ))}
             </div>
             
-            <div className={styles.categoryGroup}>
+            <div key="outras-group" className={styles.categoryGroup}>
               <h4 className={styles.categoryTitle}>Outras Ações</h4>
               {visibleActions
                 .filter(action => action.type !== 'aprovar')

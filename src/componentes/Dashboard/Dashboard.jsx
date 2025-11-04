@@ -8,6 +8,7 @@ import { StatusOcorrenciasCard } from './StatusOcorrenciasCard';
 import RecentOccurrences from './RecentOccurrences';
 import styles from './Dashboard.module.css';
 import api from '../../services/api'; // Importe o serviço da API
+import { mockDashboardData, mockApiCall } from '../../services/mockData'; // Dados mockados
 
 // Dados iniciais para KPIs e Ações (pode ser removido quando a API estiver integrada)
 const initialKpis = {
@@ -33,19 +34,23 @@ const Dashboard = () => {
   
   useEffect(() => {
     const fetchDashboardData = async () => {
-      console.log('🔄 Dashboard: Iniciando busca de dados...');
+      console.log('🔄 Dashboard: Iniciando busca de dados da API...');
       
       try {
         // Helper para que uma falha na API não quebre todas as chamadas
-        const safeGet = (url) => 
-          api.get(url).catch(error => {
-            console.error(`❌ Falha ao buscar dados de '${url}':`, error.message);
-            console.warn(`⚠️  Retornando dados vazios para '${url}'`);
-            // Retorna um objeto padrão para não quebrar o resto do código
-            return { data: { sucesso: true, dados: [] } };
-          });
+        const safeGet = async (url, mockDataKey) => {
+          try {
+            const response = await api.get(url);
+            console.log(`✅ Dados recebidos de ${url}`);
+            return response;
+          } catch (error) {
+            console.warn(`⚠️ Falha em ${url}, usando dados mockados`);
+            // Retorna dados mockados como fallback
+            return await mockApiCall(mockDashboardData[mockDataKey], 100);
+          }
+        };
 
-        console.log('📡 Fazendo requisições paralelas...');
+        console.log('📡 Buscando dados do backend...');
         
         // Usando Promise.all com o helper
         const [
@@ -56,12 +61,12 @@ const Dashboard = () => {
           mensagensResponse,
           ambientesResponse
         ] = await Promise.all([
-          safeGet('/visitantes/dashboard'),
-          safeGet('/reservas_ambientes'),
-          safeGet('/encomendas'),
-          safeGet('/ocorrencias'),
-          safeGet('/mensagens'),
-          safeGet('/ambientes')
+          safeGet('/visitantes/dashboard', 'visitantes'),
+          safeGet('/reservas_ambientes', 'reservas'),
+          safeGet('/encomendas', 'encomendas'),
+          safeGet('/ocorrencias', 'ocorrencias'),
+          safeGet('/mensagens', 'mensagens'),
+          safeGet('/ambientes', 'ambientes')
         ]);
         
         console.log('✅ Requisições concluídas');

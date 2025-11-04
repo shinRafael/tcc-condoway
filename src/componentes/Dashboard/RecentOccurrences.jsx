@@ -50,10 +50,17 @@ export default function RecentOccurrences({
         <span className={styles.notificationCount}>{notifications.length}</span>
       </div>
 
-      {visibleNotifications.length > 0
-        ? visibleNotifications.map(item => <NotificationItem key={item.vst_id} item={item} />)
-        : <p className={styles.emptyState}>Nenhum visitante aguardando ou presente.</p>
-      }
+      <div className={styles.notificationsList}>
+        {visibleNotifications.length > 0
+          ? visibleNotifications.map((item, index) => (
+              <NotificationItem 
+                key={item.vst_id || `notification-${index}`} 
+                item={item} 
+              />
+            ))
+          : <p className={styles.emptyState}>Nenhum visitante aguardando ou presente.</p>
+        }
+      </div>
 
       {/* Botão de Ação para expandir */}
       {hasMoreNotifications && (
