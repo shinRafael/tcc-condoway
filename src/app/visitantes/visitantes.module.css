@@ -1,317 +1,224 @@
-/* Importar o CSS global se necessário */
+/* ==============================================================
+📘 visitantes.module.css — versão revisada 2025
+Compatível com a page.jsx da Portaria (Controle de Acessos)
+============================================================== */
 
-
-/* Layout Principal do Dashboard (Grid) */
 .dashboardGrid {
-    display: grid;
-    /* Define 4 áreas principais: 
-       scanner e lista de espera na primeira coluna, 
-       log e fluxo inesperado na segunda coluna. */
-    grid-template-areas: 
-        "scanner lista"
-        "inesperado log";
-    gap: 2rem;
-    padding: 2rem 0;
-    max-width: 1200px; /* Aumenta a largura para o dashboard */
-    margin: 0 auto;
+  display: grid;
+  grid-template-areas:
+    "lista inesperado";
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-/* Configuração de áreas */
-.scannerArea {
-    grid-area: scanner;
-    min-height: 250px;
-}
-.listaAguardando {
-    grid-area: lista;
-}
-.logAtividade {
-    grid-area: log;
-}
-.fluxoInesperado {
-    grid-area: inesperado;
-}
-
-
-/* Estilo Geral do Widget (Caixa) */
+/* ===== WIDGETS ===== */
 .widget {
-    background-color: #ffffff;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-
+.widget:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
 .widgetTitle {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #34495e;
-    margin-top: 0;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid #ecf0f1;
-    padding-bottom: 0.5rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1rem;
+  border-left: 4px solid #2563eb;
+  padding-left: 0.5rem;
 }
 
-/* 1. Scanner Area */
-.scanButton {
-    width: 100%;
-    padding: 1.5rem;
-    background-color: #f39c12; /* Cor de atenção */
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-.scanButton:hover {
-    background-color: #e67e22;
-}
-
-.scannerAtivo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 200px;
-    background-color: #ecf0f1;
-    border-radius: 8px;
-    padding: 1rem;
-}
-
-.scannerAnimation {
-    width: 100px;
-    height: 100px;
-    border: 5px solid #3498db;
-    border-radius: 50%;
-    border-top-color: transparent;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* 2. Lista de Espera */
+/* ===== LISTA VISITANTES ===== */
 .searchInput {
-    width: 100%;
-    padding: 0.75rem;
-    margin-bottom: 1rem;
-    border: 1px solid #dcdfe6;
-    border-radius: 8px;
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.2s;
 }
-
-.listContainer {
-    max-height: 300px; /* Limite de altura para scroll */
-    overflow-y: auto;
+.searchInput:focus {
+  border-color: #2563eb;
 }
-
 .visitanteList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
-
 .visitanteItem {
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #ecf0f1;
-    display: flex;
-    flex-direction: column;
+  padding: 0.8rem 1rem;
+  border-left: 4px solid transparent;
+  border-bottom: 1px solid #e5e7eb;
+  transition: background 0.2s, border-color 0.2s;
 }
-
-.visitanteItem:last-child {
-    border-bottom: none;
+.visitanteItem:hover {
+  background: #f8fafc;
+  border-left-color: #2563eb;
 }
-
 .visitanteNome {
-    font-weight: 600;
-    color: #2c3e50;
-    font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
 }
-
 .visitanteDestino {
-    color: #3498db;
-    font-size: 0.9rem;
-    margin-top: 2px;
+  color: #2563eb;
+  font-size: 0.9rem;
 }
-
 .visitanteMorador {
-    color: #7f8c8d;
-    font-size: 0.8rem;
+  font-size: 0.8rem;
+  color: #64748b;
 }
 
-.emptyList {
-    text-align: center;
-    color: #95a5a6;
-    padding: 1rem;
+/* ===== AÇÕES ===== */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
 }
-
-/* 3. Log de Atividade */
-.logList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    max-height: 350px;
-    overflow-y: auto;
-}
-
-.logItem {
-    padding: 0.5rem 0;
-    border-bottom: 1px dashed #e0e6ed;
-    font-size: 0.9rem;
-}
-
-.logItem:last-child {
-    border-bottom: none;
-}
-
-.logHora {
-    font-weight: 600;
-    color: #2c3e50;
-    margin-right: 0.5rem;
-}
-
-.entrada { color: #2ecc71; }
-.saida { color: #e74c3c; }
-
-
-/* 4. Fluxo Inesperado */
-.notifyButton {
-    width: 100%;
-    padding: 1rem;
-    background-color: #3498db;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    margin-top: 1rem;
-}
-
-.notifyButton:hover {
-    background-color: #2980b9;
-}
-
-.formGroup select {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #dcdfe6;
-    border-radius: 8px;
-    font-size: 1rem;
-}
-
-.statusBox {
-    text-align: center;
-    padding: 1.5rem;
-    border: 2px solid;
-    border-radius: 8px;
-    margin-top: 1rem;
-}
-
-.statusText {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-}
-
 .confirmButton {
-    background-color: #2ecc71;
-    color: #ffffff;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-top: 10px;
+  background: #22c55e;
+  color: #fff;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
 }
-
-.cancelButton { /* Reutiliza o estilo do modal, mas ajusta a cor para ser secundário no box de status */
-    background-color: #bdc3c7;
-    color: #34495e;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-top: 10px;
-    margin-left: 10px;
-}
-
-
-/* Modal de Acesso (Fluxo QR Code) */
-.modalOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(44, 62, 80, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    animation: fadeIn 0.3s forwards;
-}
-
-.modalContent {
-    background-color: #ffffff;
-    padding: 2rem;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 450px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-    animation: scaleIn 0.3s forwards;
-    text-align: center;
-}
-
-.acessoInfo {
-    text-align: left;
-    margin-top: 1.5rem;
-    padding: 1rem;
-    border: 1px solid #ecf0f1;
-    border-radius: 8px;
-}
-
-.modalActions {
-    display: flex;
-    justify-content: space-around;
-    gap: 1rem;
-    margin-top: 2rem;
-}
-
 .denyButton {
-    background-color: #e74c3c;
-    color: #ffffff;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  background: #ef4444;
+  color: #fff;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.cancelButton {
+  background: #94a3b8;
+  color: white;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
 }
 
-/* Media Queries para Responsividade */
-@media (max-width: 992px) {
-    .dashboardGrid {
-        grid-template-areas: 
-            "scanner lista"
-            "inesperado inesperado"
-            "log log";
-        gap: 1.5rem;
-    }
+/* ===== FLUXO INESPERADO ===== */
+.fluxoInesperado {
+  grid-area: inesperado;
+}
+.formGroup {
+  margin-bottom: 1rem;
+}
+.formGroup label {
+  font-weight: 600;
+  color: #1e293b;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+.formGroup input,
+.formGroup select {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.formGroup input:focus,
+.formGroup select:focus {
+  border-color: #2563eb;
+}
+.notifyButton {
+  width: 100%;
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.notifyButton:hover {
+  transform: scale(1.02);
+}
+.statusBox {
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 10px;
+  border-left: 4px solid #2563eb;
+  text-align: center;
+}
+.statusText {
+  font-weight: 600;
+  color: #2563eb;
+  margin-bottom: 1rem;
 }
 
-@media (max-width: 768px) {
-    .dashboardGrid {
-        grid-template-areas: 
-            "scanner"
-            "lista"
-            "inesperado"
-            "log";
-        gap: 1.5rem;
-        padding: 1rem 0;
-    }
+/* ===== MODAL ===== */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+}
+.modalContent {
+  background: #fff;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 480px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  animation: scaleIn 0.3s ease;
+}
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.modalTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 900px) {
+  .dashboardGrid {
+    grid-template-areas:
+      "lista"
+      "inesperado";
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1rem;
+  }
+  .widget {
+    padding: 1rem;
+  }
+  .actions {
+    flex-direction: column;
+  }
 }
