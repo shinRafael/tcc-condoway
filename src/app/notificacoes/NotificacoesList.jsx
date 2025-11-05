@@ -124,7 +124,7 @@ export default function NotificacoesList({ initialNotificacoes, adicionarNotific
             <form onSubmit={handleAdicionar}>
               {/* Campos Título e Mensagem (sem alteração) */}
               <div className={styles.formGroup}><label>Título</label><input type="text" value={nova.titulo} onChange={(e) => setNova({ ...nova, titulo: e.target.value })} required /></div>
-              <div className={styles.formGroup}><label>Mensagem</label><textarea value={nova.mensagem} onChange={(e) => setNova({ ...nova, mensagem: e.target.value })} required /></div>
+              <div className={styles.formGroup}><label>Mensagem</label><textarea style={{ resize: 'none' }} value={nova.mensagem} onChange={(e) => setNova({ ...nova, mensagem: e.target.value })} required /></div>
 
               {/* NOVA LÓGICA DE SELEÇÃO DE PÚBLICO-ALVO */}
               <div className={styles.formGroup}>
@@ -181,7 +181,7 @@ export default function NotificacoesList({ initialNotificacoes, adicionarNotific
             // FORMULÁRIO DE EDIÇÃO
             <div key={n.id} className={styles.card}>
                 <div className={styles.formGroup}><label>Título</label><input type="text" value={dadosEditados.titulo} onChange={(e) => setDadosEditados({...dadosEditados, titulo: e.target.value})} /></div>
-                <div className={styles.formGroup}><label>Mensagem</label><textarea value={dadosEditados.mensagem} onChange={(e) => setDadosEditados({...dadosEditados, mensagem: e.target.value})} /></div>
+                <div className={styles.formGroup}><label>Mensagem</label><textarea style={{ resize: 'none' }} value={dadosEditados.mensagem} onChange={(e) => setDadosEditados({...dadosEditados, mensagem: e.target.value})} /></div>
                 <div className={styles.formGroup}><label>Prioridade</label><select value={dadosEditados.prioridade} onChange={(e) => setDadosEditados({...dadosEditados, prioridade: e.target.value})}><option value="baixa">Baixa</option><option value="media">Média</option><option value="alta">Alta</option></select></div>
                 <div className={styles.actions}>
                     <button className={styles.saveButton} onClick={() => handleSalvarEdicao(n)}>Salvar</button>

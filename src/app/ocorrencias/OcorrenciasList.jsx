@@ -60,7 +60,7 @@ export default function OcorrenciasList({ initialOcorrencias, onUpdate, refreshL
     }
 
     setOcorrenciasAgrupadas(novosGrupos);
-    if (onUpdate) { onUpdate(id, { oco_status: novoStatus }); }
+    // Removido daqui - será chamado depois do sucesso da API
   };
 
   // Função para atualizar prioridade VISUALMENTE
@@ -73,13 +73,14 @@ export default function OcorrenciasList({ initialOcorrencias, onUpdate, refreshL
             ).filter(Boolean);
         }
         setOcorrenciasAgrupadas(novosGrupos);
-        if (onUpdate) { onUpdate(id, { oco_prioridade: novaPrioridade }); }
+        // Não precisa notificar o pai para mudança de prioridade
    };
 
   // Chama a API para PERSISTIR a mudança de status
   const handleUpdateStatusAPI = async (id, novoStatus) => {
     try {
         await api.patch(`/ocorrencias/${id}`, { oco_status: novoStatus });
+        console.log(`✅ Status atualizado com sucesso: ${novoStatus}`);
     } catch (error) {
         console.error(`Falha ao atualizar status:`, error);
         alert(`Erro ao salvar a alteração de status.`);
@@ -91,6 +92,7 @@ export default function OcorrenciasList({ initialOcorrencias, onUpdate, refreshL
    const handleUpdatePriorityAPI = async (id, novaPrioridade) => {
         try {
             await api.patch(`/ocorrencias/${id}`, { oco_prioridade: novaPrioridade });
+            console.log(`✅ Prioridade atualizada com sucesso: ${novaPrioridade}`);
         } catch (error) {
             console.error(`Falha ao atualizar prioridade:`, error);
             alert(`Erro ao salvar a alteração de prioridade.`);
@@ -99,15 +101,17 @@ export default function OcorrenciasList({ initialOcorrencias, onUpdate, refreshL
    };
 
    // Handler COMBINADO para STATUS: Atualiza UI e depois chama API
-   const updateStatusHandler = (id, novoStatus) => {
+   const updateStatusHandler = async (id, novoStatus) => {
        handleLocalStatusUpdate(id, novoStatus); // Atualiza UI imediatamente
-       handleUpdateStatusAPI(id, novoStatus);   // Chama API em seguida
+       await handleUpdateStatusAPI(id, novoStatus);   // Chama API em seguida (await)
+       if (onUpdate) { onUpdate(id, { oco_status: novoStatus }); } // Notifica o pai APÓS sucesso
    };
 
     // Handler COMBINADO para PRIORIDADE: Atualiza UI e depois chama API
-    const updatePriorityHandler = (id, novaPrioridade) => {
+    const updatePriorityHandler = async (id, novaPrioridade) => {
        handleLocalPriorityUpdate(id, novaPrioridade); // Atualiza UI imediatamente
-       handleUpdatePriorityAPI(id, novaPrioridade);  // Chama API em seguida
+       await handleUpdatePriorityAPI(id, novaPrioridade);  // Chama API em seguida (await)
+       // Não notifica o pai para prioridade, pois não afeta o badge
    };
 
   // Determina a lista de ocorrências a serem exibidas com base na aba ativa

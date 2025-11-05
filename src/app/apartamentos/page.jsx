@@ -13,6 +13,7 @@ export default function Apartamentos() {
   const [showModal, setShowModal] = useState(false);
   const [editingAp, setEditingAp] = useState(null);
   const [showLoteModal, setShowLoteModal] = useState(false);
+  const [showBlocoModal, setShowBlocoModal] = useState(false); // NOVO: Modal de Bloco
   const [apartamentos, setApartamentos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showList, setShowList] = useState(true);
@@ -97,6 +98,7 @@ export default function Apartamentos() {
     setShowModal(false);
     setEditingAp(null);
     setShowLoteModal(false);
+    setShowBlocoModal(false); // NOVO: Fecha modal de bloco
   };
 
   // --- handleSave ATUALIZADO ---
@@ -171,10 +173,28 @@ export default function Apartamentos() {
     const formData = new FormData(e.target);
     const formLote = Object.fromEntries(formData);
     
-    const bloco = Number(formLote.bloco); // CORRIGIDO: Converte para Número
+    console.log('📦 Dados do formulário em lote:', formLote);
+    
+    const bloco = Number(formLote.bloco);
     const andar = formLote.andar;
     const numInicial = Number(formLote.numInicial);
     const numFinal = Number(formLote.numFinal);
+    
+    // Validações
+    if (!bloco || isNaN(bloco)) {
+      showInfoModal("Erro", "Por favor, selecione um bloco válido.", "error");
+      return;
+    }
+    
+    if (!andar) {
+      showInfoModal("Erro", "Por favor, informe o andar.", "error");
+      return;
+    }
+    
+    if (!numInicial || !numFinal || isNaN(numInicial) || isNaN(numFinal)) {
+      showInfoModal("Erro", "Por favor, informe os números inicial e final válidos.", "error");
+      return;
+    }
     
     if (numFinal <= numInicial) {
       showInfoModal("Erro", "O número final deve ser maior que o número inicial.", "error");
@@ -187,10 +207,11 @@ export default function Apartamentos() {
     for (let i = 0; i < total; i++) {
         const apNumero = numInicial + i;
         const payload = {
-            bloc: bloco, // CORRIGIDO: usa "bloc"
+            bloc: bloco,
             numero: apNumero,
             andar: andar
         };
+        console.log(`📤 Enviando apartamento ${i+1}/${total}:`, payload);
         requests.push(api.post('/apartamentos', payload));
     }
     
@@ -207,6 +228,47 @@ export default function Apartamentos() {
         } else {
            showInfoModal('Erro', erroMsg || 'Erro ao cadastrar apartamentos em lote. Verifique o console.', 'error');
         }
+    }
+  };
+
+  // --- NOVA FUNÇÃO: handleSaveBloco ---
+  const handleSaveBloco = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const formBloco = Object.fromEntries(formData);
+    
+    console.log('📦 Dados do bloco:', formBloco);
+    
+    const payload = {
+      nome: formBloco.nomeBloco,
+      cond_id: 1 // TODO: Pegar o ID do condomínio do usuário logado
+    };
+    
+    if (!payload.nome || payload.nome.trim() === '') {
+      showInfoModal("Erro", "Por favor, informe o nome do bloco.", "error");
+      return;
+    }
+    
+    try {
+      await api.post('/blocos', payload);
+      console.log('✅ Bloco criado com sucesso');
+      
+      // Recarrega a lista de blocos
+      const response = await api.get('/blocos');
+      console.log('📦 Blocos atualizados:', response.data);
+      const blocos = response.data.dados || [];
+      setBlocosDisponiveis(blocos);
+      setMapaBlocos(new Map(blocos.map(b => [b.bloc_id, b.bloc_nome])));
+      
+      // Recarrega também os apartamentos para refletir o novo bloco na tabela
+      await listarApartamentos();
+      
+      showInfoModal("Sucesso", `Bloco "${payload.nome}" cadastrado com sucesso!`);
+      handleClose();
+    } catch (error) {
+      console.error("Erro ao cadastrar bloco:", error);
+      const erroMsg = error.response?.data?.mensagem || "Erro ao cadastrar bloco.";
+      showInfoModal("Erro", erroMsg, "error");
     }
   };
 
@@ -236,9 +298,10 @@ export default function Apartamentos() {
 
       <div className="page-content">
         <div className={styles.content}>
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-            <FabButton label="Adicionar Apartamento" onClick={handleAddAp} />
-            <FabButton label="Cadastro Rápido (Lote)" onClick={() => setShowLoteModal(true)} />
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
+            <FabButton label="➕ Novo Bloco" onClick={() => setShowBlocoModal(true)} />
+            <FabButton label="🏢 Novo Apartamento" onClick={handleAddAp} />
+            <FabButton label="📦 Cadastro em Lote" onClick={() => setShowLoteModal(true)} />
           </div>
           
           <div className={styles.filterContainer}>
@@ -447,6 +510,43 @@ export default function Apartamentos() {
               <div className={styles.modalActions}>
                 <button type="submit" className={styles.saveBtn}>
                   Criar Lote
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClose} 
+                  className={styles.cancelBtn}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* NOVO: Modal de Adicionar Bloco */}
+      {showBlocoModal && (
+        <div className={styles.modalOverlay} onClick={handleClose}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <h2>Adicionar Bloco</h2>
+            <form onSubmit={handleSaveBloco} className={styles.form}>
+              <input
+                type="text"
+                name="nomeBloco"
+                placeholder="Nome do Bloco (Ex: A, B, Único)"
+                required
+                autoFocus
+                style={{ 
+                  padding: '10px', 
+                  borderRadius: '6px', 
+                  border: '1px solid #ccc', 
+                  fontSize: '14px',
+                  fontWeight: 600
+                }}
+              />
+              <div className={styles.modalActions}>
+                <button type="submit" className={styles.saveBtn}>
+                  Salvar
                 </button>
                 <button
                   type="button"

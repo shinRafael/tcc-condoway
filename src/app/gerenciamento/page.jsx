@@ -150,7 +150,6 @@ export default function GerenciamentoPage() {
       <div className="page-content">
         <div className={styles.content}>
           <div className={styles.contentHeader}>
-            <h2 className={styles.contentTitle}>Despesas do Condomínio</h2>
             <BotaoCadastrar onSaved={handleSaved} />
           </div>
 

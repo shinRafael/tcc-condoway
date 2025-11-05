@@ -70,6 +70,7 @@ const Dashboard = () => {
         ]);
         
         console.log('✅ Requisições concluídas');
+        console.log('📊 VISITANTES:', JSON.stringify(visitorsResponse?.data, null, 2));
         console.log('📊 RESERVAS:', JSON.stringify(reservationsResponse?.data, null, 2));
         console.log('📊 ENCOMENDAS:', JSON.stringify(encomendasResponse?.data, null, 2));
         console.log('📊 OCORRENCIAS:', JSON.stringify(ocorrenciasResponse?.data, null, 2));
@@ -78,11 +79,22 @@ const Dashboard = () => {
         // Visitantes (dashboard)
         let visitantesDados = [];
         if (visitorsResponse.data && visitorsResponse.data.sucesso && Array.isArray(visitorsResponse.data.dados)) {
-          visitantesDados = visitorsResponse.data.dados;
+          // Normaliza os campos para o formato esperado pelo componente
+          visitantesDados = visitorsResponse.data.dados.map(v => ({
+            vst_id: v.id || v.vst_id,
+            vst_nome: v.nome || v.vst_nome,
+            vst_status: v.status || v.vst_status,
+            vst_data_entrada: v.dataEntrada || v.vst_data_entrada,
+            vst_data_prevista: v.dataPrevista || v.vst_data_prevista,
+            vst_apartamento: v.unidade || v.vst_apartamento,
+            morador_nome: v.morador || v.morador_nome
+          }));
+          console.log('👥 Total de visitantes:', visitantesDados.length);
+          console.log('👥 Visitantes normalizados:', visitantesDados);
           setNotifications(visitantesDados);
         } else {
+          console.warn('⚠️ API de visitantes não retornou dados válidos:', visitorsResponse.data);
           setNotifications([]);
-          console.warn('API de visitantes não retornou dados válidos.');
         }
 
         // Mapa de ambientes (id -> nome)

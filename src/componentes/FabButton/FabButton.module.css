@@ -9,62 +9,62 @@
   background: linear-gradient(180deg,#007bff,#0056b3);
   color: #fff;
   border: none;
-  border-radius: 999px;
+  border-radius: 28px;
   height: 48px;
-  width: 48px;
-  padding: 0 14px;
-  font-weight: 700;
+  min-width: 180px;
+  padding: 0 20px;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(0,123,255,0.18);
-  transition: all 0.32s cubic-bezier(.4,0,.2,1);
-  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,123,255,0.25);
+  transition: all 0.2s ease;
+  overflow: visible;
+  gap: 8px;
+  font-size: 14px;
 }
 
-/* Expande ao passar o mouse para exibir o texto */
+/* Efeito ao passar o mouse */
 .fab:hover {
-  width: 240px; /* Aumentei de 160px para 240px */
-  border-radius: 28px;
-  transform: translateY(-3px);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,123,255,0.35);
+  background: linear-gradient(180deg,#0069d9,#0056b3);
 }
 
 .icon {
-  position: absolute;
-  left: 14px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: opacity .18s ease, transform .18s ease;
-  opacity: 1;
-}
-
-.fab:hover .icon {
+  flex-shrink: 0;
   opacity: 0;
-  transform: scale(0.6) rotate(-90deg);
+  width: 0;
+  overflow: hidden;
 }
 
 .text {
-  margin-left: 40px;
-  opacity: 0;
-  transform: translateX(8px);
-  transition: opacity .18s ease .06s, transform .18s ease .06s;
   white-space: nowrap;
-  font-size: 15px;
-}
-
-.fab:hover .text {
-  opacity: 1;
-  transform: translateX(0);
+  font-size: 14px;
+  font-weight: 600;
 }
 
 /* Acessibilidade - foco via teclado */
 .fab:focus {
-  outline: 3px solid rgba(0,123,255,0.18);
-  outline-offset: 3px;
+  outline: 3px solid rgba(0,123,255,0.4);
+  outline-offset: 2px;
 }
 
-/* Responsivo - não expande tanto em telas pequenas */
+/* Responsivo - ajusta em telas pequenas */
+@media (max-width: 768px) {
+  .fab {
+    min-width: 160px;
+    font-size: 13px;
+    padding: 0 16px;
+  }
+}
+
 @media (max-width: 480px) {
-  .fab { width: 48px; }
-  .fab:hover { width: 220px; } /* Aumentei de 120px para 220px */
-  .text { font-size: 13px; }
+  .fab {
+    min-width: 140px;
+    font-size: 12px;
+    padding: 0 12px;
+    height: 44px;
+  }
 }
