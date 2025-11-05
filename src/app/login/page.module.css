@@ -1,0 +1,126 @@
+.loginContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #5ba8f0, #5bd1c5);
+  color: #333;
+}
+
+.loginHeader {
+  padding: 1rem;
+  text-align: center;
+  color: white;
+  font-size: 1.8rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.loginMain {
+  flex: 1;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 2rem 3rem;
+}
+
+/* Lado esquerdo */
+.leftSection {
+  flex: 1;
+  max-width: 45%;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.logoCircle {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.logoCircle img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+}
+
+.aboutSection {
+  background: rgba(255, 255, 255, 0.3);
+  padding: 2rem;
+  border-radius: 20px;
+  max-width: 90%;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #1e1e1e;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Formulário */
+.loginSection {
+  background: white;
+  padding: 3rem 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.loginForm input {
+  margin-top: 0.4rem;
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.loginForm input:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 4px rgba(74, 144, 226, 0.3);
+}
+
+.loginForm button {
+  padding: 0.9rem;
+  background: linear-gradient(135deg, #4a90e2, #357ab8);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.loginForm button:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #3d7ed0, #2f66a2);
+}
+
+.erroLogin {
+  color: red;
+  font-weight: 500;
+}
+
+.loginFooter {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.85rem;
+  color: white;
+  opacity: 0.9;
+}
