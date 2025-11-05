@@ -62,14 +62,20 @@ api.interceptors.response.use(
     const url = error.config?.url || "URL desconhecida";
 
     console.error(`❌ Erro na resposta: ${url} → ${status}`);
-    console.error("📄 Detalhes:", error.response?.data || error.message);
+    console.error("📄 Detalhes do erro:", {
+      message: error.message,
+      code: error.code,
+      response: error.response?.data,
+      stack: error.stack
+    });
 
     if (status === 401 && !isDevMode) {
       console.warn("🚫 Token inválido ou expirado. Redirecionando para login...");
       localStorage.removeItem("authToken");
       window.location.href = "/login";
     } else if (status === "Network Error") {
-      console.error("📡 Servidor inacessível. Verifique sua conexão.");
+      console.error("📡 Servidor inacessível ou problema de CORS.");
+      console.error("💡 Verifique se o backend está rodando em http://localhost:3333");
     }
 
     return Promise.reject(error);

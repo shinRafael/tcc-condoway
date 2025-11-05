@@ -123,8 +123,10 @@ const Dashboard = () => {
           });
           
           const pendingReservations = reservationsResponse.data.dados.filter(r => {
-            const isPendente = r.res_status === 'Pendente';
-            console.log(`⏳ ID ${r.res_id}: Status="${r.res_status}" → Pendente? ${isPendente}`);
+            // Remove aspas extras se houver
+            const status = typeof r.res_status === 'string' ? r.res_status.replace(/['"]/g, '') : r.res_status;
+            const isPendente = status === 'Pendente';
+            console.log(`⏳ ID ${r.res_id}: Status="${status}" → Pendente? ${isPendente}`);
             return isPendente;
           });
           console.log('⏳ Total de Reservas Pendentes encontradas:', pendingReservations.length);
@@ -147,9 +149,12 @@ const Dashboard = () => {
           console.warn('❌ Dados de reservas inválidos ou não retornados');
         }
 
-        // Encomendas: status 'aguardando_retirada'
+        // Encomendas: SOMENTE status 'Aguardando' ou 'aguardando_retirada'
         if (encomendasResponse.data && encomendasResponse.data.sucesso && Array.isArray(encomendasResponse.data.dados)) {
-          const pendingEncomendas = encomendasResponse.data.dados.filter(e => e.enc_status === 'aguardando_retirada');
+          const pendingEncomendas = encomendasResponse.data.dados.filter(e => {
+            const status = typeof e.enc_status === 'string' ? e.enc_status.replace(/['"]/g, '') : e.enc_status;
+            return status === 'Aguardando' || status === 'aguardando_retirada';
+          });
           newKpis.encomendas.value = pendingEncomendas.length;
           pendingEncomendas.forEach(item => {
             combinedActions.push({
@@ -163,9 +168,22 @@ const Dashboard = () => {
           });
         }
 
-        // Ocorrências: status 'Aberta'
-        if (ocorrenciasResponse.data && ocorrenciasResponse.data.sucesso && Array.isArray(ocorrenciasResponse.data.dados)) {
-          const openOcorrencias = ocorrenciasResponse.data.dados.filter(o => o.oco_status === 'Aberta');
+        // Ocorrências: SOMENTE status 'Aberta' (não "Em Andamento")
+        if (ocorrenciasResponse.data && ocorrenciasResponse.data.sucesso) {
+          let openOcorrencias = [];
+          
+          // Se os dados vierem agrupados por status
+          if (ocorrenciasResponse.data.dados && typeof ocorrenciasResponse.data.dados === 'object' && !Array.isArray(ocorrenciasResponse.data.dados)) {
+            openOcorrencias = ocorrenciasResponse.data.dados['Aberta'] || [];
+          } 
+          // Se os dados vierem como array simples
+          else if (Array.isArray(ocorrenciasResponse.data.dados)) {
+            openOcorrencias = ocorrenciasResponse.data.dados.filter(o => {
+              const status = typeof o.oco_status === 'string' ? o.oco_status.replace(/['"]/g, '') : o.oco_status;
+              return status === 'Aberta';
+            });
+          }
+          
           newKpis.ocorrencias.value = openOcorrencias.length;
           openOcorrencias.forEach(item => {
             const dataFormatada = new Date(item.oco_data).toLocaleDateString('pt-BR');
