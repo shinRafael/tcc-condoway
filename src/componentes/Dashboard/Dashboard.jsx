@@ -173,7 +173,7 @@ const Dashboard = () => {
               id: `enc_${item.enc_id}`,
               type: 'notificar',
               description: `Notificar Retirada: ${item.enc_nome_loja || 'Encomenda'}`,
-              link: `/encomendas/${item.enc_id}`,
+              link: '/encomendas',
               icon: <FiBox />,
               createdAt: item.enc_data_chegada || item.created_at, // Passa a data
             });

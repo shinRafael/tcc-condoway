@@ -28,7 +28,9 @@
   padding: 24px;
   border-radius: 12px;
   width: 100%;
-  max-width: 450px;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
   display: flex;
   flex-direction: column;
@@ -75,15 +77,143 @@
 .saveButton, .cancelButton {
   padding: 10px 20px;
   border: none;
-  border-radius: 8px;
+  border-radius: 32px;
   cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
+  font-weight: 600;
+  font-size: 13px;
+  transition: transform 0.2s, opacity 0.2s;
 }
-.saveButton { background-color: #28a745; color: white; }
-.saveButton:hover { background-color: #218838; }
-.cancelButton { background-color: #f1f3f5; color: #495057; }
-.cancelButton:hover { background-color: #e9ecef; }
+.saveButton { background-color: #007bff; color: white; }
+.saveButton:hover { 
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+.cancelButton { background-color: #ef4444; color: #fff; }
+.cancelButton:hover { 
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+/* Estilos para o formulário de edição */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.formGroup label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.95rem;
+}
+
+.dateInput {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid #ced4da;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.dateInput:focus {
+  outline: none;
+  border-color: #1a2c5e;
+}
+
+.timeSelectContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 8px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.timeSelectContainer::-webkit-scrollbar {
+  width: 8px;
+}
+
+.timeSelectContainer::-webkit-scrollbar-track {
+  background: #e9ecef;
+  border-radius: 4px;
+}
+
+.timeSelectContainer::-webkit-scrollbar-thumb {
+  background: #adb5bd;
+  border-radius: 4px;
+}
+
+.timeSelectContainer::-webkit-scrollbar-thumb:hover {
+  background: #6c757d;
+}
+
+.timeButton {
+  padding: 10px 16px;
+  border: none;
+  background: #007bff;
+  color: white;
+  border-radius: 32px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: transform 0.2s, opacity 0.2s;
+  text-align: center;
+  width: auto;
+  min-width: 80px;
+}
+
+.timeButton:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+.timeButtonActive {
+  background: #0056b3 !important;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+}
+
+.timeButtonsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.timeButton {
+  padding: 10px 12px;
+  border: 2px solid #dee2e6;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #495057;
+  transition: all 0.2s ease;
+}
+
+.timeButton:hover {
+  border-color: #1a2c5e;
+  background: #e7f1ff;
+  transform: translateY(-1px);
+}
+
+.timeButtonActive {
+  background: #1a2c5e !important;
+  color: white !important;
+  border-color: #1a2c5e !important;
+  font-weight: 600;
+}
+
 .cardGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

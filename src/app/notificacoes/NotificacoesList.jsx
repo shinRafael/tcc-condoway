@@ -106,9 +106,8 @@ export default function NotificacoesList({ initialNotificacoes, adicionarNotific
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.leftActions}>
-          <button className={styles.animatedAddButton} onClick={() => setShowModal(true)}>
-            <span className={styles.icon}><FiPlus size={20} /></span>
-            <span className={styles.text}>Adicionar</span>
+          <button className={styles.addButton} onClick={() => setShowModal(true)}>
+            Adicionar Notificação
           </button>
         </div>
 
