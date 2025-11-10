@@ -1,0 +1,1529 @@
+/* ===================================
+   FOLHA DE ESTILOS PRINCIPAL - CONDOWAY
+   Arquivo: css/style.css
+   Descrição: Estilos principais para a landing page do CondoWay
+   ================================= */
+
+/* 1. DEFINIÇÕES GLOBAIS E VARIÁVEIS CSS */
+:root {
+    /* CORES PRINCIPAIS - Sistema de cores baseado em azul */
+    --primary-color: #1976D2;    /* Azul principal da marca */
+    --primary-hover: #145ca9;    /* Tom mais escuro para hover */
+    --primary-light: #42a5f5;    /* Azul mais claro para variações */
+    --dark-blue: #101d2d;        /* Azul super escuro para o rodapé */
+    --light-blue: #e3f2fd;       /* Azul bem claro para fundos de ícones */
+    
+    /* CORES DE TEXTO - Hierarquia de cinzas */
+    --text-dark: #1e293b;        /* Para títulos principais */
+    --text-body: #334155;        /* Para textos normais */
+    --text-light: #64748b;       /* Para parágrafos e legendas */
+
+    /* CORES DE FUNDO */
+    --bg-light: #f8fafc;         /* Fundo de seções (cinza claro) */
+    --bg-white: #ffffff;         /* Fundo de cards e header */
+    --border-color: #e2e8f0;     /* Cor das bordas */
+    
+    /* GRADIENTES MODERNOS - Para efeitos visuais */
+    --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    --gradient-light: linear-gradient(135deg, #f8fafc, #e3f2fd);
+    
+    /* SOMBRAS - Diferentes níveis de profundidade */
+    --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --shadow-medium: 0 10px 25px rgba(0, 0, 0, 0.1);
+    --shadow-heavy: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* RESET CSS - Remove estilos padrão do navegador */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* CONFIGURAÇÕES GLOBAIS */
+html {
+    scroll-behavior: smooth; /* Scrolling suave entre seções */
+}
+
+body {
+    font-family: 'Poppins', sans-serif;  /* Fonte principal */
+    color: var(--text-body);              /* Cor padrão do texto */
+    background-color: var(--bg-white);    /* Fundo padrão */
+    line-height: 1.7;                     /* Espaçamento entre linhas */
+}
+
+/* CONTAINER - Limita largura e centraliza conteúdo */
+.container {
+    max-width: 1140px;  /* Largura máxima */
+    margin: 0 auto;     /* Centraliza horizontalmente */
+    padding: 0 20px;    /* Margem interna nas laterais */
+}
+
+/* ================================= */
+/* 2. NAVEGAÇÃO PRINCIPAL (NAVBAR) */
+/* ================================= */
+.navbar {
+    background-color: var(--bg-white); /* Fundo branco */
+    padding: 1rem 0;                   /* Espaçamento vertical */
+    position: fixed;                   /* Fixa no topo da tela */
+    width: 100%;                       /* Ocupa toda a largura */
+    top: 0;
+    z-index: 1000;                     /* Garante que fique acima de outros elementos */
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05); /* Sombra sutil */
+    transition: background-color 0.3s; /* Transição suave */
+}
+
+/* Layout flexbox do container da navbar */
+.navbar .container {
+    display: flex;
+    justify-content: space-between; /* Logo à esquerda, menu ao centro, botão à direita */
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--dark-blue);
+    font-weight: 700;
+    font-size: 1.8rem; /* increased for better visibility */
+}
+
+.logo img {
+    height: 64px;        /* size by height to preserve aspect ratio */
+    width: auto;         /* let width scale automatically */
+    max-width: 100%;
+    margin-right: 0.20rem;
+    display: block;
+    object-fit: contain; /* ensure image fits without distortion */
+}
+
+/* Ensure footer logo remains proportional */
+.footer-about .logo img {
+    height: 56px;    /* size by height to preserve aspect ratio */
+    width: auto;     /* keep natural width */
+    max-width: 100%;
+    display: block;
+    object-fit: contain; /* avoid distortion */
+}
+
+/* MENU DE NAVEGAÇÃO */
+.nav-links {
+    display: flex;
+    list-style: none;  /* Remove bullets da lista */
+    gap: 2rem;         /* Espaçamento entre itens do menu */
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-body);
+    font-weight: 500;
+    position: relative;
+    padding-bottom: 5px;
+}
+
+/* EFEITO HOVER - Linha que aparece embaixo do link */
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;                             /* Começa com largura 0 */
+    height: 2px;
+    background-color: var(--primary-color);
+    transition: width 0.3s;               /* Animação suave */
+}
+
+.nav-links a:hover::after {
+    width: 100%; /* Expande a linha no hover */
+}
+
+/* BOTÃO DE LOGIN DO SÍNDICO */
+.login-button {
+    background-color: var(--primary-color);
+    color: var(--bg-white);
+    padding: 0.6rem 1.4rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s; /* Transições suaves */
+}
+
+.login-button:hover {
+    background-color: var(--primary-hover); /* Cor mais escura no hover */
+    transform: translateY(-2px);            /* Movimento para cima */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra no hover */
+}
+
+/* ================================= */
+/* 3. SEÇÃO PRINCIPAL (HERO) */
+/* ================================= */
+.hero {
+    padding-top: 140px;            /* Espaço para compensar navbar fixa */
+    padding-bottom: 80px;
+    background-color: var(--bg-white); /* Fundo branco para contrastar */
+}
+
+/* LAYOUT DA SEÇÃO HERO */
+.hero-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3rem; /* Espaçamento entre texto e imagem */
+}
+
+/* TEXTO PRINCIPAL */
+.hero-text {
+    flex: 1; /* Ocupa metade disponível do espaço */
+}
+
+.hero-text h1 {
+    font-size: 3.2rem;         /* Título grande e impactante */
+    color: var(--text-dark);
+    line-height: 1.2;          /* Espaçamento entre linhas apertado */
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.hero-text p {
+    font-size: 1.1rem;
+    color: var(--text-light);  /* Cor mais suave para o parágrafo */
+    margin-bottom: 2.5rem;
+    max-width: 500px;          /* Limita largura do texto */
+}
+
+/* BOTÕES DE AÇÃO */
+.action-buttons .btn {
+    text-decoration: none;
+    padding: 0.9rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-right: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;              /* Espaço entre ícone e texto */
+    transition: all 0.3s;     /* Transições suaves */
+}
+
+/* BOTÃO PRIMÁRIO - Gradiente azul */
+.btn-primary {
+    background: var(--gradient-primary);
+    color: var(--bg-white);
+    box-shadow: var(--shadow-light);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px); /* Movimento para cima no hover */
+    box-shadow: var(--shadow-medium); /* Sombra mais intensa no hover */
+}
+
+/* EFEITO HOVER GERAL PARA BOTÕES */
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+/* BOTÃO SECUNDÁRIO - Fundo branco com borda */
+.btn-secondary {
+    background-color: var(--bg-white);
+    color: var(--text-dark);
+    border: 1px solid var(--border-color);
+}
+
+/* IMAGEM DA SEÇÃO HERO */
+.aplicativo-condoway {
+    flex: 1;           /* Ocupa metade disponível do espaço */
+    text-align: center;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.aplicativo-condoway img {
+    max-width: 90%;
+    height: auto;
+    max-height: 500px;
+    object-fit: contain;
+    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.15));
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    animation: float 4s ease-in-out infinite; /* Animação flutuante */
+}
+
+.aplicativo-condoway img:hover {
+    transform: scale(1.05) translateY(-10px);
+    filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.2));
+}
+
+/* Efeito de fundo decorativo */
+.aplicativo-condoway::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120%;
+    height: 120%;
+    background: radial-gradient(circle, rgba(25, 118, 210, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: -1;
+    animation: pulse 3s ease-in-out infinite;
+}
+
+/* ANIMAÇÃO DE FLUTUAÇÃO PARA A IMAGEM */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }    /* Posição inicial e final */
+    50% { transform: translateY(-25px); }     /* Posição no meio da animação */
+}
+
+/* ANIMAÇÃO DE PULSO PARA O FUNDO */
+@keyframes pulse {
+    0%, 100% { 
+        transform: translate(-50%, -50%) scale(1); 
+        opacity: 0.3;
+    }
+    50% { 
+        transform: translate(-50%, -50%) scale(1.1); 
+        opacity: 0.1;
+    }
+}
+
+/* ================================= */
+/* 3.5. SEÇÃO DE FUNCIONALIDADES */
+/* ================================= */
+
+/* SEÇÃO PRINCIPAL DAS FUNCIONALIDADES */
+.features {
+    padding: 100px 0;
+    background: var(--bg-light);
+}
+
+/* GRID DE CARDS DAS FUNCIONALIDADES */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+/* CARDS DAS FUNCIONALIDADES */
+.feature-card {
+    background: var(--bg-white);
+    padding: 2.5rem 2rem;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: visible; /* allow badges / decorative elements to extend beyond rounded corners */
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-medium);
+    border-color: var(--primary-light);
+}
+
+/* ÍCONES DAS FUNCIONALIDADES */
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem auto;
+    color: white;
+    font-size: 2rem;
+    box-shadow: var(--shadow-light);
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-medium);
+}
+
+/* TÍTULOS DOS CARDS */
+.feature-card h3 {
+    font-size: 1.4rem;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+/* TEXTO DOS CARDS */
+.feature-card p {
+    color: var(--text-light);
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+/* BADGE DE STATUS (Em Desenvolvimento) */
+.status-badge {
+    position: absolute;
+    top: -0.5rem; /* lift badge above the card to avoid overlapping the icon */
+    right: 0.75rem;
+    background: var(--gradient-primary);
+    color: white;
+    padding: 0.35rem 0.7rem; /* slightly larger for better legibility */
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+    .status-badge {
+        font-size: 0.62rem;
+        padding: 0.25rem 0.5rem;
+        right: 0.5rem;
+    }
+}
+
+/* ================================= */
+/* 4. SEÇÕES GERAIS (SOBRE/DOWNLOAD) */
+/* ================================= */
+.about, .download-section {
+    padding: 80px 0;    /* Espaçamento vertical generoso */
+    text-align: center; /* Centraliza conteúdo */
+}
+
+/* TAGS DE SEÇÃO - Pequenos labels acima dos títulos */
+.section-tag {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-transform: uppercase;        /* Texto em maiúsculas */
+    letter-spacing: 1px;              /* Espaçamento entre letras */
+    margin-bottom: 1rem;
+    display: inline-block;
+    background: linear-gradient(135deg, var(--light-blue), rgba(25, 118, 210, 0.1)); /* Gradiente sutil */
+    padding: 0.5rem 1.2rem;
+    border-radius: 25px;              /* Bordas bem arredondadas */
+    font-size: 0.85rem;
+    border: 1px solid rgba(25, 118, 210, 0.2);
+    transition: all 0.3s ease;
+}
+
+.section-tag:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.2);
+}
+
+.about h2, .download-section h2, .features h2, .testimonials h2 {
+    font-size: 2.5rem;
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, var(--text-dark), var(--primary-color));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.2;
+}
+
+.section-subtitle {
+    max-width: 650px;
+    margin: 0 auto 3rem auto;
+    font-size: 1.2rem;
+    color: var(--text-light);
+    line-height: 1.6;
+}
+
+/* ESTILOS ESPECÍFICOS PARA A SEÇÃO SOBRE MELHORADA */
+/* ================================================ */
+
+/* Grid de cards informativos */
+.about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 3rem 0;
+}
+
+.about-card {
+    background: var(--bg-white);
+    padding: 2.5rem 2rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow-light);
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.about-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-medium);
+    border-color: var(--primary-light);
+}
+
+.about-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem auto;
+    color: white;
+    font-size: 2rem;
+    box-shadow: var(--shadow-light);
+}
+
+.about-card h3 {
+    font-size: 1.4rem;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.about-card p {
+    color: var(--text-light);
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+/* Estatísticas do projeto */
+.project-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin: 4rem 0;
+    padding: 3rem 2rem;
+    background: var(--gradient-light);
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 1rem;
+    color: var(--text-light);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Responsividade para a seção sobre */
+@media (max-width: 768px) {
+    .about-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .about-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .about-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+    
+    .project-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        padding: 2rem 1rem;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+    }
+}
+
+/* ================================= */
+/* 5. SEÇÃO DE TESTEMUNHOS */
+/* ================================= */
+.testimonials {
+    background: var(--gradient-light);
+    padding: 6rem 0;
+}
+
+.testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.testimonial-card {
+    background: var(--bg-white);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-medium);
+    position: relative;
+    transition: transform 0.3s ease;
+    text-align: center;
+}
+
+/* AVATAR DOS TESTEMUNHOS */
+.testimonial-avatar {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem auto;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: var(--shadow-medium);
+    border: 4px solid var(--bg-white);
+    position: relative;
+    z-index: 2;
+}
+
+.testimonial-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-heavy);
+}
+
+.testimonial-card::before {
+    content: '"';
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    font-size: 4rem;
+    color: var(--primary-color);
+    font-family: serif;
+    opacity: 0.3;
+}
+
+.testimonial-rating {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #ffa500;
+    display: flex;
+    gap: 0.25rem;
+    justify-content: center;
+}
+
+.testimonial-rating .fi {
+    color: #ffa500;
+    font-size: 1rem;
+}
+
+.testimonial-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--text-body);
+    margin-bottom: 1.5rem;
+    font-style: italic;
+}
+
+.testimonial-author {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    align-items: center;
+}
+
+.testimonial-author strong {
+    color: var(--text-dark);
+    font-size: 1.1rem;
+}
+
+.testimonial-author .fi {
+    margin-right: 0.5rem;
+    color: var(--primary-color);
+}
+
+.testimonial-role {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+/* 6. SEÇÃO DOWNLOAD */
+.download-section {
+    background-color: var(--bg-light);
+}
+
+.app-store-buttons img {
+    height: 55px;
+    margin: 0.5rem;
+    transition: transform 0.3s;
+}
+
+.app-store-buttons img:hover {
+    transform: scale(1.05);
+}
+
+/* 7. RODAPÉ (FOOTER) */
+.footer {
+    background-color: var(--dark-blue);
+    color: #a0aec0;
+    padding: 4rem 0 2rem 0;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.footer-about {
+    max-width: 300px;
+}
+
+.footer-about .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: var(--bg-white);
+}
+
+.footer-about p {
+    margin-top: 1rem;
+}
+
+.footer-contact h4 {
+    font-size: 1.2rem;
+    color: var(--bg-white);
+    margin-bottom: 1rem;
+}
+
+.footer-contact p {
+    margin-bottom: 0.5rem;
+}
+
+.footer-contact a {
+    color: #a0aec0;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.3s;
+}
+
+.footer-contact a:hover {
+    color: var(--primary-color);
+}
+
+.footer-contact .fi {
+    margin-right: 0.5rem;
+    color: var(--primary-color);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid #2d3748;
+}
+
+/* ================================= */
+/* REDES SOCIAIS NO FOOTER */
+/* ================================= */
+.social-links {
+    margin-top: 2rem;
+}
+
+.social-links h4 {
+    font-size: 1.2rem;
+    color: var(--bg-white);
+    margin-bottom: 1rem;
+}
+
+.social-icons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.social-icons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: #a0aec0;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+}
+
+.social-icons a:hover {
+    background-color: var(--primary-color);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);
+}
+
+/* Cores específicas para cada rede social */
+.social-icons a[aria-label="Facebook"]:hover {
+    background-color: #1877f2;
+}
+
+.social-icons a[aria-label="Instagram"]:hover {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+
+.social-icons a[aria-label="TikTok"]:hover {
+    background-color: #000000;
+}
+
+.social-icons a[aria-label="LinkedIn"]:hover {
+    background-color: #0a66c2;
+}
+
+/* 8. BOTÃO SCROLL TO TOP */
+.scroll-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background: var(--gradient-primary);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    z-index: 1000;                /* Fica acima de outros elementos */
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-medium);
+}
+
+/* EFEITO HOVER DO BOTÃO SCROLL */
+.scroll-top:hover {
+    transform: translateY(-3px);  /* Move para cima */
+    box-shadow: var(--shadow-heavy);
+}
+
+/* ESTADO VISÍVEL DO BOTÃO */
+.scroll-top.visible {
+    display: flex;
+    animation: fadeInUp 0.3s ease; /* Animação de entrada */
+}
+
+/* ANIMAÇÃO DE ENTRADA DO BOTÃO */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px); /* Começa 20px abaixo */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);    /* Termina na posição normal */
+    }
+}
+
+/* ================================= */
+/* 9. ANIMAÇÕES DE ENTRADA DOS CARDS */
+/* ================================= */
+.feature-card, .testimonial-card {
+    animation: fadeInUp 0.6s ease forwards;
+    opacity: 0; /* Começam invisíveis */
+}
+
+/* ATRASO ESCALONADO PARA ANIMAÇÕES DOS CARDS */
+.feature-card:nth-child(1) { animation-delay: 0.1s; }
+.feature-card:nth-child(2) { animation-delay: 0.2s; }
+.feature-card:nth-child(3) { animation-delay: 0.3s; }
+.feature-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* ================================= */
+/* 10. RESPONSIVIDADE - MOBILE FIRST */
+/* ================================= */
+@media (max-width: 768px) {
+    /* MOBILE MENU TOGGLE */
+    .mobile-menu-toggle {
+        display: flex;
+    }
+    
+    .nav-links {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--bg-white);
+        flex-direction: column;
+        box-shadow: var(--shadow-medium);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+    
+    .nav-links.active {
+        max-height: 300px;
+    }
+    
+    .nav-links li {
+        padding: 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .nav-links a {
+        display: block;
+        padding: 1rem 2rem;
+    }
+    
+    .login-button {
+        display: none;
+    }
+    
+    /* HERO EM MOBILE - Layout em coluna */
+    .hero-content {
+        flex-direction: column; /* Empilha elementos verticalmente */
+        text-align: center;
+        gap: 2rem; /* Espaçamento entre texto e imagem */
+    }
+    
+    .hero-text {
+        max-width: 100%; /* Usa toda a largura disponível */
+        order: 2; /* Coloca o texto após a imagem em mobile */
+    }
+    
+    /* Ajustes da imagem hero em mobile */
+    .aplicativo-condoway {
+        order: 1; /* Coloca a imagem primeiro em mobile */
+        margin-bottom: 1rem;
+    }
+    
+    .aplicativo-condoway img {
+        max-width: 85%;
+        max-height: 350px;
+        filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.1));
+    }
+    
+    .aplicativo-condoway::before {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr; /* Uma coluna em mobile */
+        gap: 1.5rem; /* Espaçamento menor em mobile */
+    }
+    
+    /* Ajustes dos cards em mobile */
+    .feature-card {
+        padding: 2rem 1.5rem; /* Padding menor em mobile */
+        margin: 0; /* Remove margens extras */
+    }
+    
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+}
+
+/* ================================= */
+/* 11. ESTILOS PARA ÍCONES FLATICON */
+/* ================================= */
+
+/* CONFIGURAÇÕES BASE PARA ÍCONES FLATICON */
+.fi {
+    display: inline-block;
+    font-style: normal;         /* Remove italico padrão */
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;            /* Alinhamento perfeito */
+}
+
+/* ÍCONES EM TAGS DE SEÇÃO */
+.section-tag .fi {
+    margin-right: 0.5rem;      /* Espaço entre ícone e texto */
+    color: var(--primary-color);
+}
+
+/* ÍCONES EM TÍTULOS (H1, H2) */
+h1 .fi, h2 .fi {
+    margin-right: 0.75rem;     /* Espaço um pouco maior em títulos */
+    color: var(--primary-color);
+}
+
+/* ÍCONES NOS AUTORES DOS TESTEMUNHOS */
+.testimonial-author .fi {
+    margin-right: 0.5rem;
+    color: var(--primary-color);
+}
+
+/* ================================= */
+/* FIM DOS ESTILOS PRINCIPAIS */
+/* ================================= */
+
+/* Botões com ícones */
+.btn .fi {
+    margin-right: 0.5rem;
+    font-size: 1rem;
+}
+
+/* Scroll to top button */
+.scroll-top .fi {
+    font-size: 1.2rem;
+}
+
+/* ================================= */
+/* MENU HAMBÚRGUER MOBILE */
+/* ================================= */
+.mobile-menu-toggle {
+    display: none;
+    flex-direction: column;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    gap: 4px;
+}
+
+.mobile-menu-toggle span {
+    width: 25px;
+    height: 3px;
+    background-color: var(--text-dark);
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.mobile-menu-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 6px);
+}
+
+.mobile-menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.mobile-menu-toggle.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* ================================= */
+/* FAQ SECTION */
+/* ================================= */
+.faq-section {
+    padding: 80px 0;
+    background-color: var(--bg-light);
+}
+
+.faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    margin-top: 3rem;
+}
+
+.faq-item {
+    background: var(--bg-white);
+    border-radius: 12px;
+    box-shadow: var(--shadow-light);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.faq-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.faq-question {
+    width: 100%;
+    padding: 1.5rem;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.faq-question:hover {
+    background-color: var(--light-blue);
+}
+
+.faq-icon {
+    transition: transform 0.3s ease;
+    color: var(--primary-color);
+}
+
+.faq-question.active .faq-icon {
+    transform: rotate(180deg);
+}
+
+.faq-answer {
+    padding: 0 1.5rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.faq-answer.active {
+    max-height: 200px;
+    padding: 0 1.5rem 1.5rem;
+}
+
+.faq-answer p {
+    color: var(--text-light);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ================================= */
+/* MODAL DE LOGIN */
+/* ================================= */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: var(--bg-white);
+    border-radius: 16px;
+    box-shadow: var(--shadow-heavy);
+    width: 90%;
+    max-width: 450px;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: scale(0.8) translateY(-20px);
+    transition: transform 0.3s ease;
+}
+
+.modal.active .modal-content {
+    transform: scale(1) translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 2rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--text-dark);
+    font-size: 1.5rem;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: color 0.3s ease;
+    padding: 8px;
+    border-radius: 50%;
+}
+
+.modal-close:hover {
+    color: var(--primary-color);
+    background-color: var(--light-blue);
+}
+
+.login-form {
+    padding: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-container input {
+    width: auto;
+    margin-right: 0.5rem;
+}
+
+.login-submit-btn,
+.form-submit-btn {
+    width: 100%;
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.login-submit-btn:hover,
+.form-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.login-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.login-links a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.login-links a:hover {
+    color: var(--primary-hover);
+}
+
+/* ================================= */
+/* FORMULÁRIO DE CONTATO */
+/* ================================= */
+.contact-form-container {
+    margin-top: 1.5rem;
+}
+
+.contact-form-toggle {
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.contact-form-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.contact-form {
+    margin-top: 1rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+}
+
+/* ================================= */
+/* NAVEGAÇÃO ATIVA */
+/* ================================= */
+.nav-link.active {
+    color: var(--primary-color) !important;
+}
+
+.nav-link.active::after {
+    width: 100% !important;
+}
+
+/* ================================= */
+/* ANIMAÇÕES MELHORADAS */
+/* ================================= */
+.feature-card {
+    animation: slideInUp 0.8s ease forwards;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.feature-card:nth-child(odd) {
+    animation: slideInLeft 0.8s ease forwards;
+    transform: translateX(-30px);
+    opacity: 0;
+}
+
+.feature-card:nth-child(even) {
+    animation: slideInRight 0.8s ease forwards;
+    transform: translateX(30px);
+    opacity: 0;
+}
+
+@keyframes slideInLeft {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ================================= */
+/* RESPONSIVIDADE MELHORADA */
+/* ================================= */
+@media (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: flex;
+    }
+    
+    .nav-links {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--bg-white);
+        flex-direction: column;
+        box-shadow: var(--shadow-medium);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+    
+    .nav-links.active {
+        max-height: 300px;
+    }
+    
+    .nav-links li {
+        padding: 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .nav-links a {
+        display: block;
+        padding: 1rem 2rem;
+    }
+    
+    .login-button {
+        display: none;
+    }
+    
+    /* Hero section - reorganizar ordem no mobile */
+    .hero-content {
+        flex-direction: column-reverse;
+        gap: 2rem;
+        text-align: center;
+    }
+    
+    .hero-text {
+        order: 2;
+    }
+    
+    .aplicativo-condoway {
+        order: 1;
+    }
+    
+    .faq-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        margin: 1rem;
+        width: calc(100% - 2rem);
+    }
+    
+    .modal-header,
+    .login-form {
+        padding: 1.5rem;
+    }
+}
+
+/* ================================= */
+/* 5. SEÇÃO DE PARCEIROS */
+/* ================================= */
+.partners-section {
+    padding: 80px 0;
+    background: var(--bg-light);
+    text-align: center;
+}
+
+.partners-section h2 {
+    font-size: 2.2rem;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.partners-section p {
+    color: var(--text-light);
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.partners-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.partner-card {
+    background: var(--bg-white);
+    padding: 2.5rem 2rem;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.partner-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-medium);
+    border-color: var(--primary-light);
+}
+
+.partner-avatar {
+    width: 80px;
+    height: 80px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem auto;
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    box-shadow: var(--shadow-light);
+    transition: all 0.3s ease;
+}
+
+.partner-card:hover .partner-avatar {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-medium);
+}
+
+.partner-card h3 {
+    font-size: 1.4rem;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.partner-card p {
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+}
+
+.partner-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.partner-link:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}

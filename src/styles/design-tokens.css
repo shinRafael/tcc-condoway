@@ -1,0 +1,98 @@
+/* CondoWay - Configurações de Design */
+
+:root {
+  /* 🎨 Paleta de Cores Principais */
+  --primary-blue: #1976D2;
+  --primary-blue-light: #42a5f5;
+  --primary-blue-dark: #145ca9;
+  
+  /* 🌈 Cores de Apoio */
+  --success-green: #4caf50;
+  --warning-orange: #ff9800;
+  --error-red: #f44336;
+  --info-blue: #2196f3;
+  
+  /* 🌊 Gradientes */
+  --gradient-primary: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+  --gradient-sunset: linear-gradient(135deg, #ff6b6b, #ffa500);
+  --gradient-ocean: linear-gradient(135deg, #667eea, #764ba2);
+  --gradient-light: linear-gradient(135deg, #f8fafc, #e3f2fd);
+  
+  /* 💫 Sombras e Efeitos */
+  --shadow-small: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-large: 0 8px 25px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
+  
+  /* ⚡ Transições */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  
+  /* 📏 Espaçamentos */
+  --space-xs: 0.25rem;  /* 4px */
+  --space-sm: 0.5rem;   /* 8px */
+  --space-md: 1rem;     /* 16px */
+  --space-lg: 1.5rem;   /* 24px */
+  --space-xl: 2rem;     /* 32px */
+  --space-2xl: 3rem;    /* 48px */
+  --space-3xl: 4rem;    /* 64px */
+  
+  /* 🔤 Tipografia */
+  --font-xs: 0.75rem;   /* 12px */
+  --font-sm: 0.875rem;  /* 14px */
+  --font-base: 1rem;    /* 16px */
+  --font-lg: 1.125rem;  /* 18px */
+  --font-xl: 1.25rem;   /* 20px */
+  --font-2xl: 1.5rem;   /* 24px */
+  --font-3xl: 2rem;     /* 32px */
+  --font-4xl: 2.5rem;   /* 40px */
+  
+  /* 📱 Breakpoints (para JavaScript) */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+}
+
+/* 🎯 Ícones Flaticon Utilizados
+Principais ícones vetorizados do projeto:
+
+fi-br-building - Condomínio/Edifício
+fi-br-smartphone - Mobile/Aplicativo
+fi-br-calendar - Calendário/Reservas
+fi-br-megaphone - Avisos/Comunicados
+fi-br-tool - Manutenção/Reparos
+fi-br-box - Encomendas/Entregas
+fi-br-credit-card - Pagamentos
+fi-br-vote-yea - Enquetes/Votações
+fi-br-star - Avaliações/Qualidade
+fi-br-user-female/male - Usuários
+fi-br-smile - Satisfação
+fi-br-lightbulb - Ideias/Inovação
+fi-br-graduation-cap - Educação/TCC
+fi-br-rocket - Performance/Velocidade
+fi-br-sparkles - Novidades/Melhorias
+fi-br-phone-call - Telefone/Contato
+fi-br-envelope - Email
+fi-br-social-network - Redes/GitHub
+fi-br-angle-up - Seta para cima
+fi-br-search - Pesquisa/Busca
+fi-br-comment-dots - Comentários/Opinião
+
+Vantagens dos ícones vetorizados:
+- Escalabilidade sem perda de qualidade
+- Carregamento mais rápido
+- Melhor acessibilidade
+- Consistência visual
+- Suporte a temas
+*/
+
+/* Status Badges */
+:root {
+  /* 🏷️ Badges de Status */
+  --badge-warning: linear-gradient(135deg, #ff6b6b, #ffa500);
+  --badge-success: linear-gradient(135deg, #4caf50, #8bc34a);
+  --badge-info: linear-gradient(135deg, #2196f3, #64b5f6);
+  --badge-primary: var(--gradient-primary);
+}

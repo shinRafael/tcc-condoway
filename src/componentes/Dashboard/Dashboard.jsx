@@ -33,7 +33,7 @@ const Dashboard = () => {
   const [removedActions, setRemovedActions] = useState(new Set());
   
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    const axiosDashboardData = async () => {
       console.log('🔄 Dashboard: Iniciando busca de dados da API...');
       
       try {
@@ -249,8 +249,8 @@ const Dashboard = () => {
       }
     };
 
-    fetchDashboardData();
-    const intervalId = setInterval(fetchDashboardData, 30000);
+    axiosDashboardData();
+    const intervalId = setInterval(axiosDashboardData, 30000);
     return () => clearInterval(intervalId);
   }, []);
 

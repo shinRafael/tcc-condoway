@@ -7,8 +7,11 @@ export default function ClientLayout({ children }) {
   const pathname = usePathname();
 
   // Rotas públicas (sem sidebar)
-  const paginasSemSidebar = ["/login", "/register", "/404"];
-  const semSidebar = paginasSemSidebar.some((p) => pathname.startsWith(p));
+  // 1. Adicionamos a rota "/" aqui
+  const paginasSemSidebar = ["/", "/login", "/register", "/404"];
+  
+  // 2. Trocamos startsWith(p) por === p (exatamente igual)
+  const semSidebar = paginasSemSidebar.some((p) => pathname === p);
 
   return (
     <AnimatePresence mode="wait">
