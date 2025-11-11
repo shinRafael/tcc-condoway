@@ -109,9 +109,9 @@ export default function Apartamentos() {
     const formAp = Object.fromEntries(formData);
 
     const payload = {
-      bloc: Number(formAp.bloco), // CORRIGIDO: usa "bloc" e converte para Número
-      numero: Number(formAp.numero),
-      andar: formAp.andar,
+      bloco_id: Number(formAp.bloco), // CORRIGIDO: campo correto é bloco_id
+      ap_numero: Number(formAp.numero),
+      ap_andar: formAp.andar,
     };
     
     const apiUrl = editingAp 
@@ -207,9 +207,9 @@ export default function Apartamentos() {
     for (let i = 0; i < total; i++) {
         const apNumero = numInicial + i;
         const payload = {
-            bloc: bloco,
-            numero: apNumero,
-            andar: andar
+            bloco_id: bloco,
+            ap_numero: apNumero,
+            ap_andar: andar
         };
         console.log(`📤 Enviando apartamento ${i+1}/${total}:`, payload);
         requests.push(api.post('/apartamentos', payload));
@@ -349,7 +349,6 @@ export default function Apartamentos() {
               <table className={styles.table}>
                 <thead>
                   <tr>
-                    <th>ID</th>
                     <th>Bloco</th>
                     <th>Número</th>
                     <th>Andar</th>
@@ -359,7 +358,6 @@ export default function Apartamentos() {
                 <tbody>
                   {filteredApartamentos.map((ap) => (
                     <tr key={ap.ap_id} className={styles.apRow}>
-                      <td data-label="ID">{ap.ap_id}</td>
                       <td data-label="Bloco">
                         {/* CORRIGIDO: Verifica múltiplos possíveis nomes de campo */}
                         {mapaBlocos.get(ap.bloco_id || ap.bloc_id || ap.bloc) || ap.bloc_nome || `ID ${ap.bloco_id || ap.bloc_id || ap.bloc || 'undefined'}`}

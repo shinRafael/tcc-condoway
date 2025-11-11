@@ -88,11 +88,14 @@ export default function UsuariosPage() {
           api.get('/blocos'), // Ajuste a rota se necessário
           api.get('/apartamentos') // Ajuste a rota se necessário
         ]);
+        console.log('📦 Blocos recebidos:', blocosRes.data);
+        console.log('🏠 Apartamentos recebidos:', apsRes.data);
         // Atualiza os estados com os dados da API ou arrays vazios
         setBlocosDisponiveis(blocosRes.data?.dados || []);
         setApartamentosDisponiveis(apsRes.data?.dados || []);
       } catch (error) {
         console.error("Erro ao buscar blocos/apartamentos:", error);
+        console.error("Detalhes do erro:", error.response?.data);
         showInfoModal("Erro", "Não foi possível carregar as opções de bloco/apartamento.", "error");
         setBlocosDisponiveis([]); // Garante que é array em caso de erro
         setApartamentosDisponiveis([]); // Garante que é array em caso de erro
@@ -367,9 +370,11 @@ export default function UsuariosPage() {
       <PageHeader title="Gerenciamento de Usuários" rightContent={<RightHeaderBrand />} />
 
       <div className="page-content">
-        {/* Botão Flutuante para Adicionar */}
+        {/* Botão para Adicionar */}
         <div style={{ marginBottom: "20px" }}>
-          <FabButton label="Adicionar Usuário" onClick={handleAddClick} />
+          <button className={styles.addButton} onClick={handleAddClick}>
+            Adicionar Usuário
+          </button>
         </div>
 
         {/* Modal de Adicionar/Editar Usuário */}

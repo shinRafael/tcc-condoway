@@ -115,9 +115,9 @@ export default function ReservasList() {
   // ==============================================================
   // 🔹 EDITAR DATA DA RESERVA
   // ==============================================================
-  const handleUpdateReserva = async (reservaId, novaData) => {
-    if (!novaData || isNaN(new Date(novaData).getTime())) {
-      toast.error('A data selecionada é inválida.');
+  const handleUpdateReserva = async (reservaId, dadosAtualizados) => {
+    if (!dadosAtualizados || !dadosAtualizados.res_data_reserva) {
+      toast.error('Dados inválidos.');
       return;
     }
 
@@ -127,8 +127,9 @@ export default function ReservasList() {
         r.res_id === reservaId
           ? {
               ...r,
-              res_data_reserva: novaData.toISOString(),
-              res_horario_inicio: format(novaData, 'HH:mm:ss'),
+              res_data_reserva: dadosAtualizados.res_data_reserva,
+              res_horario_inicio: dadosAtualizados.res_horario_inicio,
+              res_horario_fim: dadosAtualizados.res_horario_fim,
             }
           : r
       )
@@ -136,11 +137,9 @@ export default function ReservasList() {
     setIsEditModalOpen(false);
 
     try {
-      await api.patch(`/reservas_ambientes/${reservaId}`, {
-        res_data_reserva: format(novaData, 'yyyy-MM-dd'),
-        res_horario_inicio: format(novaData, 'HH:mm:ss'),
-      });
+      await api.patch(`/reservas_ambientes/${reservaId}`, dadosAtualizados);
       toast.success('Reserva atualizada com sucesso!');
+      await fetchReservas(); // Recarrega para garantir dados atualizados
     } catch (error) {
       console.error('Erro ao atualizar reserva:', error);
       toast.error('Falha ao salvar a nova data.');
@@ -285,7 +284,7 @@ export default function ReservasList() {
                     className={`${styles.requestCard} ${styles[reserva.res_status.toLowerCase()]}`}
                   >
                     <div className={styles.cardHeader}>
-                      <strong>Morador ID: {reserva.userap_id}</strong>
+                      <strong>{reserva.user_nome || reserva.morador_nome || `Morador ID: ${reserva.userap_id}`}</strong>
                     </div>
 
                     <div className={styles.cardBody}>

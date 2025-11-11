@@ -1,17 +1,17 @@
 /* ====== BOTÃO ADICIONAR ====== */
 .addButton {
-  background: #007bff;
-  color: #fff;
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
   border: none;
-  padding: 10px 16px;
-  border-radius: 16px;
-  cursor: pointer;
+  border-radius: 32px;
   font-weight: 600;
-  margin-bottom: 32px;
-  transition: background 0.3s, transform 0.2s;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-bottom: 20px;
 }
 .addButton:hover {
-  background: #007bff;
+  background-color: #0056b3;
   transform: translateY(-2px);
 }
 
