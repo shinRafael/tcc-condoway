@@ -78,6 +78,9 @@ export default function LoginPage() {
         </aside>
 
         <section className={styles.loginSection}>
+          <h2>Bem-vindo!</h2>
+          <p>Entre com suas credenciais</p>
+          
           <form className={styles.loginForm} onSubmit={handleLogin}>
             <label>Email:</label>
             <input

@@ -488,7 +488,6 @@ export default function UsuariosPage() {
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Nome</th>
                   <th>Email</th>
                   <th>Telefone</th>
@@ -502,7 +501,6 @@ export default function UsuariosPage() {
                 {/* Mapeia a lista de usuários para linhas da tabela */}
                 {usuarios.map((user) => (
                   <tr key={user.user_id}>
-                    <td data-label="ID">{user.user_id}</td>
                     <td data-label="Nome">{user.user_nome || '-'}</td>
                     <td data-label="Email">{user.user_email || '-'}</td>
                     <td data-label="Telefone">{formatarTelefone(user.user_telefone) || '-'}</td>

@@ -35,6 +35,13 @@
   flex: 1;
   padding: 25px;
 }
+
+.content {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -208,17 +215,25 @@
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     background-color: #f9f9f9;
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 15px;
     align-items: center;
+    max-width: 100%;
 }
 .searchInput {
     padding: 8px 12px;
-    width: 250px;
+    width: 100%;
+    max-width: 400px;
     border-radius: 4px;
     border: 1px solid #ccc;
+    box-sizing: border-box;
 }
 .radioGroup {
-    margin-right: 20px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    flex-shrink: 0;
     font-weight: bold;
 }
 .buttonMarginLeft {
