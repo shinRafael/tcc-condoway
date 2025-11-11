@@ -132,63 +132,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* SEÇÃO DE TESTEMUNHOS - Depoimentos de usuários */}
-      <section className="testimonials">
-        <div className="container">
-          {/* Tag da seção */}
-          <span className="section-tag"><i className="fi fi-br-comment-dots"></i> Opinião de quem usa</span>
-          {/* Título da seção */}
-          <h2><i className="fi fi-br-smile"></i> Moradores e Síndicos Satisfeitos</h2>
-
-          {/* Grid de testemunhos */}
-          <div className="testimonials-grid">
-            {/* Testemunho 1: Moradora */}
-            <div className="testimonial-card">
-              {/* Foto do usuário */}
-              <div className="testimonial-avatar">
-                <img src="/assets/images/avatar-joana.svg" alt="Joana Silva" />
-              </div>
-              {/* Sistema de avaliação com estrelas */}
-              <div className="testimonial-rating">
-                <i className="fi fi-br-star"></i>
-                <i className="fi fi-br-star"></i>
-                <i className="fi fi-br-star"></i>
-                <i className="fi fi-br-star"></i>
-                <i className="fi fi-br-star"></i>
-              </div>
-              <p className="testimonial-text">&quot;Com o CondoWay, a comunicação no nosso prédio melhorou 100%. Organizar a reserva da churrasqueira agora é muito mais fácil!&quot;</p>
-              {/* Informações do autor */}
-              <div className="testimonial-author">
-                <strong>Joana Silva</strong>
-                <span className="testimonial-role">Moradora, Bloco A</span>
-              </div>
-            </div>
-
-            {/* Testemunho 2: Síndico */}
-            <div className="testimonial-card">
-              {/* Foto do usuário */}
-              <div className="testimonial-avatar">
-                <img src="/assets/images/avatar-carlos.svg" alt="Carlos Almeida" />
-              </div>
-              {/* Sistema de avaliação com estrelas */}
-              <div className="testimonial-rating">
-                <i className="fi fi-br-star"></i>
-                <i className="fi fi-br-star"></i>
-                <i className="fi fi-br-star"></i>
-                <i className="fi fi-br-star"></i>
-                <i className="fi fi-br-star"></i>
-              </div>
-              <p className="testimonial-text">&quot;Gerenciar as ocorrências e os avisos ficou muito mais prático. A transparência com os moradores aumentou e meu trabalho foi otimizado.&quot;</p>
-              {/* Informações do autor */}
-              <div className="testimonial-author">
-                <strong>Carlos Almeida</strong>
-                <span className="testimonial-role">Síndico</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* SEÇÃO SOBRE - Informações sobre o projeto */}
       <section id="sobre" className="about">
         <div className="container">
