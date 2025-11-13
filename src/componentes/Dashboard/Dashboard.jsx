@@ -8,7 +8,6 @@ import { StatusOcorrenciasCard } from './StatusOcorrenciasCard';
 import RecentOccurrences from './RecentOccurrences';
 import styles from './Dashboard.module.css';
 import api from '../../services/api'; // Importe o serviço da API
-import { mockDashboardData, mockApiCall } from '../../services/mockData'; // Dados mockados
 
 // Dados iniciais para KPIs e Ações (pode ser removido quando a API estiver integrada)
 const initialKpis = {
@@ -33,24 +32,20 @@ const Dashboard = () => {
   const [removedActions, setRemovedActions] = useState(new Set());
   
   useEffect(() => {
-    const axiosDashboardData = async () => {
-      console.log('🔄 Dashboard: Iniciando busca de dados da API...');
+    const fetchDashboardData = async () => {
+      console.log('🔄 Dashboard: Iniciando busca de dados...');
       
       try {
         // Helper para que uma falha na API não quebre todas as chamadas
-        const safeGet = async (url, mockDataKey) => {
-          try {
-            const response = await api.get(url);
-            console.log(`✅ Dados recebidos de ${url}`);
-            return response;
-          } catch (error) {
-            console.warn(`⚠️ Falha em ${url}, usando dados mockados`);
-            // Retorna dados mockados como fallback
-            return await mockApiCall(mockDashboardData[mockDataKey], 100);
-          }
-        };
+        const safeGet = (url) => 
+          api.get(url).catch(error => {
+            console.error(`❌ Falha ao buscar dados de '${url}':`, error.message);
+            console.warn(`⚠️  Retornando dados vazios para '${url}'`);
+            // Retorna um objeto padrão para não quebrar o resto do código
+            return { data: { sucesso: true, dados: [] } };
+          });
 
-        console.log('📡 Buscando dados do backend...');
+        console.log('📡 Fazendo requisições paralelas...');
         
         // Usando Promise.all com o helper
         const [
@@ -61,16 +56,15 @@ const Dashboard = () => {
           mensagensResponse,
           ambientesResponse
         ] = await Promise.all([
-          safeGet('/visitantes/dashboard', 'visitantes'),
-          safeGet('/reservas_ambientes', 'reservas'),
-          safeGet('/encomendas', 'encomendas'),
-          safeGet('/ocorrencias', 'ocorrencias'),
-          safeGet('/mensagens', 'mensagens'),
-          safeGet('/ambientes', 'ambientes')
+          safeGet('/visitantes/dashboard'),
+          safeGet('/reservas_ambientes'),
+          safeGet('/encomendas'),
+          safeGet('/ocorrencias'),
+          safeGet('/mensagens'),
+          safeGet('/ambientes')
         ]);
         
         console.log('✅ Requisições concluídas');
-        console.log('📊 VISITANTES:', JSON.stringify(visitorsResponse?.data, null, 2));
         console.log('📊 RESERVAS:', JSON.stringify(reservationsResponse?.data, null, 2));
         console.log('📊 ENCOMENDAS:', JSON.stringify(encomendasResponse?.data, null, 2));
         console.log('📊 OCORRENCIAS:', JSON.stringify(ocorrenciasResponse?.data, null, 2));
@@ -79,22 +73,11 @@ const Dashboard = () => {
         // Visitantes (dashboard)
         let visitantesDados = [];
         if (visitorsResponse.data && visitorsResponse.data.sucesso && Array.isArray(visitorsResponse.data.dados)) {
-          // Normaliza os campos para o formato esperado pelo componente
-          visitantesDados = visitorsResponse.data.dados.map(v => ({
-            vst_id: v.id || v.vst_id,
-            vst_nome: v.nome || v.vst_nome,
-            vst_status: v.status || v.vst_status,
-            vst_data_entrada: v.dataEntrada || v.vst_data_entrada,
-            vst_data_prevista: v.dataPrevista || v.vst_data_prevista,
-            vst_apartamento: v.unidade || v.vst_apartamento,
-            morador_nome: v.morador || v.morador_nome
-          }));
-          console.log('👥 Total de visitantes:', visitantesDados.length);
-          console.log('👥 Visitantes normalizados:', visitantesDados);
+          visitantesDados = visitorsResponse.data.dados;
           setNotifications(visitantesDados);
         } else {
-          console.warn('⚠️ API de visitantes não retornou dados válidos:', visitorsResponse.data);
           setNotifications([]);
+          console.warn('API de visitantes não retornou dados válidos.');
         }
 
         // Mapa de ambientes (id -> nome)
@@ -135,10 +118,8 @@ const Dashboard = () => {
           });
           
           const pendingReservations = reservationsResponse.data.dados.filter(r => {
-            // Remove aspas extras se houver
-            const status = typeof r.res_status === 'string' ? r.res_status.replace(/['"]/g, '') : r.res_status;
-            const isPendente = status === 'Pendente';
-            console.log(`⏳ ID ${r.res_id}: Status="${status}" → Pendente? ${isPendente}`);
+            const isPendente = r.res_status === 'Pendente';
+            console.log(`⏳ ID ${r.res_id}: Status="${r.res_status}" → Pendente? ${isPendente}`);
             return isPendente;
           });
           console.log('⏳ Total de Reservas Pendentes encontradas:', pendingReservations.length);
@@ -161,41 +142,25 @@ const Dashboard = () => {
           console.warn('❌ Dados de reservas inválidos ou não retornados');
         }
 
-        // Encomendas: SOMENTE status 'Aguardando' ou 'aguardando_retirada'
+        // Encomendas: status 'aguardando_retirada'
         if (encomendasResponse.data && encomendasResponse.data.sucesso && Array.isArray(encomendasResponse.data.dados)) {
-          const pendingEncomendas = encomendasResponse.data.dados.filter(e => {
-            const status = typeof e.enc_status === 'string' ? e.enc_status.replace(/['"]/g, '') : e.enc_status;
-            return status === 'Aguardando' || status === 'aguardando_retirada';
-          });
+          const pendingEncomendas = encomendasResponse.data.dados.filter(e => e.enc_status === 'aguardando_retirada');
           newKpis.encomendas.value = pendingEncomendas.length;
           pendingEncomendas.forEach(item => {
             combinedActions.push({
               id: `enc_${item.enc_id}`,
               type: 'notificar',
               description: `Notificar Retirada: ${item.enc_nome_loja || 'Encomenda'}`,
-              link: '/encomendas',
+              link: `/encomendas/${item.enc_id}`,
               icon: <FiBox />,
               createdAt: item.enc_data_chegada || item.created_at, // Passa a data
             });
           });
         }
 
-        // Ocorrências: SOMENTE status 'Aberta' (não "Em Andamento")
-        if (ocorrenciasResponse.data && ocorrenciasResponse.data.sucesso) {
-          let openOcorrencias = [];
-          
-          // Se os dados vierem agrupados por status
-          if (ocorrenciasResponse.data.dados && typeof ocorrenciasResponse.data.dados === 'object' && !Array.isArray(ocorrenciasResponse.data.dados)) {
-            openOcorrencias = ocorrenciasResponse.data.dados['Aberta'] || [];
-          } 
-          // Se os dados vierem como array simples
-          else if (Array.isArray(ocorrenciasResponse.data.dados)) {
-            openOcorrencias = ocorrenciasResponse.data.dados.filter(o => {
-              const status = typeof o.oco_status === 'string' ? o.oco_status.replace(/['"]/g, '') : o.oco_status;
-              return status === 'Aberta';
-            });
-          }
-          
+        // Ocorrências: status 'Aberta'
+        if (ocorrenciasResponse.data && ocorrenciasResponse.data.sucesso && Array.isArray(ocorrenciasResponse.data.dados)) {
+          const openOcorrencias = ocorrenciasResponse.data.dados.filter(o => o.oco_status === 'Aberta');
           newKpis.ocorrencias.value = openOcorrencias.length;
           openOcorrencias.forEach(item => {
             const dataFormatada = new Date(item.oco_data).toLocaleDateString('pt-BR');
@@ -249,8 +214,8 @@ const Dashboard = () => {
       }
     };
 
-    axiosDashboardData();
-    const intervalId = setInterval(axiosDashboardData, 30000);
+    fetchDashboardData();
+    const intervalId = setInterval(fetchDashboardData, 30000);
     return () => clearInterval(intervalId);
   }, []);
 
