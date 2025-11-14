@@ -39,6 +39,7 @@ export default function LoginPage() {
 
       localStorage.setItem("authToken", token);
       localStorage.setItem("userType", usuario.user_tipo);
+      localStorage.setItem("userId", usuario.user_id); // Salva o ID do usuário
 
       const rotas = {
         Sindico: "/dashboard",

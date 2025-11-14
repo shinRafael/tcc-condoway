@@ -1,0 +1,289 @@
+=============================================================
+📸 PROMPT PARA O BACKEND - UPLOAD DE FOTO DE PERFIL
+=============================================================
+
+O frontend agora está enviando fotos de perfil de usuários durante o cadastro e atualização.
+Você precisa implementar o upload de imagens no backend.
+
+=============================================================
+1. ENDPOINT DE CADASTRO DE USUÁRIO (ATUALIZADO)
+=============================================================
+
+POST /Usuario
+
+ANTES recebia: Content-Type: application/json
+AGORA recebe: Content-Type: multipart/form-data
+
+Body (FormData):
+- user_nome: string (obrigatório)
+- user_email: string (obrigatório)
+- user_senha: string (obrigatório)
+- user_telefone: string (opcional)
+- user_tipo: "Sindico" | "Funcionario" | "Morador" (obrigatório)
+- foto: File (arquivo de imagem - OPCIONAL)
+
+Response esperada (Status 200):
+{
+  "sucesso": true,
+  "mensagem": "Usuário cadastrado com sucesso.",
+  "dados": {
+    "id": 123,
+    "user_nome": "João Silva",
+    "user_email": "joao@email.com",
+    "user_tipo": "Morador",
+    "user_foto": "/uploads/perfil/123456789.jpg"  // ← NOVO CAMPO
+  }
+}
+
+=============================================================
+2. ENDPOINT DE ATUALIZAÇÃO DE USUÁRIO (ATUALIZADO)
+=============================================================
+
+PATCH /Usuario/:id
+
+Pode receber:
+- Content-Type: application/json (se NÃO houver foto nova)
+- Content-Type: multipart/form-data (se HOUVER foto nova)
+
+Body (JSON ou FormData):
+- user_nome: string (opcional)
+- user_email: string (opcional)
+- user_senha: string (opcional - se vazio, não atualizar)
+- user_telefone: string (opcional)
+- user_tipo: string (opcional)
+- foto: File (arquivo de imagem - OPCIONAL)
+
+Response esperada (Status 200):
+{
+  "sucesso": true,
+  "mensagem": "Usuário atualizado com sucesso.",
+  "dados": {
+    "user_id": 123,
+    "user_foto": "/uploads/perfil/987654321.jpg"  // ← NOVO CAMPO (se foi atualizada)
+  }
+}
+
+=============================================================
+3. IMPLEMENTAÇÃO DO UPLOAD NO BACKEND
+=============================================================
+
+Você precisa:
+
+A) INSTALAR BIBLIOTECA DE UPLOAD (exemplo com Multer para Node.js):
+   npm install multer
+
+B) CONFIGURAR O MULTER:
+
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Cria a pasta de uploads se não existir
+const uploadDir = path.join(__dirname, '..', 'uploads', 'perfil');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Configuração do storage
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    // Gera nome único: timestamp + extensão original
+    const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, uniqueName + ext);
+  }
+});
+
+// Filtro para aceitar apenas imagens
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = /jpeg|jpg|png|gif|webp/;
+  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = allowedTypes.test(file.mimetype);
+
+  if (mimetype && extname) {
+    return cb(null, true);
+  } else {
+    cb(new Error('Apenas imagens são permitidas (JPG, PNG, GIF, WEBP)'));
+  }
+};
+
+// Middleware de upload
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: fileFilter
+});
+
+module.exports = upload;
+
+C) USAR O MIDDLEWARE NAS ROTAS:
+
+const upload = require('./middleware/upload'); // Ajuste o caminho
+
+// Rota de cadastro
+router.post('/Usuario', upload.single('foto'), UsuarioController.criar);
+
+// Rota de atualização
+router.patch('/Usuario/:id', upload.single('foto'), UsuarioController.atualizar);
+
+D) NO CONTROLLER, SALVAR O CAMINHO DA FOTO:
+
+// Exemplo no método criar()
+const criar = async (req, res) => {
+  try {
+    const { user_nome, user_email, user_senha, user_telefone, user_tipo } = req.body;
+    
+    // Se houver arquivo enviado, pega o caminho
+    const user_foto = req.file ? `/uploads/perfil/${req.file.filename}` : null;
+
+    // Salva no banco (adicione o campo user_foto na tabela usuarios)
+    const query = `
+      INSERT INTO usuarios (user_nome, user_email, user_senha, user_telefone, user_tipo, user_foto)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
+    
+    const result = await db.execute(query, [
+      user_nome,
+      user_email,
+      hashedPassword, // Hash da senha
+      user_telefone,
+      user_tipo,
+      user_foto
+    ]);
+
+    res.status(200).json({
+      sucesso: true,
+      mensagem: "Usuário cadastrado com sucesso.",
+      dados: {
+        id: result.insertId,
+        user_nome,
+        user_email,
+        user_tipo,
+        user_foto
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensagem: "Erro ao cadastrar usuário" });
+  }
+};
+
+=============================================================
+4. BANCO DE DADOS - ADICIONAR CAMPO
+=============================================================
+
+Execute no MySQL:
+
+ALTER TABLE usuarios 
+ADD COLUMN user_foto VARCHAR(255) NULL;
+
+=============================================================
+5. SERVIR ARQUIVOS ESTÁTICOS (Express.js)
+=============================================================
+
+No arquivo principal (app.js ou server.js):
+
+const express = require('express');
+const path = require('path');
+const app = express();
+
+// Servir arquivos estáticos da pasta uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+Isso permite que o frontend acesse as imagens via:
+http://localhost:3333/uploads/perfil/123456789.jpg
+
+=============================================================
+6. ENDPOINT GET /Usuario DEVE RETORNAR user_foto
+=============================================================
+
+Quando buscar usuários, inclua o campo user_foto:
+
+SELECT 
+  user_id,
+  user_nome,
+  user_email,
+  user_tipo,
+  user_telefone,
+  user_foto  -- ← ADICIONAR ESTE CAMPO
+FROM usuarios;
+
+=============================================================
+7. VALIDAÇÕES IMPORTANTES
+=============================================================
+
+- Arquivo é OPCIONAL (nem sempre o usuário vai enviar foto)
+- Tamanho máximo: 5MB
+- Formatos aceitos: JPG, JPEG, PNG, GIF, WEBP
+- Se atualizar usuário SEM enviar foto, manter a foto existente
+- Se atualizar COM foto nova, DELETAR a foto antiga do servidor
+
+Exemplo para deletar foto antiga:
+
+const fs = require('fs');
+const path = require('path');
+
+// Antes de salvar nova foto, deletar a antiga
+if (usuarioAntigo.user_foto) {
+  const caminhoAntigo = path.join(__dirname, '..', usuarioAntigo.user_foto);
+  if (fs.existsSync(caminhoAntigo)) {
+    fs.unlinkSync(caminhoAntigo);
+  }
+}
+
+=============================================================
+8. CORS - IMPORTANTE!
+=============================================================
+
+Certifique-se de que o CORS está permitindo multipart/form-data:
+
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
+
+=============================================================
+9. TESTE MANUAL
+=============================================================
+
+Você pode testar com Postman ou Insomnia:
+
+1. Criar request POST para http://localhost:3333/Usuario
+2. Em Body, selecionar "form-data"
+3. Adicionar os campos:
+   - user_nome: "Teste"
+   - user_email: "teste@email.com"
+   - user_senha: "123456"
+   - user_tipo: "Morador"
+   - foto: [selecionar arquivo de imagem]
+
+=============================================================
+10. ESTRUTURA DE PASTAS NO BACKEND
+=============================================================
+
+backend/
+├── uploads/
+│   └── perfil/
+│       ├── 1234567890-foto1.jpg
+│       └── 9876543210-foto2.png
+├── src/
+│   ├── controllers/
+│   │   └── UsuarioController.js
+│   ├── middleware/
+│   │   └── upload.js
+│   └── routes/
+│       └── usuario.routes.js
+└── server.js
+
+=============================================================
+
+IMPORTANTE: Após implementar, confirme que:
+✅ POST /Usuario aceita multipart/form-data com campo "foto"
+✅ PATCH /Usuario/:id aceita multipart/form-data com campo "foto"
+✅ GET /Usuario retorna o campo "user_foto" para cada usuário
+✅ Arquivos são salvos em /uploads/perfil/
+✅ Arquivos são acessíveis via http://localhost:3333/uploads/perfil/nome-arquivo.jpg
+✅ Tabela usuarios tem a coluna user_foto
