@@ -3,8 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { FiCamera } from 'react-icons/fi';
 import ImageUpload from '../ImageUpload/ImageUpload';
 import api from '../../services/api';
+import { useModal } from '../../context/ModalContext';
 
 export default function RightHeaderBrand() {
+  const { showModal: showInfoModal } = useModal();
   const [showModal, setShowModal] = useState(false);
   const [userInfo, setUserInfo] = useState({ nome: 'Síndico', foto: null, userId: null });
   const [selectedImage, setSelectedImage] = useState(null);
@@ -43,12 +45,12 @@ export default function RightHeaderBrand() {
     console.log('👤 userInfo.userId:', userInfo.userId);
     
     if (!selectedImage) {
-      alert('Por favor, selecione uma foto primeiro!');
+      showInfoModal('Atenção', 'Por favor, selecione uma foto primeiro!', 'error');
       return;
     }
     
     if (!userInfo.userId) {
-      alert('Erro: ID do usuário não encontrado. Faça login novamente.');
+      showInfoModal('Erro', 'ID do usuário não encontrado. Faça login novamente.', 'error');
       return;
     }
 
@@ -75,7 +77,7 @@ export default function RightHeaderBrand() {
         foto: response.data.dados.user_foto
       }));
 
-      alert('Foto atualizada com sucesso!');
+      showInfoModal('Sucesso', 'Foto atualizada com sucesso!');
       setShowModal(false);
       setSelectedImage(null);
     } catch (error) {
@@ -85,7 +87,7 @@ export default function RightHeaderBrand() {
       console.error('❌ Config da requisição:', error.config);
       
       const mensagemErro = error.response?.data?.mensagem || error.message;
-      alert(`Erro ao atualizar foto: ${mensagemErro}\n\nVerifique o console para mais detalhes.`);
+      showInfoModal('Erro', `Erro ao atualizar foto: ${mensagemErro}`, 'error');
     } finally {
       setLoading(false);
     }

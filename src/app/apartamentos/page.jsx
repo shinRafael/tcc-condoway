@@ -108,15 +108,21 @@ export default function Apartamentos() {
     const formData = new FormData(e.target);
     const formAp = Object.fromEntries(formData);
 
+    console.log('📝 Dados do formulário:', formAp);
+
     const payload = {
-      bloco_id: Number(formAp.bloco), // CORRIGIDO: campo correto é bloco_id
+      bloc_id: Number(formAp.bloco), // Campo correto: bloc_id
       ap_numero: Number(formAp.numero),
       ap_andar: formAp.andar,
     };
     
+    console.log('📦 Payload a ser enviado:', payload);
+    
     const apiUrl = editingAp 
       ? `/apartamentos/${editingAp.ap_id}` 
       : '/apartamentos';
+    
+    console.log('🌐 URL da API:', apiUrl);
     
     try {
       if (editingAp) {
@@ -130,7 +136,8 @@ export default function Apartamentos() {
       showInfoModal("Sucesso", `Apartamento ${editingAp ? 'atualizado' : 'cadastrado'} com sucesso!`);
       
     } catch (error) {
-      console.error(`Erro ao salvar apartamento:`, error);
+      console.error(`❌ Erro ao salvar apartamento:`, error);
+      console.error(`❌ Resposta do backend:`, error.response?.data);
       const erroMsg = error.response?.data?.mensagem;
       if (erroMsg && (erroMsg.toLowerCase().includes("já existe") || erroMsg.toLowerCase().includes("duplicate"))) {
          showInfoModal('Erro', 'Já existe um apartamento com este Bloco e Número.', 'error');

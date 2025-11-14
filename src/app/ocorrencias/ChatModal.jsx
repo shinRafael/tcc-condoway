@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import styles from './ocorrencias.module.css'; // Usaremos o mesmo CSS
 import api from '@/services/api';
+import { useModal } from '@/context/ModalContext';
 
 // --- Componente ChatModal ---
 function ChatModal({ ocorrencia, onClose }) {
+  const { showModal } = useModal();
   const [mensagens, setMensagens] = useState([]);
   const [novaMensagem, setNovaMensagem] = useState("");
   const [loading, setLoading] = useState(true);
@@ -47,7 +49,7 @@ function ChatModal({ ocorrencia, onClose }) {
       }
     } catch (error) {
       console.error("Erro ao enviar mensagem:", error);
-      alert(`Falha ao enviar mensagem: ${error.message}`);
+      showModal('Erro', `Falha ao enviar mensagem: ${error.message}`, 'error');
     } finally {
       setEnviando(false);
     }

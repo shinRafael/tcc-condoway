@@ -6,8 +6,11 @@ import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
 import FabButton from '@/componentes/FabButton/FabButton';
 import IconAction from '@/componentes/IconAction/IconAction';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { useModal } from "@/context/ModalContext";
 
 export default function Page() {
+  const { showModal } = useModal();
+  
   const [encomendas, setEncomendas] = useState([
     { enc_id: 1, enc_userap_id: 1, enc_nome_loja: "Magazine Online", enc_status: "aguardando_retirada", enc_data_chegada: "2025-08-18", enc_data_retirada: null },
     { enc_id: 2, enc_userap_id: 4, enc_nome_loja: "Loja do Lar", enc_status: "entregue", enc_data_chegada: "2025-08-20", enc_data_retirada: "2025-08-23" },
@@ -25,6 +28,8 @@ export default function Page() {
 
   const [editandoId, setEditandoId] = useState(null);
   const [novoStatus, setNovoStatus] = useState("");
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [encomendaParaExcluir, setEncomendaParaExcluir] = useState(null);
 
   // Totais
   const totalEncomendas = encomendas.length;
@@ -58,6 +63,24 @@ export default function Page() {
     );
     setEditandoId(null);
     setNovoStatus("");
+  };
+
+  // Excluir encomenda
+  const handleExcluirEncomenda = (id) => {
+    setEncomendaParaExcluir(id);
+    setShowConfirmDelete(true);
+  };
+
+  const confirmarExclusao = () => {
+    setEncomendas((prev) => prev.filter((enc) => enc.enc_id !== encomendaParaExcluir));
+    setShowConfirmDelete(false);
+    setEncomendaParaExcluir(null);
+    showModal("Sucesso", "Encomenda excluída com sucesso!");
+  };
+
+  const cancelarExclusao = () => {
+    setShowConfirmDelete(false);
+    setEncomendaParaExcluir(null);
   };
 
   return (
@@ -168,9 +191,23 @@ export default function Page() {
                         Salvar
                       </button>
                     ) : (
-                      <>
-                        <IconAction icon={FiEdit2} label="Editar" onClick={() => { setEditandoId(enc.enc_id); setNovoStatus(enc.enc_status); }} variant="edit" />
-                      </>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <IconAction 
+                          icon={FiEdit2} 
+                          label="Editar" 
+                          onClick={() => { 
+                            setEditandoId(enc.enc_id); 
+                            setNovoStatus(enc.enc_status); 
+                          }} 
+                          variant="edit" 
+                        />
+                        <IconAction 
+                          icon={FiTrash2} 
+                          label="Excluir" 
+                          onClick={() => handleExcluirEncomenda(enc.enc_id)} 
+                          variant="delete" 
+                        />
+                      </div>
                     )}
                   </td>
                 </tr>
@@ -179,6 +216,24 @@ export default function Page() {
           </table>
         </div>
         </section>
+
+        {/* Modal de Confirmação de Exclusão */}
+        {showConfirmDelete && (
+          <div className={styles.modalOverlay} onClick={cancelarExclusao}>
+            <div className={styles.modalConfirm} onClick={(e) => e.stopPropagation()}>
+              <h3>Confirmar Exclusão</h3>
+              <p>Tem certeza que deseja excluir esta encomenda?</p>
+              <div className={styles.modalButtons}>
+                <button onClick={cancelarExclusao} className={styles.cancelBtn}>
+                  Cancelar
+                </button>
+                <button onClick={confirmarExclusao} className={styles.deleteBtn}>
+                  Excluir
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

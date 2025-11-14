@@ -2,8 +2,10 @@
 import { useState, useEffect } from 'react';
 import { IoClose } from 'react-icons/io5';
 import styles from './page.module.css';
+import { useModal } from '@/context/ModalContext';
 
 export default function EditReservationModal({ isOpen, onClose, reserva, onUpdate, excludeDatesArray }) {
+  const { showModal } = useModal();
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedHoraInicio, setSelectedHoraInicio] = useState('');
   const [selectedHoraFim, setSelectedHoraFim] = useState('');
@@ -35,12 +37,12 @@ export default function EditReservationModal({ isOpen, onClose, reserva, onUpdat
 
   const handleSave = () => {
     if (!selectedDate || !selectedHoraInicio || !selectedHoraFim) {
-      alert('Por favor, preencha todos os campos');
+      showModal('Atenção', 'Por favor, preencha todos os campos', 'error');
       return;
     }
     
     if (selectedHoraFim <= selectedHoraInicio) {
-      alert('O horário de fim deve ser maior que o horário de início');
+      showModal('Atenção', 'O horário de fim deve ser maior que o horário de início', 'error');
       return;
     }
 

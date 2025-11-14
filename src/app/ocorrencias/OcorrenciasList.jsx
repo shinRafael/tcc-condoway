@@ -4,9 +4,12 @@ import styles from "./ocorrencias.module.css";
 import api from '@/services/api';
 import OcorrenciaCard from './OcorrenciaCard'; // Importa o componente de card
 import ChatModal from './ChatModal';     // Importa o modal de chat
+import { useModal } from '@/context/ModalContext';
 
 // --- Componente principal da lista ---
 export default function OcorrenciasList({ initialOcorrencias, onUpdate, refreshList }) {
+  const { showModal } = useModal();
+  
   // Estado para armazenar as ocorrências agrupadas
   const [ocorrenciasAgrupadas, setOcorrenciasAgrupadas] = useState(() => {
       const grupos = { Aberta: [], 'Em Andamento': [], Resolvida: [], Cancelada: [] };
@@ -83,7 +86,7 @@ export default function OcorrenciasList({ initialOcorrencias, onUpdate, refreshL
         console.log(`✅ Status atualizado com sucesso: ${novoStatus}`);
     } catch (error) {
         console.error(`Falha ao atualizar status:`, error);
-        alert(`Erro ao salvar a alteração de status.`);
+        showModal('Erro', 'Erro ao salvar a alteração de status.', 'error');
         if (refreshList) refreshList(); // Recarrega tudo em caso de erro
     }
   };
@@ -95,7 +98,7 @@ export default function OcorrenciasList({ initialOcorrencias, onUpdate, refreshL
             console.log(`✅ Prioridade atualizada com sucesso: ${novaPrioridade}`);
         } catch (error) {
             console.error(`Falha ao atualizar prioridade:`, error);
-            alert(`Erro ao salvar a alteração de prioridade.`);
+            showModal('Erro', 'Erro ao salvar a alteração de prioridade.', 'error');
             if (refreshList) refreshList();
         }
    };
