@@ -144,25 +144,25 @@ const Dashboard = () => {
 
         // Encomendas: status 'aguardando_retirada'
         if (encomendasResponse.data && encomendasResponse.data.sucesso && Array.isArray(encomendasResponse.data.dados)) {
-          const pendingEncomendas = encomendasResponse.data.dados.filter(e => e.enc_status === 'aguardando_retirada');
-          newKpis.encomendas.value = pendingEncomendas.length;
-          pendingEncomendas.forEach(item => {
-            combinedActions.push({
-              id: `enc_${item.enc_id}`,
-              type: 'notificar',
-              description: `Notificar Retirada: ${item.enc_nome_loja || 'Encomenda'}`,
-              link: `/encomendas/${item.enc_id}`,
-              icon: <FiBox />,
-              createdAt: item.enc_data_chegada || item.created_at, // Passa a data
-            });
-          });
-        }
+  const pendingEncomendas = encomendasResponse.data.dados.filter(e => e.enc_status === 'Aguardando');
+  newKpis.encomendas.value = pendingEncomendas.length;
+  pendingEncomendas.forEach(item => {
+    combinedActions.push({
+      id: `enc_${item.enc_id}`,
+      type: 'notificar',
+      description: `Notificar Retirada: ${item.enc_nome_loja || 'Encomenda'}`,
+      link: `/encomendas/${item.enc_id}`, // <<<--- Problema está aqui
+      icon: <FiBox />,
+      createdAt: item.enc_data_chegada || item.created_at, 
+    });
+  });
+}
 
         // Ocorrências: status 'Aberta'
-        if (ocorrenciasResponse.data && ocorrenciasResponse.data.sucesso && Array.isArray(ocorrenciasResponse.data.dados)) {
-          const openOcorrencias = ocorrenciasResponse.data.dados.filter(o => o.oco_status === 'Aberta');
-          newKpis.ocorrencias.value = openOcorrencias.length;
-          openOcorrencias.forEach(item => {
+        if (ocorrenciasResponse.data && ocorrenciasResponse.data.sucesso && typeof ocorrenciasResponse.data.dados === 'object' && ocorrenciasResponse.data.dados.Aberta) {
+            const openOcorrencias = ocorrenciasResponse.data.dados.Aberta; // Pega o array 'Aberta' diretamente
+            newKpis.ocorrencias.value = openOcorrencias.length;
+            openOcorrencias.forEach(item => {
             const dataFormatada = new Date(item.oco_data).toLocaleDateString('pt-BR');
             combinedActions.push({
               id: `oco_${item.oco_id}`,
