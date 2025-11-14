@@ -19,6 +19,7 @@ const usuarioInicial = {
   user_tipo: "Morador", // Padrão para Morador
   ap_id: "", // ID do apartamento selecionado
   bloc_id: "", // ID do bloco selecionado (para controle do filtro)
+  user_foto: null, // Caminho/URL da foto (vindo do backend)
 };
 
 // --- Função para formatar telefone ---
@@ -133,74 +134,64 @@ export default function UsuariosPage() {
   }, [usuarioEmEdicao.bloc_id, usuarioEmEdicao.ap_id, apartamentosDisponiveis]); // Dependências corretas
   // --- Fim useEffect filtro Apartamentos ---
 
-  // --- Handler para Adicionar Usuário (Corrigido com 2 Etapas) ---
+  // --- Handler para Adicionar Usuário (Sem upload de foto) ---
   const handleAddUsuario = async () => {
     try {
-      // Prepara os dados do usuário (sem o ap_id)
-      const dadosParaEnviar = {
-        user_nome: usuarioEmEdicao.user_nome.trim(),
-        user_email: usuarioEmEdicao.user_email.trim(),
-        user_telefone: usuarioEmEdicao.user_telefone.replace(/\D/g, ""), // Remove formatação
-        user_senha: usuarioEmEdicao.user_senha,
-        user_tipo: usuarioEmEdicao.user_tipo,
-      };
-      
-      // Guarda o ap_id selecionado
-      const ap_id_selecionado = usuarioEmEdicao.ap_id ? parseInt(usuarioEmEdicao.ap_id) : null;
-
-      // Validações (iguais às que você já tinha)
-      if (!dadosParaEnviar.user_senha) {
+      // Validações iniciais
+      if (!usuarioEmEdicao.user_senha) {
           showInfoModal("Erro", "A senha é obrigatória para novos usuários.", "error");
           return;
       }
-      if (dadosParaEnviar.user_tipo === 'Morador' && !ap_id_selecionado) {
+      
+      const ap_id_selecionado = usuarioEmEdicao.ap_id ? parseInt(usuarioEmEdicao.ap_id) : null;
+      
+      if (usuarioEmEdicao.user_tipo === 'Morador' && !ap_id_selecionado) {
         showInfoModal("Erro", "Para cadastrar um Morador, selecione o Bloco e o Apartamento.", "error");
         return;
       }
 
       // --- ETAPA 1: Criar o Usuário ---
-      // A API /Usuario não aceita ap_id, enviamos apenas os dados do usuário
-      const responseUser = await api.post("/Usuario", dadosParaEnviar); //
+      const dadosParaEnviar = {
+        user_nome: usuarioEmEdicao.user_nome.trim(),
+        user_email: usuarioEmEdicao.user_email.trim().toLowerCase(),
+        user_telefone: usuarioEmEdicao.user_telefone.replace(/\D/g, ""),
+        user_senha: usuarioEmEdicao.user_senha,
+        user_tipo: usuarioEmEdicao.user_tipo,
+      };
+
+      const responseUser = await api.post("/Usuario", dadosParaEnviar);
       
-      // Precisamos que a API retorne o ID do usuário recém-criado.
-      // O controller Usuario.js retorna: { dados: { id: result.insertId, ... } }
       const novoUserId = responseUser.data?.dados?.id;
 
       if (!novoUserId) {
-        // Se a API não retornar o ID, não podemos continuar.
         throw new Error("A API de usuário não retornou o ID do usuário criado.");
       }
 
       // --- ETAPA 2: Vincular o Apartamento (se for Morador) ---
-      if (dadosParaEnviar.user_tipo === 'Morador' && ap_id_selecionado) {
+      if (usuarioEmEdicao.user_tipo === 'Morador' && ap_id_selecionado) {
         try {
-          // Usamos a API /usuarioApartamentos para fazer o vínculo
-          // O controller 'usuarioApartamentos.js' espera { user_id, ap_id }
           await api.post("/usuarioApartamentos", { 
             user_id: novoUserId,
             ap_id: ap_id_selecionado
           });
         } catch (linkError) {
-          // Se o vínculo falhar, informamos o usuário.
           console.error("Erro ao vincular apartamento:", linkError);
-          showInfoModal("Atenção", `Usuário ${dadosParaEnviar.user_nome} foi CRIADO (ID: ${novoUserId}), mas FALHOU ao vincular ao apartamento. Edite o usuário para tentar novamente.`, "error");
+          showInfoModal("Atenção", `Usuário ${usuarioEmEdicao.user_nome} foi CRIADO (ID: ${novoUserId}), mas FALHOU ao vincular ao apartamento. Edite o usuário para tentar novamente.`, "error");
           
-          // Mesmo com erro no vínculo, recarregamos a lista e fechamos o form
           axiosUsuarios(); 
           setShowForm(false);
           setUsuarioEmEdicao(usuarioInicial);
-          return; // Sai da função
+          return;
         }
       }
 
       // --- Sucesso Completo ---
-      showInfoModal("Sucesso", "Usuário cadastrado e vinculado com sucesso!");
-      axiosUsuarios(); // Recarrega a lista
-      setShowForm(false); // Fecha o modal
-      setUsuarioEmEdicao(usuarioInicial); // Reseta o formulário
+      showInfoModal("Sucesso", "Usuário cadastrado com sucesso! Ele poderá adicionar foto após o login.");
+      axiosUsuarios();
+      setShowForm(false);
+      setUsuarioEmEdicao(usuarioInicial);
 
     } catch (error) {
-      // Tratamento de Erro (o mesmo que você já usa para duplicidade, etc.)
       console.error("Erro ao cadastrar usuário:", error.response || error);
       const erroMsg = error.response?.data?.mensagem;
       const isDuplicateError = error.response && (error.response.status === 409 || (error.response.status === 400 && erroMsg?.toLowerCase().includes("e-mail já cadastrado")) || (erroMsg?.toLowerCase().includes("duplicate")));
@@ -218,7 +209,7 @@ export default function UsuariosPage() {
   const handleUpdateUsuario = async () => {
     try {
       // Extrai IDs e dados a serem atualizados
-      const { user_id, ap_id, bloc_id, ...dadosParaAtualizar } = usuarioEmEdicao;
+      const { user_id, ap_id, bloc_id, user_foto, ...dadosParaAtualizar } = usuarioEmEdicao;
       dadosParaAtualizar.user_telefone = dadosParaAtualizar.user_telefone.replace(/\D/g, ""); // Limpa telefone
 
       // Remove a senha se estiver vazia (para não atualizar sem querer)
@@ -227,11 +218,9 @@ export default function UsuariosPage() {
       }
 
        // Validação: Morador DEVE ter um apartamento selecionado (se estiver editando para morador)
-       // NOTA: A API de PATCH não suporta alterar o ap_id. A validação aqui previne salvar um Morador sem AP,
-       // mas não permite *trocar* o AP pela UI.
-      if (dadosParaAtualizar.user_tipo === 'Morador' && !ap_id) { // Usa o ap_id original do estado
+      if (dadosParaAtualizar.user_tipo === 'Morador' && !ap_id) {
         showInfoModal("Erro", "Moradores devem estar associados a um Bloco e Apartamento.", "error");
-        return; // Impede o envio
+        return;
       }
 
       // Envia a atualização para a API
