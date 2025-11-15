@@ -60,7 +60,7 @@ export default function UsuariosPage() {
   const axiosUsuarios = async () => {
     try {
       // Idealmente, a API /Usuario deveria retornar o bloco/apto do morador no JOIN
-      const response = await api.get("/Usuario");
+      const response = await api.get("/usuario");
       setUsuarios(response.data.dados || []);
     } catch (error) {
       console.error("Erro ao buscar usuários:", error);
