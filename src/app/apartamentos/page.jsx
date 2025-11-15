@@ -306,9 +306,15 @@ export default function Apartamentos() {
       <div className="page-content">
         <div className={styles.content}>
           <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
-            <FabButton label="➕ Novo Bloco" onClick={() => setShowBlocoModal(true)} />
-            <FabButton label="🏢 Novo Apartamento" onClick={handleAddAp} />
-            <FabButton label="📦 Cadastro em Lote" onClick={() => setShowLoteModal(true)} />
+            <button className={styles.addButton} onClick={() => setShowBlocoModal(true)}>
+              ➕ Novo Bloco
+            </button>
+            <button className={styles.addButton} onClick={handleAddAp}>
+              🏢 Novo Apartamento
+            </button>
+            <button className={styles.addButton} onClick={() => setShowLoteModal(true)}>
+              📦 Cadastro em Lote
+            </button>
           </div>
           
           <div className={styles.filterContainer}>

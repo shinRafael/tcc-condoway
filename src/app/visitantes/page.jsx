@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import api from '../../services/api';
 import styles from './visitantes.module.css';
 import PageHeader from '@/componentes/PageHeader';
@@ -17,12 +17,28 @@ export default function ControleAcessos() {
   const [notificando, setNotificando] = useState(false);
   const [statusNotificacao, setStatusNotificacao] = useState('');
   const [visitanteInesperado, setVisitanteInesperado] = useState({ nome: '', apartamentoDestino: '' });
+  
+  // Estados do QR Code Scanner
+  const [showScanner, setShowScanner] = useState(false);
+  const [scanning, setScanning] = useState(false);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const streamRef = useRef(null);
 
   // ==============================================================
   // 🔹 CARREGAR VISITANTES
   // ==============================================================
   useEffect(() => {
     carregarVisitantes();
+  }, []);
+
+  // Cleanup do scanner ao desmontar componente
+  useEffect(() => {
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+    };
   }, []);
 
   const carregarVisitantes = async () => {
@@ -121,6 +137,98 @@ export default function ControleAcessos() {
   };
 
   // ==============================================================
+  // 🔹 QR CODE SCANNER
+  // ==============================================================
+  const startScanner = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: 'environment' } // Usa câmera traseira em mobile
+      });
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+        streamRef.current = stream;
+        setShowScanner(true);
+        setScanning(true);
+        scanQRCode();
+      }
+    } catch (err) {
+      console.error('Erro ao acessar câmera:', err);
+      showModal('Erro', 'Não foi possível acessar a câmera. Verifique as permissões.', 'error');
+    }
+  };
+
+  const stopScanner = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+    }
+    setShowScanner(false);
+    setScanning(false);
+  };
+
+  const scanQRCode = () => {
+    if (!scanning || !videoRef.current || !canvasRef.current) return;
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+
+    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // Usa a API BarcodeDetector se disponível
+      if ('BarcodeDetector' in window) {
+        const barcodeDetector = new window.BarcodeDetector({ formats: ['qr_code'] });
+        barcodeDetector.detect(canvas)
+          .then(barcodes => {
+            if (barcodes.length > 0) {
+              handleQRCodeDetected(barcodes[0].rawValue);
+              return;
+            }
+          })
+          .catch(err => console.error('Erro ao detectar QR:', err));
+      }
+    }
+
+    if (scanning) {
+      requestAnimationFrame(scanQRCode);
+    }
+  };
+
+  const handleQRCodeDetected = async (data) => {
+    stopScanner();
+    
+    try {
+      // Espera que o QR Code contenha o ID do visitante
+      const visitanteId = parseInt(data);
+      
+      if (isNaN(visitanteId)) {
+        showModal('Erro', 'QR Code inválido.', 'error');
+        return;
+      }
+
+      // Busca o visitante pelo ID
+      const visitante = visitantesHoje.find(v => v.id === visitanteId);
+      
+      if (!visitante) {
+        showModal('Erro', 'Visitante não encontrado.', 'error');
+        return;
+      }
+
+      // Registra automaticamente a entrada
+      await handleConfirmarAcesso(visitante, 'ENTROU');
+      showModal('Sucesso', `Entrada registrada para ${visitante.nome}!`, 'success');
+      
+    } catch (err) {
+      console.error('Erro ao processar QR Code:', err);
+      showModal('Erro', 'Erro ao processar QR Code.', 'error');
+    }
+  };
+
+  // ==============================================================
   // 🔹 RENDERIZAÇÃO
   // ==============================================================
   return (
@@ -128,6 +236,34 @@ export default function ControleAcessos() {
       <PageHeader title="Controle de Acessos - Portaria" rightContent={<RightHeaderBrand />} />
 
       <div className="page-content">
+        {/* Botão de Scanner QR Code */}
+        <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
+          <button 
+            className={styles.addButton} 
+            onClick={startScanner}
+            style={{ backgroundColor: '#28a745' }}
+          >
+            📷 Escanear QR Code
+          </button>
+        </div>
+
+        {/* Modal do Scanner */}
+        {showScanner && (
+          <div className={styles.scannerModal}>
+            <div className={styles.scannerContainer}>
+              <div className={styles.scannerHeader}>
+                <h3>Escaneie o QR Code do Visitante</h3>
+                <button className={styles.closeButton} onClick={stopScanner}>✕</button>
+              </div>
+              <div className={styles.videoContainer}>
+                <video ref={videoRef} style={{ width: '100%', maxWidth: '500px', borderRadius: '8px' }} />
+                <canvas ref={canvasRef} style={{ display: 'none' }} />
+              </div>
+              <p className={styles.scannerInstructions}>Posicione o QR Code dentro do quadro</p>
+            </div>
+          </div>
+        )}
+
         <div className={styles.dashboardGrid}>
 
           {/* === Lista de Visitantes === */}
@@ -156,12 +292,12 @@ export default function ControleAcessos() {
                       <div className={styles.actions}>
                         {v.status === 'Aguardando' && (
                           <>
-                            <button className={styles.confirmButton} onClick={() => handleConfirmarAcesso(v, 'CONFIRMADO')}>Registrar Entrada</button>
+                            <button className={styles.confirmButton} onClick={() => handleConfirmarAcesso(v, 'ENTROU')}>Registrar Entrada</button>
                             <button className={styles.denyButton} onClick={() => handleConfirmarAcesso(v, 'NEGADO')}>Negar</button>
                           </>
                         )}
                         {v.status === 'Entrou' && (
-                          <button className={styles.cancelButton} onClick={() => handleConfirmarAcesso(v, 'SAIDA')}>Registrar Saída</button>
+                          <button className={styles.cancelButton} onClick={() => handleConfirmarAcesso(v, 'SAIU')}>Registrar Saída</button>
                         )}
                       </div>
                     </li>

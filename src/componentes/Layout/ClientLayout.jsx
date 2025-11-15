@@ -8,7 +8,7 @@ export default function ClientLayout({ children }) {
 
   // Rotas públicas (sem sidebar)
   // 1. Adicionamos a rota "/" aqui
-  const paginasSemSidebar = ["/", "/login", "/register", "/404"];
+  const paginasSemSidebar = ["/", "/login", "/register", "/404", "/esqueci-senha", "/redefinir-senha"];
   
   // 2. Trocamos startsWith(p) por === p (exatamente igual)
   const semSidebar = paginasSemSidebar.some((p) => pathname === p);

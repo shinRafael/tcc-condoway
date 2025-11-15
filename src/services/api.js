@@ -82,4 +82,33 @@ api.interceptors.response.use(
   }
 );
 
+// =============================================================
+// 🔑 FUNÇÕES DE RECUPERAÇÃO DE SENHA
+// =============================================================
+
+/**
+ * Solicita o código de recuperação de senha
+ * @param {string} email - Email do usuário
+ * @returns {Promise} Resposta da API
+ */
+export const solicitarResetSenha = async (email) => {
+  return await api.post('/usuario/recuperar-senha', { 
+    user_email: email.trim().toLowerCase() 
+  });
+};
+
+/**
+ * Redefine a senha do usuário usando o código recebido
+ * @param {string} email - Email do usuário (não usado no backend, mas mantido por compatibilidade)
+ * @param {string} codigo - Código de recuperação recebido por email (6 dígitos)
+ * @param {string} novaSenha - Nova senha do usuário
+ * @returns {Promise} Resposta da API
+ */
+export const resetarSenha = async (email, codigo, novaSenha) => {
+  return await api.post('/usuario/redefinir-senha', { 
+    codigo: codigo, 
+    novaSenha: novaSenha 
+  });
+};
+
 export default api;

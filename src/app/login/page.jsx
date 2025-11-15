@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import api from "../../services/api";
 import styles from "./page.module.css";
 
@@ -104,6 +105,12 @@ export default function LoginPage() {
             <button type="submit" disabled={loading}>
               {loading ? "Entrando..." : "Entrar"}
             </button>
+
+            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+              <Link href="/esqueci-senha" style={{ color: '#0066cc', textDecoration: 'none', fontSize: '0.9rem' }}>
+                Esqueceu a senha?
+              </Link>
+            </div>
           </form>
         </section>
       </main>
