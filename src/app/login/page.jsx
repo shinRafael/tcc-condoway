@@ -24,7 +24,7 @@ export default function LoginPage() {
 
     try {
       setLoading(true);
-      const response = await api.post("/Usuario/login", {
+      const response = await api.post("/usuario/login", {
         user_email: email.trim().toLowerCase(),
         user_senha: senha,
       });
