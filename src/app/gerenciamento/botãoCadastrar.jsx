@@ -1,39 +1,25 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react'; // 1. Removido useEffect
 import styles from './index.module.css';
 import api from '@/services/api';
 import FabButton from '@/componentes/FabButton/FabButton';
-import IconAction from '@/componentes/IconAction/IconAction';
-import { FiEdit2, FiTrash2 } from 'react-icons/fi';
-import { useModal } from "@/context/ModalContext"; // Importe o hook
+// import IconAction from '@/componentes/IconAction/IconAction'; // Removido (não usado)
+// import { FiEdit2, FiTrash2 } from 'react-icons/fi'; // Removido (não usado)
+import { useModal } from "@/context/ModalContext"; 
 
 export default function BotaoCadastrar({ onSaved }) {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
-  const [condominios, setCondominios] = useState([]);
+  // const [condominios, setCondominios] = useState([]); // 2. Removido estado de condominios
   const [formData, setFormData] = useState({
-    cond_id: '',
+    // cond_id: '', // 3. Removido cond_id do estado inicial do form
     ger_data: '',
     ger_descricao: '',
     ger_valor: '',
   });
   const [loading, setLoading] = useState(false);
-  const { showModal } = useModal(); // Use o hook
+  const { showModal } = useModal(); 
 
-  useEffect(() => {
-    if (mostrarFormulario) {
-      const fetchCondominios = async () => {
-        try {
-          const response = await api.get('/condominio');
-          if (response.data?.sucesso) {
-            setCondominios(response.data.dados);
-          }
-        } catch (error) {
-          console.error("Erro ao buscar condomínios:", error);
-        }
-      };
-      fetchCondominios();
-    }
-  }, [mostrarFormulario]);
+  // 4. Removido o useEffect que buscava condomínios
 
   const toggleModal = () => setMostrarFormulario(prev => !prev);
 
@@ -46,12 +32,19 @@ export default function BotaoCadastrar({ onSaved }) {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await api.post('/gerenciamento', formData);
-      const itemSalvo = response.data?.dados ?? response.data ?? { ...formData, ger_id: `local-${Date.now()}` };
+      // 5. INJETAR O ID DO CONDOMÍNIO AQUI
+      const payload = {
+        ...formData,
+        cond_id: 1 // ID 1 = Residencial Jardim Europa (baseado no insert.novo.sql)
+      };
+
+      const response = await api.post('/gerenciamento', payload); // 6. Enviar 'payload'
+      const itemSalvo = response.data?.dados ?? response.data ?? { ...payload, ger_id: `local-${Date.now()}` };
 
       if (onSaved) onSaved(itemSalvo);
 
-      setFormData({ cond_id: '', ger_data: '', ger_descricao: '', ger_valor: '' });
+      // 7. Resetar o formulário
+      setFormData({ ger_data: '', ger_descricao: '', ger_valor: '' });
       setMostrarFormulario(false);
     } catch (error) {
       console.error('Erro ao salvar despesa:', error);
@@ -75,16 +68,16 @@ export default function BotaoCadastrar({ onSaved }) {
             <h3 style={{textAlign: 'center'}}>Cadastrar Despesa</h3>
 
             <form onSubmit={handleSubmit} className={styles.form}>
+              
+              {/* 8. CAMPO DE CONDOMÍNIO REMOVIDO */}
               <label className={styles.label}>
                 Condomínio:
-                <select className={styles.input} name="cond_id" value={formData.cond_id} onChange={handleChange} required>
-                  <option value="">Selecione um condomínio</option>
-                  {condominios.map(cond => (
-                    <option key={cond.cond_id} value={cond.cond_id}>
-                      {cond.cond_nome}
-                    </option>
-                  ))}
-                </select>
+                <input 
+                  className={`${styles.input} ${styles.disabledInput}`} 
+                  type="text" 
+                  value="Residencial Jardim Europa" 
+                  disabled 
+                />
               </label>
 
               <label className={styles.label}>

@@ -223,3 +223,37 @@
          width: 100%; /* Botões ocupam largura total */
      }
 }
+.contentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap; /* Para responsividade em telas menores */
+  gap: 16px; /* Espaço entre o botão e o card */
+}
+
+/* Card de Total */
+.totalCard {
+  background: #fff;
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  text-align: right;
+  border: 1px solid #e0e0e0;
+  animation: fadeIn 0.3s ease-out; /* Reutiliza a animação do modal */
+}
+
+.totalCard h4 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  color: #555;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.totalCard p {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #dc3545; /* Vermelho para destacar o gasto */
+} 

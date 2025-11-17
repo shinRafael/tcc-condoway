@@ -1,17 +1,17 @@
-
 'use client';
 import { useState, useEffect } from 'react';
-import styles from './index.module.css'; // <<< VERIFIQUE SE O NOME DO ARQUIVO CSS ESTÁ CORRETO
+import styles from './index.module.css';
 import PageHeader from '@/componentes/PageHeader';
 import RightHeaderBrand from '@/componentes/PageHeader/RightHeaderBrand';
 import BotaoCadastrar from './botãoCadastrar';
 import IconAction from '@/componentes/IconAction/IconAction';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 import api from '@/services/api';
-import { useModal } from "@/context/ModalContext"; // Importe o hook
+import { useModal } from "@/context/ModalContext";
 
 export default function GerenciamentoPage() {
   const [dados, setDados] = useState([]);
+  const [totalMes, setTotalMes] = useState(0); // <-- NOVO ESTADO
   const [editando, setEditando] = useState(null);
   const [formEdit, setFormEdit] = useState({
     cond_nome: "",
@@ -19,12 +19,10 @@ export default function GerenciamentoPage() {
     ger_descricao: "",
     ger_valor: ""
   });
-  const { showModal: showInfoModal } = useModal(); // Use o hook
+  const { showModal: showInfoModal } = useModal(); 
 
-  // --- INÍCIO: Adicionado estado para o modal de exclusão ---
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
   const [itemParaExcluir, setItemParaExcluir] = useState(null);
-  // --- FIM: Adicionado estado para o modal de exclusão ---
 
 
   const formatDisplayDate = (val) => {
@@ -52,23 +50,64 @@ export default function GerenciamentoPage() {
       try {
         const response = await api.get("/gerenciamento");
         const dadosDaApi = response.data?.dados ?? response.data ?? [];
-        setDados(Array.isArray(dadosDaApi) ? dadosDaApi : []);
+        
+        // Filtra a lista para mostrar apenas "Residencial Jardim Europa"
+        const dadosFiltrados = dadosDaApi.filter(
+          item => item.cond_nome === "Residencial Jardim Europa"
+        );
+
+        // --- NOVO CÁLCULO DO TOTAL DO MÊS ---
+        const hoje = new Date();
+        const mesAtual = hoje.getMonth(); // 0-11
+        const anoAtual = hoje.getFullYear();
+        
+        let total = 0;
+        dadosFiltrados.forEach(item => {
+          try {
+            // A API retorna data como 'dd/mm/AAAA'
+            const [dia, mes, ano] = item.ger_data.split('/').map(Number);
+            // new Date(ano, mes - 1, dia) -> mes é 0-indexado
+            if (mes - 1 === mesAtual && ano === anoAtual) {
+              total += Number(item.ger_valor) || 0;
+            }
+          } catch (e) {
+            console.error("Erro ao parsear data do item:", item.ger_data, e);
+          }
+        });
+        
+        setTotalMes(total);
+        // --- FIM DO CÁLCULO ---
+
+        setDados(Array.isArray(dadosFiltrados) ? dadosFiltrados : []);
       } catch (error) {
         console.error("Erro ao buscar dados da API:", error);
         setDados([]);
-        showInfoModal("Erro", "Não foi possível carregar as despesas.", "error"); // Adicionado feedback de erro
+        showInfoModal("Erro", "Não foi possível carregar as despesas.", "error"); 
       }
     };
     fetchData();
-  }, [showInfoModal]); // Adicionado showInfoModal como dependência
+  }, [showInfoModal]); 
 
   const handleSaved = (item) => {
-    // Adiciona o item novo no início da lista para melhor visibilidade
-    setDados(prev => [item, ...prev]);
-    showInfoModal("Sucesso", "Despesa cadastrada com sucesso!"); // Feedback de sucesso
+    const itemComNome = { ...item, cond_nome: "Residencial Jardim Europa" };
+    setDados(prev => [itemComNome, ...prev]);
+
+    // Recalcula o total do mês ao salvar
+    const hoje = new Date();
+    const mesAtual = hoje.getMonth();
+    const anoAtual = hoje.getFullYear();
+    try {
+      const [dia, mes, ano] = item.ger_data.split('/').map(Number);
+      if (mes - 1 === mesAtual && ano === anoAtual) {
+        setTotalMes(prevTotal => prevTotal + (Number(item.ger_valor) || 0));
+      }
+    } catch (e) {
+      console.error("Erro ao parsear data do novo item:", item.ger_data, e);
+    }
+    
+    showInfoModal("Sucesso", "Despesa cadastrada com sucesso!"); 
   };
 
-  // --- INÍCIO: Funções do modal de exclusão ---
   const handleDelete = (item) => {
     setItemParaExcluir(item);
     setShowConfirmDeleteModal(true);
@@ -78,6 +117,18 @@ export default function GerenciamentoPage() {
     if (!itemParaExcluir) return;
     try {
       await api.delete(`/gerenciamento/${itemParaExcluir.ger_id}`);
+      
+      // Recalcula o total ao excluir
+      const hoje = new Date();
+      const mesAtual = hoje.getMonth();
+      const anoAtual = hoje.getFullYear();
+      try {
+        const [dia, mes, ano] = itemParaExcluir.ger_data.split('/').map(Number);
+        if (mes - 1 === mesAtual && ano === anoAtual) {
+          setTotalMes(prevTotal => prevTotal - (Number(itemParaExcluir.ger_valor) || 0));
+        }
+      } catch (e) {}
+      
       setDados(prev => prev.filter(item => Number(item.ger_id) !== Number(itemParaExcluir.ger_id)));
       showInfoModal("Sucesso", "Despesa excluída com sucesso!");
     } catch (error) {
@@ -94,8 +145,7 @@ export default function GerenciamentoPage() {
     setShowConfirmDeleteModal(false);
     setItemParaExcluir(null);
   };
-  // --- FIM: Funções do modal de exclusão ---
-
+  
 
   const abrirEdicao = (item) => {
     setEditando(item);
@@ -111,7 +161,7 @@ export default function GerenciamentoPage() {
     if (!editando) return;
     try {
       const payload = {
-        cond_id: editando.cond_id,
+        cond_id: editando.cond_id, 
         ger_data: formEdit.ger_data,
         ger_descricao: formEdit.ger_descricao,
         ger_valor: formEdit.ger_valor,
@@ -119,17 +169,13 @@ export default function GerenciamentoPage() {
 
       await api.patch(`/gerenciamento/${editando.ger_id}`, payload);
       
-      // Atualiza o item na lista localmente após sucesso da API
-      setDados(prev =>
-        prev.map(item =>
-          Number(item.ger_id) === Number(editando.ger_id) 
-            ? { ...item, ...payload, ger_data: formatDisplayDate(payload.ger_data) } // Atualiza com dados do payload
-            : item
-        )
-      );
+      // Após salvar, recarrega os dados para atualizar a lista E o total
+      useEffect(() => {
+        fetchData();
+      }, []);
 
       fecharModal();
-      showInfoModal("Sucesso", "Despesa atualizada com sucesso!"); // Feedback de sucesso
+      showInfoModal("Sucesso", "Despesa atualizada com sucesso!"); 
 
     } catch (error) {
       console.error("Erro ao editar:", error);
@@ -149,9 +195,22 @@ export default function GerenciamentoPage() {
 
       <div className="page-content">
         <div className={styles.content}>
+          
+          {/* --- CABEÇALHO ATUALIZADO --- */}
           <div className={styles.contentHeader}>
             <BotaoCadastrar onSaved={handleSaved} />
+            
+            <div className={styles.totalCard}>
+              <h4>Total Gasto (Mês Atual)</h4>
+              <p>
+                {totalMes.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+              </p>
+            </div>
           </div>
+          {/* --- FIM DA ATUALIZAÇÃO --- */}
 
           <div className={styles.tableContainer}>
             <table className={styles.table}>
@@ -191,7 +250,7 @@ export default function GerenciamentoPage() {
                             icon={FiTrash2} 
                             label="Excluir" 
                             variant="delete"
-                            onClick={() => handleDelete(item)} // <<< ATUALIZADO: Passa o objeto 'item'
+                            onClick={() => handleDelete(item)} 
                           />
                         </div>
                       </td>
@@ -199,7 +258,7 @@ export default function GerenciamentoPage() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} style={{ textAlign: 'center', color: '#6c757d' }}>Nenhuma despesa encontrada.</td>
+                    <td colSpan={5} style={{ textAlign: 'center', color: '#6c757d' }}>Nenhuma despesa encontrada para o Residencial Jardim Europa.</td>
                   </tr>
                 )}
               </tbody>
@@ -238,7 +297,6 @@ export default function GerenciamentoPage() {
         </div>
       )}
 
-       {/* --- INÍCIO: Modal de exclusão --- */}
        {showConfirmDeleteModal && itemParaExcluir && (
         <div className={styles.modalOverlay} onClick={cancelarExclusao}>
           <div className={`${styles.modal} ${styles.confirmDeleteModal}`} onClick={(e) => e.stopPropagation()}>
@@ -255,8 +313,7 @@ export default function GerenciamentoPage() {
           </div>
         </div>
       )}
-      {/* --- FIM: Modal de exclusão --- */}
-
+      
     </div>
   );
 }
