@@ -269,3 +269,38 @@
 .deleteBtn:hover {
   background: #dc2626;
 }
+.statusSelect {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  border: 2px solid; /* Borda para indicar que é editável */
+  outline: none;
+  cursor: pointer;
+  
+  /* Remove a aparência padrão do navegador */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  
+  /* Adiciona uma seta personalizada */
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%23212529" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 10.75a.75.75 0 0 1-.53-.22l-3.25-3.25a.75.75 0 0 1 1.06-1.06L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06L8.53 10.53a.75.75 0 0 1-.53.22z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+  padding-right: 30px; /* Espaço extra para a seta */
+}
+
+/* Variante pendente (baseada no .statusPendente) */
+.statusSelectPendente {
+  color: #d89616;
+  background-color: #fff3cd;
+  border-color: #d89616;
+}
+
+/* Variante entregue (baseada no .statusEntregue) */
+.statusSelectEntregue {
+  color: #28a745;
+  background-color: #d4edda;
+  border-color: #28a745;
+}

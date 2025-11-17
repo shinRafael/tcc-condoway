@@ -55,12 +55,20 @@ const OcorrenciaCard = ({ ocorrencia, onUpdateStatus, onUpdatePriority, onOpenCh
 
             {/* Botões para Alterar Status */}
             <div className={styles.statusButtons}>
-                 {/* Para cada botão, aplicamos a classe base e a classe ativa se for o status atual */}
+                 {/* * AQUI ESTÁ A MUDANÇA:
+                   * O botão "Aberta" agora tem 'disabled={true}'.
+                   * Isso acontece porque:
+                   * 1. Se o status FOR "Aberta", ele já deve ser desabilitado (lógica antiga).
+                   * 2. Se o status NÃO FOR "Aberta", ele também deve ser desabilitado (sua nova regra).
+                   * Portanto, ele fica sempre desabilitado.
+                 */}
                  <button
                     onClick={() => onUpdateStatus(ocorrencia.oco_id, "Aberta")}
-                    disabled={ocorrencia.oco_status === "Aberta"}
+                    disabled={true} 
                     className={`${styles.statusButton} ${styles.statusAberta} ${ocorrencia.oco_status === "Aberta" ? styles.activeStatusButton : ''}`}
                  > Aberta </button>
+                 
+                 {/* Os outros botões continuam com a lógica original */}
                  <button
                     onClick={() => onUpdateStatus(ocorrencia.oco_id, "Em Andamento")}
                     disabled={ocorrencia.oco_status === "Em Andamento"}
