@@ -7,27 +7,23 @@ import { StatusChamadosCard } from './StatusChamadosCard';
 import { StatusOcorrenciasCard } from './StatusOcorrenciasCard';
 import RecentOccurrences from './RecentOccurrences';
 import styles from './Dashboard.module.css';
-import api from '../../services/api'; // Importe o serviço da API
+import api from '../../services/api'; 
+import { useModal } from "@/context/ModalContext"; // <-- 1. Importar o useModal
 
-// Dados iniciais para KPIs e Ações (pode ser removido quando a API estiver integrada)
+// Dados iniciais para KPIs
 const initialKpis = {
-  reservas: { value: 0, title: 'Reservas Pendentes', icon: <FiCalendar />, href: '/reservas?status=pendente' },
+  reservas: { value: 0, title: 'Reservas Pendentes', icon: <FiCalendar />, href: '/reservas' }, // <-- Link corrigido
   encomendas: { value: 0, title: 'Encomendas a Retirar', icon: <FiBox />, href: '/encomendas' },
   ocorrencias: { value: 0, title: 'Ocorrências Abertas', icon: <FiBell />, href: '/ocorrencias' },
   visitantes: { value: 0, title: 'Visitantes Hoje', icon: <FiUsers />, href: '/visitantes' },
 };
 
-const initialActions = [
-  { id: 1, type: 'aprovar', description: 'Aprovar Reserva: Salão de Festas (Apto 101)', link: '/reservas/123', icon: <FiCheckCircle /> },
-  { id: 2, type: 'responder', description: 'Responder Mensagem: Maria (Apto 302)', link: '/mensagens/456', icon: <FiMessageSquare /> },
-  { id: 3, type: 'validar', description: 'Validar Novo Cadastro: Apto 504', link: '/usuarios/789', icon: <FiUserPlus /> },
-];
-
 const Dashboard = () => {
+  const { showModal } = useModal(); // <-- 2. Inicializar o hook
   const [kpis, setKpis] = useState(initialKpis);
-  const [actions, setActions] = useState([]); // agora será preenchido pela API
+  const [actions, setActions] = useState([]); 
   const [processedActions, setProcessedActions] = useState(new Set());
-  const [notifications, setNotifications] = useState([]); // Visitantes ativos
+  const [notifications, setNotifications] = useState([]); 
   const [isExpanded, setIsExpanded] = useState(false);
   const [removedActions, setRemovedActions] = useState(new Set());
   
@@ -36,18 +32,15 @@ const Dashboard = () => {
       console.log('🔄 Dashboard: Iniciando busca de dados...');
       
       try {
-        // Helper para que uma falha na API não quebre todas as chamadas
         const safeGet = (url) => 
           api.get(url).catch(error => {
             console.error(`❌ Falha ao buscar dados de '${url}':`, error.message);
             console.warn(`⚠️  Retornando dados vazios para '${url}'`);
-            // Retorna um objeto padrão para não quebrar o resto do código
             return { data: { sucesso: true, dados: [] } };
           });
 
         console.log('📡 Fazendo requisições paralelas...');
         
-        // Usando Promise.all com o helper
         const [
           visitorsResponse,
           reservationsResponse,
@@ -65,12 +58,7 @@ const Dashboard = () => {
         ]);
         
         console.log('✅ Requisições concluídas');
-        console.log('📊 RESERVAS:', JSON.stringify(reservationsResponse?.data, null, 2));
-        console.log('📊 ENCOMENDAS:', JSON.stringify(encomendasResponse?.data, null, 2));
-        console.log('📊 OCORRENCIAS:', JSON.stringify(ocorrenciasResponse?.data, null, 2));
-        console.log('📊 AMBIENTES:', JSON.stringify(ambientesResponse?.data, null, 2));
         
-        // Visitantes (dashboard)
         let visitantesDados = [];
         if (visitorsResponse.data && visitorsResponse.data.sucesso && Array.isArray(visitorsResponse.data.dados)) {
           visitantesDados = visitorsResponse.data.dados;
@@ -80,87 +68,54 @@ const Dashboard = () => {
           console.warn('API de visitantes não retornou dados válidos.');
         }
 
-        // Mapa de ambientes (id -> nome)
         let ambientesMap = new Map();
-        console.log('Resposta da API de ambientes:', ambientesResponse?.data);
         if (ambientesResponse?.data?.sucesso && Array.isArray(ambientesResponse.data.dados)) {
-          console.log('Dados dos ambientes:', ambientesResponse.data.dados);
           ambientesMap = new Map(
-            ambientesResponse.data.dados.map((a) => {
-              console.log('Mapeando ambiente:', a.id, '->', a.nome);
-              return [a.id, a.nome];
-            })
+            ambientesResponse.data.dados.map((a) => [a.amd_id, a.amd_nome]) // Ajustado para amd_id e amd_nome
           );
-          console.log('Mapa de ambientes criado:', Array.from(ambientesMap.entries()));
         } else {
-          console.warn("API de ambientes falhou ou não retornou dados válidos. Os nomes dos ambientes podem não ser exibidos.");
+          console.warn("API de ambientes falhou ou não retornou dados válidos.");
         }
 
         const newKpis = { ...initialKpis };
         const combinedActions = [];
 
-        // KPI Visitantes: usa a contagem que veio da API (Aguardando/Entrou)
         newKpis.visitantes.value = visitantesDados.length;
 
-        // Reservas: filtra status 'Pendente' e usa o nome do ambiente
-        console.log('🔍 Verificando reservas...', reservationsResponse.data);
         if (reservationsResponse.data && reservationsResponse.data.sucesso && Array.isArray(reservationsResponse.data.dados)) {
-          console.log('📋 Total de reservas recebidas:', reservationsResponse.data.dados.length);
-          
-          // Log detalhado de cada reserva para debug
-          reservationsResponse.data.dados.forEach((r, index) => {
-            console.log(`🔍 Reserva ${index + 1}:`, {
-              id: r.res_id,
-              status: `"${r.res_status}"`,
-              statusType: typeof r.res_status,
-              todosOsCampos: Object.keys(r)
-            });
-          });
-          
-          const pendingReservations = reservationsResponse.data.dados.filter(r => {
-            const isPendente = r.res_status === 'Pendente';
-            console.log(`⏳ ID ${r.res_id}: Status="${r.res_status}" → Pendente? ${isPendente}`);
-            return isPendente;
-          });
-          console.log('⏳ Total de Reservas Pendentes encontradas:', pendingReservations.length);
-          
+          const pendingReservations = reservationsResponse.data.dados.filter(r => r.res_status === 'Pendente');
           newKpis.reservas.value = pendingReservations.length;
+          
           pendingReservations.forEach(item => {
-            console.log('Processando reserva:', item.res_id, 'com amd_id:', item.amd_id);
             const ambNome = item.amd_nome || ambientesMap.get(item.amd_id) || `Ambiente #${item.amd_id}`;
-            console.log('Nome do ambiente encontrado:', ambNome);
             combinedActions.push({
               id: `res_${item.res_id}`,
               type: 'aprovar',
               description: `Aprovar Reserva: ${ambNome}`,
-              link: `/reservas/${item.res_id}`,
+              link: `/reservas`, // <-- 3. CORREÇÃO DE LINK (Problema 3)
               icon: <FiCheckCircle />,
-              createdAt: item.res_data_reserva, // Passa a data
+              createdAt: item.res_data_reserva, 
             });
           });
-        } else {
-          console.warn('❌ Dados de reservas inválidos ou não retornados');
         }
 
-        // Encomendas: status 'aguardando_retirada'
         if (encomendasResponse.data && encomendasResponse.data.sucesso && Array.isArray(encomendasResponse.data.dados)) {
-  const pendingEncomendas = encomendasResponse.data.dados.filter(e => e.enc_status === 'Aguardando');
-  newKpis.encomendas.value = pendingEncomendas.length;
-  pendingEncomendas.forEach(item => {
-    combinedActions.push({
-      id: `enc_${item.enc_id}`,
-      type: 'notificar',
-      description: `Notificar Retirada: ${item.enc_nome_loja || 'Encomenda'}`,
-      link: `/encomendas/${item.enc_id}`, // <<<--- Problema está aqui
-      icon: <FiBox />,
-      createdAt: item.enc_data_chegada || item.created_at, 
-    });
-  });
-}
+          const pendingEncomendas = encomendasResponse.data.dados.filter(e => e.enc_status === 'Aguardando');
+          newKpis.encomendas.value = pendingEncomendas.length;
+          pendingEncomendas.forEach(item => {
+            combinedActions.push({
+              id: `enc_${item.enc_id}`,
+              type: 'notificar',
+              description: `Notificar Retirada: ${item.enc_nome_loja || 'Encomenda'}`,
+              link: `/encomendas`, // <-- 3. CORREÇÃO DE LINK (Problema 3)
+              icon: <FiBox />,
+              createdAt: item.enc_data_chegada || item.created_at, 
+            });
+          });
+        }
 
-        // Ocorrências: status 'Aberta'
         if (ocorrenciasResponse.data && ocorrenciasResponse.data.sucesso && typeof ocorrenciasResponse.data.dados === 'object' && ocorrenciasResponse.data.dados.Aberta) {
-            const openOcorrencias = ocorrenciasResponse.data.dados.Aberta; // Pega o array 'Aberta' diretamente
+            const openOcorrencias = ocorrenciasResponse.data.dados.Aberta;
             newKpis.ocorrencias.value = openOcorrencias.length;
             openOcorrencias.forEach(item => {
             const dataFormatada = new Date(item.oco_data).toLocaleDateString('pt-BR');
@@ -168,14 +123,13 @@ const Dashboard = () => {
               id: `oco_${item.oco_id}`,
               type: 'analisar',
               description: `Analisar ${item.oco_categoria || 'Ocorrência'}: ${dataFormatada}`,
-              link: `/ocorrencias/${item.oco_id}`,
+              link: `/ocorrencias`, // <-- 3. CORREÇÃO DE LINK (Problema 3)
               icon: <FiBell />,
-              createdAt: item.oco_data, // Passa a data
+              createdAt: item.oco_data, 
             });
           });
         }
 
-        // Mensagens: status 'pendente' (só entram como ação, sem KPI)
         if (mensagensResponse.data && mensagensResponse.data.sucesso && Array.isArray(mensagensResponse.data.dados)) {
           const pendingMessages = mensagensResponse.data.dados.filter(m => m.msg_status === 'pendente');
           pendingMessages.forEach(item => {
@@ -183,23 +137,22 @@ const Dashboard = () => {
               id: `msg_${item.msg_id}`,
               type: 'responder',
               description: `Responder Mensagem ID: ${item.msg_id}`,
-              link: `/mensagens/${item.msg_id}`,
+              link: `/mensagens`, // <-- 3. CORREÇÃO DE LINK (Problema 3)
               icon: <FiMessageSquare />,
-              createdAt: item.msg_data_envio || item.created_at, // Passa a data
+              createdAt: item.msg_data_envio || item.created_at, 
             });
           });
         }
 
-        // Visitantes como ação: status 'Aguardando'
         const waitingVisitors = visitantesDados.filter(v => v.vst_status === 'Aguardando');
         waitingVisitors.forEach(item => {
           combinedActions.push({
             id: `vst_${item.vst_id}`,
             type: 'liberar',
             description: `Liberar Entrada: ${item.vst_nome}`,
-            link: `/visitantes/${item.vst_id}`,
+            link: `/visitantes`, // <-- 3. CORREÇÃO DE LINK (Problema 3)
             icon: <FiUserPlus />,
-            createdAt: item.vst_data_prevista || item.created_at, // Passa a data
+            createdAt: item.vst_data_prevista || item.created_at, 
           });
         });
 
@@ -217,47 +170,70 @@ const Dashboard = () => {
     fetchDashboardData();
     const intervalId = setInterval(fetchDashboardData, 30000);
     return () => clearInterval(intervalId);
-  }, []);
+  }, []); // Removido showModal das dependências
 
-  // Filtrar ações removidas
   const filteredActions = actions.filter(action => !removedActions.has(action.id));
 
-  // Handlers para aprovar/rejeitar notificações
-  // NOTA: Para produção, integre com NotificationService
   const handleApproveNotification = async (notificacao) => {
     console.log('Aprovando notificação:', notificacao);
-    // Simulação mantida, mas ajustada para não quebrar o estado
     setNotifications(prev => prev.map(n => (n.id === notificacao.id ? n : n)));
   };
 
   const handleRejectNotification = async (notificacao) => {
     console.log('Rejeitando notificação:', notificacao);
-    // Simulação mantida, mas ajustada para não quebrar o estado
     setNotifications(prev => prev.map(n => (n.id === notificacao.id ? n : n)));
   };
 
-  // Handler para ações rápidas do ActionListCard
-  const handleQuickAction = (actionId, actionType) => {
+  // <-- 4. CORREÇÃO DA AÇÃO RÁPIDA (Problema 2)
+  const handleQuickAction = async (actionId, actionType) => {
     console.log(`Ação rápida: ${actionType} para ação ${actionId}`);
-    
-    // Marcar ação como processada temporariamente
+
+    const [type, id] = actionId.split('_'); // Ex: "res_1" -> ["res", "1"]
+
+    if (!type || !id) {
+      console.error("actionId mal formatado:", actionId);
+      return;
+    }
+
+    // Marca como processando na UI
     setProcessedActions(prev => new Set([...prev, `${actionId}_${actionType}`]));
-    
-    // Implementar lógica de ação rápida (placeholder)
-    // ...
-    
-    // Remover a ação da lista após 2 segundos
-    setTimeout(() => {
-      // Adicionar à lista de ações removidas
-      setRemovedActions(prev => new Set([...prev, actionId]));
+
+    try {
+      let novoStatus = '';
+      let endpoint = '';
+
+      if (type === 'res') {
+        endpoint = `/reservas_ambientes/${id}`;
+        if (actionType === 'approve') novoStatus = 'Reservado';
+        if (actionType === 'reject') novoStatus = 'Cancelado';
+      } 
+      // Adicionar lógica para 'oco', 'enc', 'vst' se necessário
+      else {
+        console.warn(`Ação rápida não implementada para: ${type}, ${actionType}`);
+      }
+
+      // Se for uma ação de API conhecida, execute-a
+      if (endpoint && novoStatus) {
+        await api.patch(endpoint, { res_status: novoStatus });
+        console.log(`✅ Ação ${actionType} para ${actionId} executada com sucesso.`);
+      }
+
+      // Remove da lista da UI após sucesso
+      setTimeout(() => {
+        setRemovedActions(prev => new Set([...prev, actionId]));
+      }, 1000); // Delay de 1s para o usuário ver o feedback
+
+    } catch (error) {
+      console.error(`Erro ao executar ação rápida ${actionType} para ${actionId}:`, error);
+      showModal("Erro", `Falha ao ${actionType === 'approve' ? 'aprovar' : 'rejeitar'}. Tente novamente.`, "error");
       
-      // Limpar do estado de processamento
+      // Reverte o "processando" na UI em caso de erro
       setProcessedActions(prev => {
         const newSet = new Set(prev);
         newSet.delete(`${actionId}_${actionType}`);
         return newSet;
       });
-    }, 2000);
+    }
   };
 
   return (
@@ -274,7 +250,7 @@ const Dashboard = () => {
           <ActionListCard 
             title="Ações Requeridas" 
             actions={filteredActions} 
-            viewAllLink="/reservas"
+            viewAllLink="/reservas" // Pode manter /reservas ou mudar para /dashboard/acoes
             onQuickAction={handleQuickAction}
             processedActions={processedActions}
           />
