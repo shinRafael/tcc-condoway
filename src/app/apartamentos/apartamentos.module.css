@@ -326,3 +326,129 @@
   background-color: #0056b3;
   transform: translateY(-2px);
 }
+
+/* ====== ESTILOS PARA AGRUPAMENTO POR CONDOMÍNIO ====== */
+
+.condominiosList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.condominioGroup {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.condominioGroup:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.condominioHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  user-select: none;
+}
+
+.condominioHeader:hover {
+  background: linear-gradient(135deg, #0056b3 0%, #003d82 100%);
+}
+
+.condominioHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.condominioHeaderLeft h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.apartamentosCount {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.taxaCondominal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.taxaLabel {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.taxaValor {
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.apartamentosTable {
+  padding: 0;
+  background: #f8f9fa;
+}
+
+.apartamentosTable .table {
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.apartamentosTable .table thead {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.apartamentosTable .table thead th {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.taxaCell {
+  color: #00b894;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+/* Responsividade para dispositivos móveis */
+@media (max-width: 768px) {
+  .condominioHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .taxaCondominal {
+    align-self: flex-start;
+  }
+  
+  .condominioHeaderLeft h3 {
+    font-size: 1.1rem;
+  }
+  
+  .taxaValor {
+    font-size: 1rem;
+  }
+}

@@ -1,10 +1,7 @@
 'use client';
-import { useState } from 'react'; // 1. Removido useEffect
+import { useState } from 'react';
 import styles from './index.module.css';
 import api from '@/services/api';
-import FabButton from '@/componentes/FabButton/FabButton';
-// import IconAction from '@/componentes/IconAction/IconAction'; // Removido (não usado)
-// import { FiEdit2, FiTrash2 } from 'react-icons/fi'; // Removido (não usado)
 import { useModal } from "@/context/ModalContext"; 
 
 export default function BotaoCadastrar({ onSaved }) {
@@ -60,7 +57,9 @@ export default function BotaoCadastrar({ onSaved }) {
 
   return (
     <>
-      <FabButton label="Cadastrar Despesa" onClick={toggleModal} />
+      <button className={styles.addButton} onClick={toggleModal}>
+        💰 Cadastrar Despesa
+      </button>
 
       {mostrarFormulario && (
         <div className={styles.modalOverlay} onClick={closeOnOverlay}>

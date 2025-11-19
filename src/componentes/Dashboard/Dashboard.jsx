@@ -62,6 +62,8 @@ const Dashboard = () => {
         let visitantesDados = [];
         if (visitorsResponse.data && visitorsResponse.data.sucesso && Array.isArray(visitorsResponse.data.dados)) {
           visitantesDados = visitorsResponse.data.dados;
+          console.log('📊 Total de visitantes retornados pela API:', visitantesDados.length);
+          console.log('👤 Dados dos visitantes:', visitantesDados);
           setNotifications(visitantesDados);
         } else {
           setNotifications([]);
@@ -77,10 +79,29 @@ const Dashboard = () => {
           console.warn("API de ambientes falhou ou não retornou dados válidos.");
         }
 
-        const newKpis = { ...initialKpis };
+        // Fazer cópia profunda do initialKpis para evitar mutação
+        const newKpis = {
+          reservas: { ...initialKpis.reservas, value: 0 },
+          encomendas: { ...initialKpis.encomendas, value: 0 },
+          ocorrencias: { ...initialKpis.ocorrencias, value: 0 },
+          visitantes: { ...initialKpis.visitantes, value: 0 },
+        };
         const combinedActions = [];
 
-        newKpis.visitantes.value = visitantesDados.length;
+        // Contar apenas visitantes de HOJE
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        
+        const visitantesHoje = visitantesDados.filter(v => {
+          if (!v.vst_validade_inicio) return false;
+          const dataVisitante = new Date(v.vst_validade_inicio);
+          dataVisitante.setHours(0, 0, 0, 0);
+          return dataVisitante.getTime() === hoje.getTime();
+        });
+        
+        console.log('📅 Visitantes de hoje:', visitantesHoje.length);
+        newKpis.visitantes.value = visitantesHoje.length;
+        console.log('🎯 KPI de visitantes atualizado:', newKpis.visitantes);
 
         if (reservationsResponse.data && reservationsResponse.data.sucesso && Array.isArray(reservationsResponse.data.dados)) {
           const pendingReservations = reservationsResponse.data.dados.filter(r => r.res_status === 'Pendente');
@@ -156,6 +177,7 @@ const Dashboard = () => {
           });
         });
 
+        console.log('📦 Atualizando KPIs no estado:', newKpis);
         setKpis(newKpis);
         setActions(combinedActions);
 

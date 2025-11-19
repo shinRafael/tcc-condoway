@@ -6,14 +6,14 @@ import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
 import api from "@/services/api";
 import FabButton from '@/componentes/FabButton/FabButton';
 import IconAction from '@/componentes/IconAction/IconAction';
-import { FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { FiEdit2, FiTrash2, FiChevronDown, FiChevronRight } from 'react-icons/fi';
 import { useModal } from "@/context/ModalContext";
 
 export default function Apartamentos() {
   const [showModal, setShowModal] = useState(false);
   const [editingAp, setEditingAp] = useState(null);
   const [showLoteModal, setShowLoteModal] = useState(false);
-  const [showBlocoModal, setShowBlocoModal] = useState(false); // NOVO: Modal de Bloco
+  const [showBlocoModal, setShowBlocoModal] = useState(false);
   const [apartamentos, setApartamentos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showList, setShowList] = useState(true);
@@ -24,13 +24,16 @@ export default function Apartamentos() {
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
   const [apartamentoParaExcluir, setApartamentoParaExcluir] = useState(null);
 
-  // --- NOVOS ESTADOS PARA OS BLOCOS ---
+  // Estados para blocos
   const [blocosDisponiveis, setBlocosDisponiveis] = useState([]);
   const [loadingBlocos, setLoadingBlocos] = useState(true);
-  // Mapa para converter ID de bloco em Nome (para a tabela)
   const [mapaBlocos, setMapaBlocos] = useState(new Map());
 
-  // --- FUNÇÃO ATUALIZADA PARA BUSCAR BLOCOS ---
+  // NOVO: Estados para agrupamento por condomínio
+  const [condominios, setCondominios] = useState([]);
+  const [condominiosExpandidos, setCondominiosExpandidos] = useState(new Set());
+
+  // Buscar blocos
   useEffect(() => {
     const fetchBlocos = async () => {
       setLoadingBlocos(true);
@@ -38,7 +41,6 @@ export default function Apartamentos() {
         const response = await api.get('/blocos');
         const blocos = response.data.dados || [];
         setBlocosDisponiveis(blocos);
-        // Cria um mapa para consulta rápida (Ex: 1 => "A")
         setMapaBlocos(new Map(blocos.map(b => [b.bloc_id, b.bloc_nome])));
       } catch (error) {
         console.error('Erro ao buscar blocos:', error);
@@ -49,24 +51,73 @@ export default function Apartamentos() {
       }
     };
     fetchBlocos();
-  }, [showInfoModal]); // Dependência do showInfoModal
+  }, [showInfoModal]);
 
+  // NOVO: Função para buscar apartamentos com dados do condomínio
   const listarApartamentos = async () => {
     setLoading(true);
     try {
       const response = await api.get('/apartamentos');
       const apartamentosData = response.data.dados;
-      console.log('📦 Dados dos apartamentos recebidos:', apartamentosData);
-      if (apartamentosData && apartamentosData.length > 0) {
-        console.log('🔍 Exemplo de apartamento:', apartamentosData[0]);
-        console.log('🏢 Campos de bloco disponíveis:', {
-          bloco_id: apartamentosData[0].bloco_id,
-          bloc_id: apartamentosData[0].bloc_id,
-          bloc: apartamentosData[0].bloc,
-          bloc_nome: apartamentosData[0].bloc_nome
+      
+      // Buscar blocos com informações de condomínio
+      const responseBlocos = await api.get('/blocos');
+      const blocosData = responseBlocos.dados || responseBlocos.data?.dados || [];
+      
+      // Criar mapa de blocos com condomínio
+      const mapaBlocosComCond = new Map();
+      blocosData.forEach(bloco => {
+        mapaBlocosComCond.set(bloco.bloc_id, {
+          bloc_nome: bloco.bloc_nome,
+          cond_id: bloco.cond_id
         });
-      }
-      setApartamentos(apartamentosData); 
+      });
+      
+      // Buscar condomínios (endpoint singular /condominio)
+      const responseCondominios = await api.get('/condominio');
+      const condominiosData = responseCondominios.dados || responseCondominios.data?.dados || [];
+      
+      // Criar mapa de condomínios (converter cond_taxa_base de STRING para NÚMERO)
+      const mapaCondominios = new Map();
+      condominiosData.forEach(cond => {
+        mapaCondominios.set(cond.cond_id, {
+          cond_nome: cond.cond_nome,
+          cond_taxa_base: parseFloat(cond.cond_taxa_base) || 0.00
+        });
+      });
+      
+      // Enriquecer apartamentos com dados do condomínio
+      const apartamentosEnriquecidos = apartamentosData.map(ap => {
+        const blocoInfo = mapaBlocosComCond.get(ap.bloco_id || ap.bloc_id);
+        const condInfo = blocoInfo ? mapaCondominios.get(blocoInfo.cond_id) : null;
+        
+        return {
+          ...ap,
+          bloc_nome: blocoInfo?.bloc_nome || 'Desconhecido',
+          cond_id: blocoInfo?.cond_id || null,
+          cond_nome: condInfo?.cond_nome || 'Sem Condomínio',
+          cond_taxa_base: condInfo?.cond_taxa_base || 0.00
+        };
+      });
+      
+      // Agrupar por condomínio
+      const condominiosAgrupados = {};
+      apartamentosEnriquecidos.forEach(ap => {
+        const condId = ap.cond_id || 'sem_condominio';
+        if (!condominiosAgrupados[condId]) {
+          condominiosAgrupados[condId] = {
+            cond_id: ap.cond_id,
+            cond_nome: ap.cond_nome,
+            cond_taxa_base: ap.cond_taxa_base,
+            apartamentos: []
+          };
+        }
+        condominiosAgrupados[condId].apartamentos.push(ap);
+      });
+      
+      setCondominios(Object.values(condominiosAgrupados));
+      setApartamentos(apartamentosEnriquecidos);
+      
     } catch(error) {
       console.error('Erro ao buscar apartamentos:', error);
       showInfoModal('Erro', 'Não foi possível carregar a lista de apartamentos', 'error');
@@ -76,12 +127,21 @@ export default function Apartamentos() {
   };
   
   useEffect(() => {
-    // Só lista apartamentos depois que os blocos carregarem,
-    // para que a tabela possa mostrar os nomes corretos.
     if (!loadingBlocos) {
       listarApartamentos();
     }
-  }, [loadingBlocos]); // Dependência do loadingBlocos
+  }, [loadingBlocos]);
+
+  // NOVO: Função para expandir/recolher condomínios
+  const toggleCondominio = (condId) => {
+    const novosExpandidos = new Set(condominiosExpandidos);
+    if (novosExpandidos.has(condId)) {
+      novosExpandidos.delete(condId);
+    } else {
+      novosExpandidos.add(condId);
+    }
+    setCondominiosExpandidos(novosExpandidos);
+  };
 
   const handleAddAp = () => {
     setEditingAp(null);
@@ -160,8 +220,11 @@ export default function Apartamentos() {
       showInfoModal("Sucesso", "Apartamento excluído com sucesso!");
       await listarApartamentos(); 
     } catch (error) {
-      console.error("Erro ao excluir apartamento:", error);
-      const erroMsg = error.response?.data?.mensagem || "Erro ao excluir apartamento. Verifique o console.";
+      console.error("❌ Erro ao excluir apartamento:", error);
+      console.error("❌ Resposta completa do backend:", error.response);
+      console.error("❌ Dados do erro:", error.response?.data);
+      
+      const erroMsg = error.response?.data?.mensagem || error.response?.data?.erro || "Erro ao excluir apartamento. Verifique o console.";
       showInfoModal("Erro", erroMsg, "error");
     } finally {
       setShowConfirmDeleteModal(false);
@@ -280,21 +343,29 @@ export default function Apartamentos() {
   };
 
 
-  const filteredApartamentos = apartamentos.filter(ap => {
-    const term = searchTerm.toLowerCase();
-
-    if (!term) return true;
-
-    // Busca pelo NOME do bloco (usando o mapa) ou pelo NÚMERO
-    if (filterField === 'bloco') {
-      const nomeBloco = mapaBlocos.get(ap.bloco_id)?.toLowerCase() || '';
-      return nomeBloco.includes(term);
-    } else if (filterField === 'numero') {
-      return ap.ap_numero && ap.ap_numero.toString().includes(term);
-    }
-
-    return false;
-  });
+  // NOVO: Filtrar condominios e apartamentos (mostra apenas cond_id 1)
+  const filteredCondominios = condominios
+    .filter(cond => cond.cond_id === 1) // Apenas condomínio ID 1
+    .map(cond => {
+      const term = searchTerm.toLowerCase();
+      
+      if (!term) return cond;
+      
+      const apartamentosFiltrados = cond.apartamentos.filter(ap => {
+        if (filterField === 'bloco') {
+          return ap.bloc_nome?.toLowerCase().includes(term);
+        } else if (filterField === 'numero') {
+          return ap.ap_numero && ap.ap_numero.toString().includes(term);
+        }
+        return false;
+      });
+      
+      return {
+        ...cond,
+        apartamentos: apartamentosFiltrados
+      };
+    })
+    .filter(cond => cond.apartamentos.length > 0);
 
   return (
     <div className="page-container">
@@ -356,47 +427,79 @@ export default function Apartamentos() {
           {showList ? (
             loading ? (
               <p>Carregando lista de apartamentos...</p>
-            ) : filteredApartamentos.length === 0 ? (
+            ) : filteredCondominios.length === 0 ? (
               <p>Nenhum apartamento encontrado.</p>
             ) : (
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>Bloco</th>
-                    <th>Número</th>
-                    <th>Andar</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredApartamentos.map((ap) => (
-                    <tr key={ap.ap_id} className={styles.apRow}>
-                      <td data-label="Bloco">
-                        {/* CORRIGIDO: Verifica múltiplos possíveis nomes de campo */}
-                        {mapaBlocos.get(ap.bloco_id || ap.bloc_id || ap.bloc) || ap.bloc_nome || `ID ${ap.bloco_id || ap.bloc_id || ap.bloc || 'undefined'}`}
-                      </td>
-                      <td data-label="Número">{ap.ap_numero}</td>
-                      <td data-label="Andar">{ap.ap_andar}</td>
-                      <td data-label="Ações">
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <IconAction 
-                            icon={FiEdit2} 
-                            label="Editar" 
-                            variant="edit"
-                            onClick={() => handleEditAp(ap)} 
-                          />
-                          <IconAction 
-                            icon={FiTrash2} 
-                            label="Excluir" 
-                            variant="delete"
-                            onClick={() => handleDelete(ap)}
-                          />
+              <div className={styles.condominiosList}>
+                {filteredCondominios.map((cond) => {
+                  const isExpanded = condominiosExpandidos.has(cond.cond_id);
+                  
+                  return (
+                    <div key={cond.cond_id || 'sem_cond'} className={styles.condominioGroup}>
+                      {/* Cabeçalho do Condomínio */}
+                      <div 
+                        className={styles.condominioHeader}
+                        onClick={() => toggleCondominio(cond.cond_id)}
+                      >
+                        <div className={styles.condominioHeaderLeft}>
+                          {isExpanded ? <FiChevronDown size={20} /> : <FiChevronRight size={20} />}
+                          <h3>{cond.cond_nome}</h3>
+                          <span className={styles.apartamentosCount}>
+                            ({cond.apartamentos.length} {cond.apartamentos.length === 1 ? 'apartamento' : 'apartamentos'})
+                          </span>
                         </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                        <div className={styles.taxaCondominal}>
+                          <span className={styles.taxaLabel}>Taxa Base:</span>
+                          <span className={styles.taxaValor}>
+                            R$ {cond.cond_taxa_base.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Tabela de Apartamentos (expandível) */}
+                      {isExpanded && (
+                        <div className={styles.apartamentosTable}>
+                          <table className={styles.table}>
+                            <thead>
+                              <tr>
+                                <th>Bloco</th>
+                                <th>Número</th>
+                                <th>Andar</th>
+                                <th>Ações</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {cond.apartamentos.map((ap) => (
+                                <tr key={ap.ap_id} className={styles.apRow}>
+                                  <td data-label="Bloco">{ap.bloc_nome}</td>
+                                  <td data-label="Número">{ap.ap_numero}</td>
+                                  <td data-label="Andar">{ap.ap_andar}</td>
+                                  <td data-label="Ações">
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                      <IconAction 
+                                        icon={FiEdit2} 
+                                        label="Editar" 
+                                        variant="edit"
+                                        onClick={() => handleEditAp(ap)} 
+                                      />
+                                      <IconAction 
+                                        icon={FiTrash2} 
+                                        label="Excluir" 
+                                        variant="delete"
+                                        onClick={() => handleDelete(ap)}
+                                      />
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             )
           ) : null}
         </div>
