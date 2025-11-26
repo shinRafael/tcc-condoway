@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './ocorrencias.module.css';
-import { FaCommentDots } from 'react-icons/fa';
+import { FaCommentDots, FaPaperclip } from 'react-icons/fa'; // Adicionado FaPaperclip
 
 const OcorrenciaCard = ({ ocorrencia, onUpdateStatus, onUpdatePriority, onOpenChat }) => {
 
@@ -14,8 +14,19 @@ const OcorrenciaCard = ({ ocorrencia, onUpdateStatus, onUpdatePriority, onOpenCh
         }
     };
     
-    // Verifica se a ocorrência já foi encerrada
+    // Verifica se a ocorrência já foi encerrada para bloquear edições
     const isFinalizado = ["Resolvida", "Cancelada"].includes(ocorrencia.oco_status);
+
+    // Função auxiliar para montar a URL da imagem
+    const getImageUrl = (url) => {
+        if (!url) return null;
+        // Se já vier com http (do mobile antigo com IP), usa ela mesma. 
+        // Se vier relativa (/uploads/...), adiciona a base do backend local.
+        if (url.startsWith('http')) return url;
+        return `http://localhost:3333${url}`; 
+    };
+
+    const imagemUrl = getImageUrl(ocorrencia.oco_imagem);
 
     if (!ocorrencia || ocorrencia.oco_id == null) {
         console.warn("Tentativa de renderizar OcorrenciaCard inválido:", ocorrencia);
@@ -34,13 +45,32 @@ const OcorrenciaCard = ({ ocorrencia, onUpdateStatus, onUpdatePriority, onOpenCh
             <div className={styles.moradorInfo}>
                 <p><strong>Morador:</strong> {ocorrencia.morador_nome || 'N/A'}</p>
                 <p><strong>Apto:</strong> {ocorrencia.apartamento || 'N/A'}</p>
-                {/* Mostra a prioridade como texto se estiver finalizado, já que a barra sumiu */}
+                {/* Mostra a prioridade como texto simples se estiver finalizado (já que o seletor some) */}
                 {isFinalizado && (
                     <p><strong>Prioridade:</strong> {ocorrencia.oco_prioridade}</p>
                 )}
             </div>
 
             <p className={styles.mensagem}>{ocorrencia.oco_descricao || 'Sem descrição'}</p>
+
+            {/* --- BLOCO: EXIBIÇÃO DA IMAGEM --- */}
+            {imagemUrl && (
+                <div className={styles.anexoContainer}>
+                    <p className={styles.anexoLabel}><FaPaperclip /> Anexo:</p>
+                    <a href={imagemUrl} target="_blank" rel="noopener noreferrer" title="Clique para ampliar">
+                        <div className={styles.imagemWrapper}>
+                            <img 
+                                src={imagemUrl} 
+                                alt="Evidência da Ocorrência" 
+                                className={styles.imagemOcorrencia}
+                                onError={(e) => {e.target.style.display='none';}} // Esconde se falhar ao carregar
+                            />
+                        </div>
+                        <span className={styles.verImagemTexto}>Clique para ver original</span>
+                    </a>
+                </div>
+            )}
+            {/* --------------------------------------- */}
 
             {/* Botões de Status */}
             <div className={styles.statusButtons}>
@@ -52,21 +82,21 @@ const OcorrenciaCard = ({ ocorrencia, onUpdateStatus, onUpdatePriority, onOpenCh
                  
                  <button
                     onClick={() => onUpdateStatus(ocorrencia.oco_id, "Em Andamento")}
-                    // Desabilita se já estiver 'Em Andamento' OU se estiver Finalizado
+                    // Desabilita se já for 'Em Andamento' OU se estiver finalizado
                     disabled={ocorrencia.oco_status === "Em Andamento" || isFinalizado}
                     className={`${styles.statusButton} ${styles.statusEmAndamento} ${ocorrencia.oco_status === "Em Andamento" ? styles.activeStatusButton : ''}`}
                  > Em Andamento </button>
                  
                  <button
                     onClick={() => onUpdateStatus(ocorrencia.oco_id, "Resolvida")}
-                    // Desabilita se já estiver 'Resolvida' OU se estiver Finalizado (Cancelada)
+                    // Desabilita se já for 'Resolvida' OU se estiver finalizado (Cancelada)
                     disabled={ocorrencia.oco_status === "Resolvida" || isFinalizado}
                     className={`${styles.statusButton} ${styles.statusResolvida} ${ocorrencia.oco_status === "Resolvida" ? styles.activeStatusButton : ''}`}
                  > Resolvida </button>
                  
                  <button
                     onClick={() => onUpdateStatus(ocorrencia.oco_id, "Cancelada")}
-                    // Desabilita se já estiver 'Cancelada' OU se estiver Finalizado (Resolvida)
+                    // Desabilita se já for 'Cancelada' OU se estiver finalizado (Resolvida)
                     disabled={ocorrencia.oco_status === "Cancelada" || isFinalizado}
                      className={`${styles.statusButton} ${styles.statusCancelada} ${ocorrencia.oco_status === "Cancelada" ? styles.activeStatusButton : ''}`}
                  > Cancelada </button>
@@ -90,10 +120,16 @@ const OcorrenciaCard = ({ ocorrencia, onUpdateStatus, onUpdatePriority, onOpenCh
                 </div>
             )}
 
-            {/* RECURSO DE CHAT DESATIVADO TEMPORARIAMENTE */}
-            {/* <div className={styles.actions}>
-                <button ... > ... </button>
-            </div> 
+            {/* RECURSO DE CHAT DESATIVADO
+            <div className={styles.actions}>
+                <button
+                  className={styles.chatButton}
+                  onClick={() => onOpenChat(ocorrencia)}
+                  title="Abrir chat da ocorrência"
+                >
+                  <FaCommentDots /> Conversar
+                </button>
+            </div>
             */}
         </div>
     );
