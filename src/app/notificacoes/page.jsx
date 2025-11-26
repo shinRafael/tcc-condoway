@@ -4,26 +4,24 @@ import PageHeader from "@/componentes/PageHeader";
 import { useEffect, useState } from "react";
 import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
 import api from "@/services/api";
-import { useModal } from "@/context/ModalContext"; // Importe o hook
+import { useModal } from "@/context/ModalContext";
 import useAuthGuard from "@/utils/useAuthGuard";
 
 export default function Page() {
-  useAuthGuard(["Sindico"]); // Apenas síndico pode acessar
-  
+  useAuthGuard(["Sindico"]);
+
   const [notificacoes, setNotificacoes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notificacaoParaExcluir, setNotificacaoParaExcluir] = useState(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
-  const { showModal } = useModal(); // Use o hook
+  const { showModal } = useModal();
 
   const axiosNotificacoes = async () => {
     setLoading(true);
     try {
       const response = await api.get("/notificacoes/envios");
-      
-      const notificacoesFormatadas = response.data.dados.map(envio => {
+      const notificacoesFormatadas = (response.data?.dados || []).map((envio) => {
         const idUnicoParaReact = btoa(encodeURIComponent(envio.not_titulo + envio.not_mensagem + envio.not_prioridade + envio.not_tipo));
-        
         return {
           id: idUnicoParaReact,
           titulo: envio.not_titulo,
@@ -34,9 +32,7 @@ export default function Page() {
           destinatarios: envio.total_destinatarios,
         };
       });
-
       setNotificacoes(notificacoesFormatadas);
-
     } catch (error) {
       console.error("Falha ao buscar envios de notificações:", error);
     } finally {
@@ -52,10 +48,20 @@ export default function Page() {
         not_prioridade: nova.prioridade,
         alvo: nova.alvo,
       };
-      await api.post("/notificacao", novaNotificacaoAPI);
+      console.log("Enviando payload para /notificacao:", novaNotificacaoAPI);
+      const res = await api.post("/notificacao", novaNotificacaoAPI);
+      console.log("Envio de notificação concluído com sucesso.", res?.status);
       axiosNotificacoes();
     } catch (error) {
       console.error("Falha ao adicionar notificação:", error);
+      console.error('Detalhes da resposta (se houver):', error.response?.status, error.response?.data);
+      try {
+        const status = error.response?.status || 'desconhecido';
+        const data = error.response?.data ? JSON.stringify(error.response.data) : '';
+        showModal("Erro", `Falha ao enviar notificação. Status: ${status}. ${data}`, "error");
+      } catch (e) {
+        console.error('Erro ao tentar mostrar modal de erro:', e);
+      }
     }
   };
 
@@ -72,7 +78,7 @@ export default function Page() {
           not_titulo: atualizado.titulo,
           not_mensagem: atualizado.mensagem,
           not_prioridade: atualizado.prioridade,
-        }
+        },
       });
       axiosNotificacoes();
     } catch (error) {
@@ -88,19 +94,16 @@ export default function Page() {
 
   const confirmarExclusao = async () => {
     if (!notificacaoParaExcluir) return;
-
     const capitalizeLocal = (s) => {
       if (!s || typeof s !== 'string') return 'Media';
       return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
     };
-
     const payload = {
       not_titulo: notificacaoParaExcluir.titulo || notificacaoParaExcluir.not_titulo,
       not_mensagem: notificacaoParaExcluir.mensagem || notificacaoParaExcluir.not_mensagem,
       not_prioridade: capitalizeLocal(notificacaoParaExcluir.prioridade || notificacaoParaExcluir.not_prioridade),
       not_tipo: notificacaoParaExcluir.tipo || notificacaoParaExcluir.not_tipo,
     };
-
     const logError = (prefix, err) => {
       console.error(prefix, err);
       if (err?.response) {
@@ -108,7 +111,6 @@ export default function Page() {
         console.error(prefix + ' - data:', err.response.data);
       }
     };
-
     try {
       console.log("Tentando excluir envio com payload (body):", payload);
       await api.delete("/notificacoes/envio", { data: payload });
@@ -118,7 +120,6 @@ export default function Page() {
       return;
     } catch (error) {
       logError('Falha ao excluir (DELETE body)', error);
-
       try {
         console.log('Tentando DELETE com query params', payload);
         await api.delete('/notificacoes/envio', { params: payload });
@@ -128,7 +129,6 @@ export default function Page() {
         return;
       } catch (err2) {
         logError('Falha ao excluir (DELETE params)', err2);
-
         try {
           console.log('Tentando fallback via POST com _method=DELETE', payload);
           await api.post("/notificacoes/envio", { ...payload, _method: "DELETE" });
@@ -138,7 +138,6 @@ export default function Page() {
           return;
         } catch (err3) {
           logError('Falha no fallback (POST _method)', err3);
-
           const status = err3?.response?.status || err2?.response?.status || error?.response?.status;
           showModal("Erro", `Erro ao excluir o envio. Status: ${status || 'desconhecido'}. Veja console para detalhes.`, "error");
           setShowConfirmDelete(false);
@@ -173,7 +172,6 @@ export default function Page() {
         )}
       </div>
 
-      {/* Modal de Confirmação de Exclusão */}
       {showConfirmDelete && (
         <div style={{
           position: 'fixed',
@@ -185,7 +183,7 @@ export default function Page() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          zIndex: 9999
+          zIndex: 9999,
         }}>
           <div style={{
             background: 'white',
@@ -199,34 +197,10 @@ export default function Page() {
               Tem certeza que deseja excluir este envio para TODOS os destinatários?
             </p>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-              <button
-                onClick={cancelarExclusao}
-                style={{
-                  padding: '10px 20px',
-                  border: 'none',
-                  borderRadius: '32px',
-                  cursor: 'pointer',
-                  fontWeight: '600',
-                  fontSize: '13px',
-                  backgroundColor: '#6c757d',
-                  color: 'white'
-                }}
-              >
+              <button onClick={cancelarExclusao} style={{ padding: '10px 20px', border: 'none', borderRadius: '32px', cursor: 'pointer', fontWeight: '600', fontSize: '13px', backgroundColor: '#6c757d', color: 'white' }}>
                 Cancelar
               </button>
-              <button
-                onClick={confirmarExclusao}
-                style={{
-                  padding: '10px 20px',
-                  border: 'none',
-                  borderRadius: '32px',
-                  cursor: 'pointer',
-                  fontWeight: '600',
-                  fontSize: '13px',
-                  backgroundColor: '#dc3545',
-                  color: 'white'
-                }}
-              >
+              <button onClick={confirmarExclusao} style={{ padding: '10px 20px', border: 'none', borderRadius: '32px', cursor: 'pointer', fontWeight: '600', fontSize: '13px', backgroundColor: '#dc3545', color: 'white' }}>
                 Excluir
               </button>
             </div>

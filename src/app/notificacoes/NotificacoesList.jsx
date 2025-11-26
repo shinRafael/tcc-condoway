@@ -45,7 +45,20 @@ export default function NotificacoesList({ initialNotificacoes, adicionarNotific
   // Filtra os apartamentos quando um bloco é selecionado
   useEffect(() => {
     if (blocoSelecionado) {
-      const filtrados = todosApartamentos.filter(ap => ap.bloco_id == blocoSelecionado);
+      // Normaliza e compara como string para evitar problemas de tipo (number vs string)
+      const blocoSelStr = String(blocoSelecionado);
+
+      const filtrados = (Array.isArray(todosApartamentos) ? todosApartamentos : []).filter((ap) => {
+        // Suporta diferentes nomes de chave que o backend pode retornar
+        const apBloco = ap?.bloc_id ?? ap?.bloco_id ?? ap?.blocoId ?? ap?.bloco ?? ap?.blc_id ?? ap?.blcId;
+        return String(apBloco) === blocoSelStr;
+      });
+
+      // Para facilitar o debug em ambiente de desenvolvimento, logue quando não houver resultados
+      if (filtrados.length === 0) {
+        console.warn('Nenhum apartamento encontrado para o bloco selecionado:', blocoSelecionado, '— todosApartamentos exemplo:', (todosApartamentos && todosApartamentos.slice && todosApartamentos.slice(0,5)) || todosApartamentos);
+      }
+
       setApartamentosFiltrados(filtrados);
       setApartamentoSelecionado(""); // Reseta a seleção do apartamento
     } else {
