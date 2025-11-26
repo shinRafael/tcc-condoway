@@ -8,8 +8,11 @@ import FabButton from '@/componentes/FabButton/FabButton';
 import IconAction from '@/componentes/IconAction/IconAction';
 import { FiEdit2, FiTrash2, FiChevronDown, FiChevronRight } from 'react-icons/fi';
 import { useModal } from "@/context/ModalContext";
+import useAuthGuard from "@/utils/useAuthGuard";
 
 export default function Apartamentos() {
+  useAuthGuard(["Sindico"]); // Apenas síndico pode acessar
+  
   const [showModal, setShowModal] = useState(false);
   const [editingAp, setEditingAp] = useState(null);
   const [showLoteModal, setShowLoteModal] = useState(false);
@@ -224,7 +227,14 @@ export default function Apartamentos() {
       console.error("❌ Resposta completa do backend:", error.response);
       console.error("❌ Dados do erro:", error.response?.data);
       
-      const erroMsg = error.response?.data?.mensagem || error.response?.data?.erro || "Erro ao excluir apartamento. Verifique o console.";
+      // Mensagem específica para erro 500
+      let erroMsg = "Erro ao excluir apartamento.";
+      if (error.response?.status === 500) {
+        erroMsg = "Não foi possível excluir o apartamento. Verifique se não existem moradores, visitantes ou encomendas vinculados a este apartamento.";
+      } else {
+        erroMsg = error.response?.data?.mensagem || error.response?.data?.erro || erroMsg;
+      }
+      
       showInfoModal("Erro", erroMsg, "error");
     } finally {
       setShowConfirmDeleteModal(false);

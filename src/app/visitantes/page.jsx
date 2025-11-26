@@ -333,7 +333,7 @@ export default function ControleAcessos() {
                   <label>Unidade de Destino</label>
                   <input
                     type="number"
-                    placeholder="ID do apartamento (userap_id)"
+                    placeholder="ID do apartamento"
                     value={visitanteInesperado.apartamentoDestino}
                     onChange={(e) => setVisitanteInesperado({ ...visitanteInesperado, apartamentoDestino: e.target.value })}
                     required

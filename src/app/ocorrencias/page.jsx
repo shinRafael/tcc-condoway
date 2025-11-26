@@ -4,8 +4,11 @@ import OcorrenciasList from "./OcorrenciasList";
 import PageHeader from "@/componentes/PageHeader";
 import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
 import api from '@/services/api';
+import useAuthGuard from "@/utils/useAuthGuard";
 
 export default function Page() {
+  useAuthGuard(["Sindico", "Funcionario"]); // Síndico e Porteiro podem acessar
+  
   // O estado agora armazena o objeto agrupado pela API
   const [ocorrenciasAgrupadas, setOcorrenciasAgrupadas] = useState({
       Aberta: [], 'Em Andamento': [], Resolvida: [], Cancelada: []

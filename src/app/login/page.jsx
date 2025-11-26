@@ -44,7 +44,7 @@ export default function LoginPage() {
 
       const rotas = {
         Sindico: "/dashboard",
-        Funcionario: "/porteiro",
+        Funcionario: "/dashboard", // Porteiro também vai para dashboard
         Morador: "/home",
       };
 

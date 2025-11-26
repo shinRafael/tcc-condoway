@@ -9,6 +9,7 @@ import FabButton from '../../componentes/FabButton/FabButton';
 import IconAction from '../../componentes/IconAction/IconAction';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi'; // Import padrão para react-icons
 import { useModal } from "../../context/ModalContext";
+import useAuthGuard from "../../utils/useAuthGuard";
 
 // --- Estado Inicial Atualizado ---
 const usuarioInicial = {
@@ -40,6 +41,8 @@ const formatarTelefone = (telefone) => {
 
 // --- Componente Principal ---
 export default function UsuariosPage() {
+  useAuthGuard(["Sindico"]); // Apenas síndico pode acessar
+  
   // Estados existentes
   const [usuarios, setUsuarios] = useState([]);
   const [showForm, setShowForm] = useState(false);

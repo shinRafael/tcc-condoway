@@ -5,8 +5,11 @@ import { useEffect, useState } from "react";
 import RightHeaderBrand from "@/componentes/PageHeader/RightHeaderBrand";
 import api from "@/services/api";
 import { useModal } from "@/context/ModalContext"; // Importe o hook
+import useAuthGuard from "@/utils/useAuthGuard";
 
 export default function Page() {
+  useAuthGuard(["Sindico"]); // Apenas síndico pode acessar
+  
   const [notificacoes, setNotificacoes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notificacaoParaExcluir, setNotificacaoParaExcluir] = useState(null);

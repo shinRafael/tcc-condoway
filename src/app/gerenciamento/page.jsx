@@ -8,8 +8,11 @@ import IconAction from '@/componentes/IconAction/IconAction';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 import api from '@/services/api';
 import { useModal } from "@/context/ModalContext";
+import useAuthGuard from "@/utils/useAuthGuard";
 
 export default function GerenciamentoPage() {
+  useAuthGuard(["Sindico"]); // Apenas síndico pode acessar
+  
   const [dados, setDados] = useState([]);
   const [totalMes, setTotalMes] = useState(0); // <-- NOVO ESTADO
   const [editando, setEditando] = useState(null);

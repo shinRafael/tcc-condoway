@@ -12,20 +12,25 @@ const formatarData = (data) => {
 
 // Item da lista de notificação (Visitantes Ativos)
 const NotificationItem = ({ item }) => {
+  // Compatibilidade: aceita campos com ou sem prefixo vst_
+  const status = item.status || item.vst_status;
+  const nome = item.nome || item.vst_nome;
+  const dataEntrada = item.dataEntrada || item.vst_data_entrada;
+  
   const statusText = { 'Aguardando': 'Aguardando Entrada', 'Entrou': 'Presente no Condomínio' };
   const statusClass = { 'Aguardando': styles.statusAguardando, 'Entrou': styles.statusEntrou };
 
   return (
     <div className={styles.notificationItem}>
-      <span className={`${styles.statusDot} ${statusClass[item.vst_status] || ''}`}></span>
+      <span className={`${styles.statusDot} ${statusClass[status] || ''}`}></span>
       <div className={styles.notificationContent}>
-        <p className={styles.notificationTitle}>{item.vst_nome}</p>
+        <p className={styles.notificationTitle}>{nome}</p>
         <div className={styles.details}>
-          <span className={`${styles.statusTag} ${statusClass[item.vst_status] || ''}`}>
-            {statusText[item.vst_status] || item.vst_status}
+          <span className={`${styles.statusTag} ${statusClass[status] || ''}`}>
+            {statusText[status] || status}
           </span>
-          {item.vst_data_entrada && (
-            <div className={styles.detailItem}><FiLogIn /> Entrada: {formatarData(item.vst_data_entrada)}</div>
+          {dataEntrada && (
+            <div className={styles.detailItem}><FiLogIn /> Entrada: {formatarData(dataEntrada)}</div>
           )}
         </div>
       </div>

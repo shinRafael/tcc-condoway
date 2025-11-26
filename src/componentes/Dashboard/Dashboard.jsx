@@ -64,9 +64,7 @@ const Dashboard = () => {
           visitantesDados = visitorsResponse.data.dados;
           console.log('📊 Total de visitantes retornados pela API:', visitantesDados.length);
           console.log('👤 Dados dos visitantes:', visitantesDados);
-          setNotifications(visitantesDados);
         } else {
-          setNotifications([]);
           console.warn('API de visitantes não retornou dados válidos.');
         }
 
@@ -88,20 +86,30 @@ const Dashboard = () => {
         };
         const combinedActions = [];
 
-        // Contar apenas visitantes de HOJE
-        const hoje = new Date();
-        hoje.setHours(0, 0, 0, 0);
+        // Contar visitantes com status "Aguardando" (case insensitive)
+        console.log('🔍 Verificando status dos visitantes:', visitantesDados.map(v => v.status || v.vst_status));
         
-        const visitantesHoje = visitantesDados.filter(v => {
-          if (!v.vst_validade_inicio) return false;
-          const dataVisitante = new Date(v.vst_validade_inicio);
-          dataVisitante.setHours(0, 0, 0, 0);
-          return dataVisitante.getTime() === hoje.getTime();
+        const visitantesAguardando = visitantesDados.filter(v => {
+          const status = v.status || v.vst_status; // Tenta ambos os campos
+          return status && status.toLowerCase().trim() === 'aguardando';
         });
         
-        console.log('📅 Visitantes de hoje:', visitantesHoje.length);
-        newKpis.visitantes.value = visitantesHoje.length;
+        console.log('📅 Visitantes aguardando:', visitantesAguardando.length);
+        console.log('👥 Detalhes:', visitantesAguardando);
+        
+        newKpis.visitantes.value = visitantesAguardando.length;
         console.log('🎯 KPI de visitantes atualizado:', newKpis.visitantes);
+        
+        // Mostrar TODOS os visitantes com status "Aguardando" (não limitar a 5)
+        const visitantesPendentes = visitantesDados
+          .filter(v => {
+            const status = v.status || v.vst_status; // Tenta ambos os campos
+            return status && status.toLowerCase().trim() === 'aguardando';
+          })
+          .sort((a, b) => new Date(b.vst_validade_inicio || b.dataInicio) - new Date(a.vst_validade_inicio || a.dataInicio));
+        
+        console.log('🏠 Visitantes pendentes (todos):', visitantesPendentes.length);
+        setNotifications(visitantesPendentes);
 
         if (reservationsResponse.data && reservationsResponse.data.sucesso && Array.isArray(reservationsResponse.data.dados)) {
           const pendingReservations = reservationsResponse.data.dados.filter(r => r.res_status === 'Pendente');
